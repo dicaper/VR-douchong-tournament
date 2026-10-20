@@ -221,3 +221,9 @@ __marimo__/
 # Operating systems
 .DS_Store
 Thumbs.db
+.env
+*.db
+__pycache__/
+*.py[cod]
+venv/
+.venv/
