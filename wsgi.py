@@ -1,6 +1,6 @@
 # wsgi.py
 from pathlib import Path
-from app.api_revenue_test import revenue_test_bp
+
 from flask import Flask, abort, send_from_directory
 
 from app.api_tournament import bp as tournament_blueprint
@@ -19,7 +19,6 @@ app = Flask(
 
 # 比赛 API
 app.register_blueprint(tournament_blueprint)
-app.register_blueprint(revenue_test_bp)
 
 # 页面路由：保留原有页面文件和静态资源
 @app.route("/")
