@@ -1,28 +1,26 @@
 # app/services/tournament_service.py
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+from collections import defaultdict
 import random
+
 import requests
 
-from sqlalchemy import func
-
+from app.memfire_rest import MemFireError, get_memfire
 from app.models.tournament import (
-    SessionLocal,
-    TournamentConfig,
-    TournamentPlayer,
-    TournamentMatch,
-    TournamentVote,
-    TournamentRevenue,
+    BEST_OF_THREE_WINS,
+    KNOCKOUT_GAME_HOURS,
+    ROUND_QF,
+    ROUND_SF,
+    ROUND_FINAL,
+    SWISS_MAX_ROUNDS,
+    TABLE_TOURNAMENTS,
+    TABLE_PLAYERS,
+    TABLE_MATCHES,
+    TABLE_VOTES,
+    TABLE_REVENUE,
 )
 
-# 瑞士轮之后的淘汰赛阶段编号
-ROUND_QF = 100
-ROUND_SF = 101
-ROUND_FINAL = 102
-
-BEST_OF_THREE_WINS = 2
-KNOCKOUT_GAME_HOURS = 72
-SWISS_MAX_ROUNDS = 5
 
 BEIJING_TZ = ZoneInfo("Asia/Shanghai")
 UTC_TZ = timezone.utc
@@ -35,17 +33,26 @@ DATA_API_BASES = (
 HTTP_TIMEOUT_SECONDS = 20
 
 
-def _as_utc(value):
-    """数据库中的 naive datetime 按 UTC 解释。"""
-    if value is None:
+def _utc_now_naive():
+    return datetime.now(UTC_TZ).replace(tzinfo=None)
+
+
+def _parse_db_time(value):
+    if not value:
         return None
-    if value.tzinfo is None:
-        return value.replace(tzinfo=UTC_TZ)
-    return value.astimezone(UTC_TZ)
+
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+
+    if parsed.tzinfo is not None:
+        return parsed.astimezone(UTC_TZ).replace(tzinfo=None)
+
+    return parsed
 
 
 def _parse_api_time(value):
-    """上游 API 时间无时区时按北京时间解析。"""
     if not value:
         return None
 
@@ -57,15 +64,13 @@ def _parse_api_time(value):
     return parsed.astimezone(UTC_TZ)
 
 
-def _month_strings(start_bj, end_bj):
-    """生成时间窗口覆盖的月份，格式 YYYYMM。"""
+def _month_strings(start_utc, end_utc):
+    start_bj = start_utc.replace(tzinfo=UTC_TZ).astimezone(BEIJING_TZ)
+    end_bj = end_utc.replace(tzinfo=UTC_TZ).astimezone(BEIJING_TZ)
+
     months = []
     cursor = start_bj.replace(
-        day=1,
-        hour=0,
-        minute=0,
-        second=0,
-        microsecond=0,
+        day=1, hour=0, minute=0, second=0, microsecond=0
     )
 
     while cursor < end_bj:
@@ -78,39 +83,37 @@ def _month_strings(start_bj, end_bj):
     return months
 
 
+def _series_info(match_id):
+    import re
+
+    found = re.match(r"^(qf[1-4]|sf[1-2]|final)g([1-3])$", match_id or "")
+    if not found:
+        return None, None
+
+    return found.group(1), int(found.group(2))
+
+
 def _get_room_sessions(room_id, month):
-    """从 VR/PSP 数据接口获取直播场次。"""
     errors = []
-    room_id = str(room_id)
 
     for base_url in DATA_API_BASES:
         try:
             response = requests.get(
                 f"{base_url}/gift/live_sessions",
-                params={"room_id": room_id, "month": month},
+                params={"room_id": str(room_id), "month": month},
                 timeout=HTTP_TIMEOUT_SECONDS,
             )
 
             if response.status_code in (400, 404):
-                errors.append(f"{base_url}: 房间不在此数据源")
+                errors.append(f"{base_url}: 房间/月数据不存在")
                 continue
 
             response.raise_for_status()
             payload = response.json()
 
-            returned_room_id = payload.get("room_id")
-            if (
-                returned_room_id is not None
-                and str(returned_room_id) != room_id
-            ):
-                errors.append(f"{base_url}: 返回房间号不匹配")
-                continue
-
             sessions = payload.get("sessions")
             if not isinstance(sessions, list):
-                raise RuntimeError(
-                    f"{base_url} 返回的数据没有 sessions 数组"
-                )
+                raise RuntimeError("接口响应中没有 sessions 数组")
 
             return sessions
 
@@ -118,13 +121,12 @@ def _get_room_sessions(room_id, month):
             errors.append(f"{base_url}: {exc}")
 
     raise RuntimeError(
-        f"查询直播间 {room_id} 的 {month} 数据失败："
+        f"查询直播间 {room_id} 的 {month} 数据失败；"
         + " | ".join(errors)
     )
 
 
-def _accumulate_bucket(result, bucket, start_utc, end_utc):
-    """将15分钟统计桶按比赛时间窗口的重叠比例累计。"""
+def _add_bucket(result, bucket, start_utc, end_utc):
     bucket_start = _parse_api_time(bucket.get("start_time"))
     bucket_end = _parse_api_time(bucket.get("end_time"))
 
@@ -137,8 +139,8 @@ def _accumulate_bucket(result, bucket, start_utc, end_utc):
     if bucket_end <= bucket_start:
         return
 
-    overlap_start = max(bucket_start, start_utc)
-    overlap_end = min(bucket_end, end_utc)
+    overlap_start = max(bucket_start, start_utc.replace(tzinfo=UTC_TZ))
+    overlap_end = min(bucket_end, end_utc.replace(tzinfo=UTC_TZ))
     overlap_seconds = (overlap_end - overlap_start).total_seconds()
 
     if overlap_seconds <= 0:
@@ -147,451 +149,576 @@ def _accumulate_bucket(result, bucket, start_utc, end_utc):
     bucket_seconds = (bucket_end - bucket_start).total_seconds()
     ratio = min(1.0, overlap_seconds / bucket_seconds)
 
-    result["gift_amount"] += float(bucket.get("gift") or 0) * ratio
-    result["guard_amount"] += float(bucket.get("guard") or 0) * ratio
-    result["sc_amount"] += float(bucket.get("super_chat") or 0) * ratio
-    result["danmaku_count"] += (
-        float(bucket.get("danmaku_count") or 0) * ratio
-    )
+    result["gift"] += float(bucket.get("gift") or 0) * ratio
+    result["guard"] += float(bucket.get("guard") or 0) * ratio
+    result["sc"] += float(bucket.get("super_chat") or 0) * ratio
+    result["danmaku"] += float(bucket.get("danmaku_count") or 0) * ratio
 
     result["peak_viewers"] = max(
         result["peak_viewers"],
         int(bucket.get("max_concurrency") or 0),
     )
 
-    avg_concurrency = bucket.get("avg_concurrency")
-    sample_count = float(bucket.get("sample_count") or 0)
-
-    if avg_concurrency is not None and sample_count > 0:
-        weighted_samples = sample_count * ratio
-        result["concurrency_weighted_sum"] += (
-            float(avg_concurrency) * weighted_samples
-        )
-        result["concurrency_weight"] += weighted_samples
+    average = bucket.get("avg_concurrency")
+    samples = float(bucket.get("sample_count") or 0)
+    if average is not None and samples > 0:
+        weighted = samples * ratio
+        result["viewers_weighted"] += float(average) * weighted
+        result["viewers_weight"] += weighted
 
 
-def _series_id_and_game_number(match_id):
-    """
-    从淘汰赛单局 ID 中解析系列赛和局数。
-    例如 qf1g2 -> ("qf1", 2)，finalg1 -> ("final", 1)。
-    """
-    if "g" not in match_id:
-        return None, None
-
-    series_id, game_text = match_id.rsplit("g", 1)
-
-    if not game_text.isdigit():
-        return None, None
-
-    if not (
-        series_id.startswith("qf")
-        or series_id.startswith("sf")
-        or series_id == "final"
-    ):
-        return None, None
-
-    return series_id, int(game_text)
+def _json_match_id(match_id):
+    return str(match_id)
 
 
 class TournamentService:
 
     @staticmethod
-    def init_tournament(name: str, players: list):
-        """创建比赛和参赛选手。"""
-        session = SessionLocal()
-        try:
-            tournament = TournamentConfig(
-                name=name,
-                status="pending",
-            )
-            session.add(tournament)
-            session.flush()
-
-            for item in players:
-                session.add(TournamentPlayer(
-                    tournament_id=tournament.id,
-                    player_id=item["id"],
-                    player_name=item["name"],
-                    room_id=str(item["room_id"]),
-                    avatar_url=item.get("avatar_url"),
-                    seed=item.get("seed", 999),
-                    wins=0,
-                    losses=0,
-                    status="active",
-                ))
-
-            session.commit()
-            return tournament.id
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+    def _db():
+        return get_memfire()
 
     @staticmethod
-    def auto_start_next_swiss_round(tournament_id: int):
-        """按当前战绩分组，在同战绩组内随机配对并开始下一轮。"""
-        session = SessionLocal()
+    def _get_tournament(tournament_id):
+        rows = TournamentService._db().select(
+            TABLE_TOURNAMENTS,
+            filters={"id": f"eq.{int(tournament_id)}"},
+            limit=1,
+        )
+        return rows[0] if rows else None
+
+    @staticmethod
+    def _get_players(tournament_id):
+        return TournamentService._db().select(
+            TABLE_PLAYERS,
+            filters={"tournament_id": f"eq.{int(tournament_id)}"},
+        )
+
+    @staticmethod
+    def _get_matches(tournament_id, round_number=None):
+        filters = {"tournament_id": f"eq.{int(tournament_id)}"}
+        if round_number is not None:
+            filters["round_number"] = f"eq.{int(round_number)}"
+
+        rows = TournamentService._db().select(
+            TABLE_MATCHES,
+            filters=filters,
+        )
+        return sorted(
+            rows,
+            key=lambda row: (
+                int(row.get("round_number") or 0),
+                str(row.get("match_id") or ""),
+            ),
+        )
+
+    @staticmethod
+    def init_tournament(name, players):
+        db = TournamentService._db()
+
+        created = db.insert(TABLE_TOURNAMENTS, {
+            "name": name,
+            "status": "pending",
+            "current_round": 1,
+            "match_duration_days": 3,
+        })
+
+        if not created:
+            raise RuntimeError("MemFire 未返回新赛事记录")
+
+        tournament_id = created[0]["id"]
+
         try:
-            tournament = session.get(TournamentConfig, tournament_id)
-            if not tournament:
-                return {"success": False, "error": "比赛不存在"}
-
-            players = session.query(TournamentPlayer).filter_by(
-                tournament_id=tournament_id,
-                status="active",
-            ).all()
-
-            if len(players) < 2:
-                return {"success": False, "error": "可配对选手不足"}
-
-            groups = {}
+            player_rows = []
             for player in players:
-                groups.setdefault(
-                    (player.wins, player.losses), []
-                ).append(player)
+                player_rows.append({
+                    "tournament_id": tournament_id,
+                    "player_id": str(player["id"]),
+                    "player_name": player["name"],
+                    "room_id": str(player["room_id"]),
+                    "avatar_url": player.get("avatar_url"),
+                    "seed": int(player.get("seed", 999)),
+                    "wins": 0,
+                    "losses": 0,
+                    "status": "active",
+                })
 
-            next_round = tournament.current_round + 1
-            start_time = datetime.utcnow()
-            end_time = start_time + timedelta(
-                days=tournament.match_duration_days
-            )
-            match_number = 0
+            db.insert(TABLE_PLAYERS, player_rows)
+            return tournament_id
 
-            for record in sorted(groups.keys(), reverse=True):
-                group = groups[record]
-                random.shuffle(group)
-
-                for index in range(0, len(group) - 1, 2):
-                    match_number += 1
-                    player1 = group[index]
-                    player2 = group[index + 1]
-
-                    session.add(TournamentMatch(
-                        tournament_id=tournament_id,
-                        match_id=f"r{next_round}m{match_number}",
-                        round_number=next_round,
-                        player1_id=player1.player_id,
-                        player2_id=player2.player_id,
-                        start_time=start_time,
-                        end_time=end_time,
-                        status="running",
-                    ))
-
-            tournament.current_round = next_round
-            tournament.status = "running"
-            session.commit()
-
-            return {
-                "success": True,
-                "round": next_round,
-                "matches": match_number,
-            }
         except Exception:
-            session.rollback()
+            db.delete(
+                TABLE_TOURNAMENTS,
+                {"id": f"eq.{tournament_id}"},
+            )
             raise
-        finally:
-            session.close()
 
     @staticmethod
-    def start_knockout_stage(tournament_id: int):
-        """瑞士轮结束后创建八强 BO3 的第一局。"""
-        session = SessionLocal()
-        try:
-            tournament = session.get(TournamentConfig, tournament_id)
-            if not tournament:
-                return {"success": False, "error": "比赛不存在"}
+    def schedule_first_round(tournament_id, start_utc):
+        """
+        创建第一轮固定对阵。
+        start_utc 必须为 UTC naive datetime。
+        """
+        db = TournamentService._db()
+        tournament = TournamentService._get_tournament(tournament_id)
 
-            existing = session.query(TournamentMatch).filter_by(
-                tournament_id=tournament_id,
-                round_number=ROUND_QF,
-            ).first()
+        if not tournament:
+            raise ValueError("比赛不存在")
 
-            if existing:
-                return {"success": False, "error": "八强对局已存在"}
+        existing = TournamentService._get_matches(tournament_id, 1)
+        if existing:
+            raise ValueError("第一轮已存在；为避免覆盖，不重复创建")
 
-            advanced = session.query(TournamentPlayer).filter_by(
-                tournament_id=tournament_id,
-                status="advanced",
-            ).all()
+        names = [
+            ("Ameki", "chu2u"),
+            ("Nagisa", "Rhea"),
+            ("Mizuki", "Hazel"),
+            ("Liko", "Izayoi"),
+            ("SUI", "Harei"),
+            ("Viridis", "Sumire"),
+            ("Kloa", "Melody"),
+            ("Mit3uri", "Shiori"),
+        ]
 
-            if len(advanced) != 8:
-                return {
-                    "success": False,
-                    "error": f"晋级人数为{len(advanced)}，需要8人",
-                }
+        players = TournamentService._get_players(tournament_id)
+        by_name = {
+            str(player["player_name"]).strip().casefold(): player
+            for player in players
+        }
 
-            random.shuffle(advanced)
+        missing = [
+            name
+            for pair in names
+            for name in pair
+            if name.casefold() not in by_name
+        ]
+        if missing:
+            raise ValueError("缺少选手：" + ", ".join(missing))
 
-            start_time = datetime.utcnow()
-            end_time = start_time + timedelta(
-                hours=KNOCKOUT_GAME_HOURS
+        end_utc = start_utc + timedelta(hours=72)
+        rows = []
+
+        for index, (name1, name2) in enumerate(names, start=1):
+            rows.append({
+                "tournament_id": int(tournament_id),
+                "match_id": f"r1m{index}",
+                "round_number": 1,
+                "player1_id": by_name[name1.casefold()]["player_id"],
+                "player2_id": by_name[name2.casefold()]["player_id"],
+                "start_time": start_utc.isoformat(sep=" "),
+                "end_time": end_utc.isoformat(sep=" "),
+                "status": "pending",
+            })
+
+        db.insert(TABLE_MATCHES, rows)
+
+        db.update(
+            TABLE_TOURNAMENTS,
+            {"id": f"eq.{int(tournament_id)}"},
+            {
+                "start_time": start_utc.isoformat(sep=" "),
+                "current_round": 1,
+                "match_duration_days": 3,
+                "status": "pending",
+            },
+        )
+
+        return {
+            "success": True,
+            "matches_created": 8,
+            "start_time_utc": start_utc.isoformat(),
+            "end_time_utc": end_utc.isoformat(),
+        }
+
+    @staticmethod
+    def _played_pairs(tournament_id):
+        matches = TournamentService._get_matches(tournament_id)
+        played = set()
+
+        for match in matches:
+            if int(match.get("round_number") or 0) >= ROUND_QF:
+                continue
+            p1, p2 = match.get("player1_id"), match.get("player2_id")
+            if p1 and p2:
+                played.add(frozenset((str(p1), str(p2))))
+
+        return played
+
+    @staticmethod
+    def _pair_swiss_players(players, played):
+        """
+        同战绩组优先配对且不重复对手。
+        某战绩组人数为奇数时，余下一人浮动至另一余数选手配对。
+        """
+        groups = defaultdict(list)
+        for player in players:
+            groups[(int(player.get("wins") or 0),
+                    int(player.get("losses") or 0))].append(player)
+
+        pairs = []
+        floaters = []
+
+        for record in sorted(groups.keys(), reverse=True):
+            group = list(groups[record])
+            random.shuffle(group)
+
+            while len(group) >= 2:
+                first = group.pop()
+                partner_index = next(
+                    (
+                        index
+                        for index, other in enumerate(group)
+                        if frozenset((
+                            str(first["player_id"]),
+                            str(other["player_id"]),
+                        )) not in played
+                    ),
+                    None,
+                )
+
+                if partner_index is None:
+                    floaters.append(first)
+                    continue
+
+                second = group.pop(partner_index)
+                pairs.append((first, second))
+
+            floaters.extend(group)
+
+        random.shuffle(floaters)
+
+        while len(floaters) >= 2:
+            first = floaters.pop()
+            partner_index = next(
+                (
+                    index
+                    for index, other in enumerate(floaters)
+                    if frozenset((
+                        str(first["player_id"]),
+                        str(other["player_id"]),
+                    )) not in played
+                ),
+                None,
             )
 
-            for index in range(4):
-                player1 = advanced[index * 2]
-                player2 = advanced[index * 2 + 1]
+            if partner_index is None:
+                raise RuntimeError(
+                    f"无法避免重复对手，未生成下一轮。选手：{first['player_name']}"
+                )
 
-                session.add(TournamentMatch(
-                    tournament_id=tournament_id,
-                    match_id=f"qf{index + 1}g1",
-                    round_number=ROUND_QF,
-                    player1_id=player1.player_id,
-                    player2_id=player2.player_id,
-                    start_time=start_time,
-                    end_time=end_time,
-                    status="running",
-                ))
+            second = floaters.pop(partner_index)
+            pairs.append((first, second))
 
-            tournament.current_round = ROUND_QF
-            tournament.status = "running"
-            session.commit()
+        if floaters:
+            raise RuntimeError(
+                "活动选手为奇数，当前没有定义轮空规则，未生成下一轮"
+            )
 
-            return {
-                "success": True,
-                "stage": "quarterfinals",
-                "matches_created": 4,
-                "format": "BO3",
-            }
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+        return pairs
 
     @staticmethod
-    def _completed_series_wins(session, tournament_id, series_id):
-        """返回系列赛双方当前赢下的局数。"""
-        game_matches = session.query(TournamentMatch).filter(
-            TournamentMatch.tournament_id == tournament_id,
-            TournamentMatch.match_id.like(f"{series_id}g%"),
-            TournamentMatch.status == "completed",
-        ).all()
+    def auto_start_next_swiss_round(tournament_id):
+        db = TournamentService._db()
+        tournament = TournamentService._get_tournament(tournament_id)
 
-        wins = {}
-        for game in game_matches:
-            if game.winner_id:
-                wins[game.winner_id] = wins.get(game.winner_id, 0) + 1
+        if not tournament:
+            return {"success": False, "error": "比赛不存在"}
 
-        return game_matches, wins
+        current_round = int(tournament.get("current_round") or 1)
+        next_round = current_round + 1
 
-    @staticmethod
-    def _start_next_series_game(
-        session,
-        tournament,
-        series_id,
-        round_number,
-        player1_id,
-        player2_id,
-        previous_games,
-    ):
-        """创建系列赛的下一局，比赛时长72小时。"""
-        game_number = previous_games + 1
-        now = datetime.utcnow()
+        if next_round > SWISS_MAX_ROUNDS:
+            return {"success": False, "error": "已到瑞士轮最大轮数"}
 
-        session.add(TournamentMatch(
-            tournament_id=tournament.id,
-            match_id=f"{series_id}g{game_number}",
-            round_number=round_number,
-            player1_id=player1_id,
-            player2_id=player2_id,
-            start_time=now,
-            end_time=now + timedelta(hours=KNOCKOUT_GAME_HOURS),
-            status="running",
+        players = TournamentService._get_players(tournament_id)
+        active = [p for p in players if p.get("status") == "active"]
+
+        if len(active) < 2:
+            return {"success": False, "error": "活动选手不足"}
+
+        pairs = TournamentService._pair_swiss_players(
+            active,
+            TournamentService._played_pairs(tournament_id),
+        )
+
+        start = _utc_now_naive()
+        end = start + timedelta(days=int(
+            tournament.get("match_duration_days") or 3
         ))
 
+        rows = []
+        for index, (player1, player2) in enumerate(pairs, start=1):
+            rows.append({
+                "tournament_id": int(tournament_id),
+                "match_id": f"r{next_round}m{index}",
+                "round_number": next_round,
+                "player1_id": player1["player_id"],
+                "player2_id": player2["player_id"],
+                "start_time": start.isoformat(sep=" "),
+                "end_time": end.isoformat(sep=" "),
+                "status": "running",
+            })
+
+        db.insert(TABLE_MATCHES, rows)
+        db.update(
+            TABLE_TOURNAMENTS,
+            {"id": f"eq.{int(tournament_id)}"},
+            {"current_round": next_round, "status": "running"},
+        )
+
+        return {
+            "success": True,
+            "round": next_round,
+            "matches": len(rows),
+        }
+
     @staticmethod
-    def _knockout_series_ids(session, tournament_id, round_number):
-        """列出某一淘汰赛阶段已经出现过的系列赛编号。"""
-        matches = session.query(TournamentMatch).filter_by(
-            tournament_id=tournament_id,
-            round_number=round_number,
-        ).all()
+    def start_knockout_stage(tournament_id):
+        db = TournamentService._db()
+        tournament = TournamentService._get_tournament(tournament_id)
 
-        ids = set()
+        if not tournament:
+            return {"success": False, "error": "比赛不存在"}
+
+        existing = TournamentService._get_matches(
+            tournament_id,
+            ROUND_QF,
+        )
+        if existing:
+            return {"success": False, "error": "八强对局已存在"}
+
+        players = TournamentService._get_players(tournament_id)
+        qualified = [p for p in players if p.get("status") == "advanced"]
+
+        if len(qualified) != 8:
+            return {
+                "success": False,
+                "error": f"晋级人数为{len(qualified)}，需要8人",
+            }
+
+        random.shuffle(qualified)
+        start = _utc_now_naive()
+        end = start + timedelta(hours=KNOCKOUT_GAME_HOURS)
+
+        rows = []
+        for index in range(4):
+            rows.append({
+                "tournament_id": int(tournament_id),
+                "match_id": f"qf{index + 1}g1",
+                "round_number": ROUND_QF,
+                "player1_id": qualified[index * 2]["player_id"],
+                "player2_id": qualified[index * 2 + 1]["player_id"],
+                "start_time": start.isoformat(sep=" "),
+                "end_time": end.isoformat(sep=" "),
+                "status": "running",
+            })
+
+        db.insert(TABLE_MATCHES, rows)
+        db.update(
+            TABLE_TOURNAMENTS,
+            {"id": f"eq.{int(tournament_id)}"},
+            {"current_round": ROUND_QF, "status": "running"},
+        )
+
+        return {
+            "success": True,
+            "stage": "quarterfinals",
+            "matches_created": 4,
+            "format": "BO3",
+        }
+
+    @staticmethod
+    def _recompute_swiss_records(tournament_id):
+        db = TournamentService._db()
+        players = TournamentService._get_players(tournament_id)
+        matches = TournamentService._get_matches(tournament_id)
+
+        records = {
+            str(player["player_id"]): {"wins": 0, "losses": 0}
+            for player in players
+        }
+
         for match in matches:
-            series_id, _game_number = _series_id_and_game_number(
-                match.match_id
-            )
-            if series_id:
-                ids.add(series_id)
+            if int(match.get("round_number") or 0) >= ROUND_QF:
+                continue
+            if match.get("status") != "completed":
+                continue
 
-        return sorted(ids)
+            winner = match.get("winner_id")
+            p1 = match.get("player1_id")
+            p2 = match.get("player2_id")
+
+            if not winner or not p1 or not p2:
+                continue
+
+            loser = p2 if str(winner) == str(p1) else p1
+
+            if str(winner) in records:
+                records[str(winner)]["wins"] += 1
+            if str(loser) in records:
+                records[str(loser)]["losses"] += 1
+
+        for player in players:
+            record = records[str(player["player_id"])]
+            wins, losses = record["wins"], record["losses"]
+
+            if wins >= 3:
+                status = "advanced"
+            elif losses >= 3:
+                status = "eliminated"
+            else:
+                status = "active"
+
+            db.update(
+                TABLE_PLAYERS,
+                {"player_id": f"eq.{player['player_id']}"},
+                {
+                    "wins": wins,
+                    "losses": losses,
+                    "status": status,
+                },
+            )
+
+    @staticmethod
+    def _series_games(tournament_id, series_id, round_number):
+        matches = TournamentService._get_matches(
+            tournament_id,
+            round_number,
+        )
+        return sorted(
+            [
+                match for match in matches
+                if str(match.get("match_id", "")).startswith(series_id + "g")
+            ],
+            key=lambda m: int(_series_info(m["match_id"])[1] or 0),
+        )
 
     @staticmethod
     def _advance_knockout(tournament_id):
-        """
-        检查每个 BO3 系列赛：
-        - 未达到2胜，自动创建下一局；
-        - 当前阶段全部系列赛结束，自动开始下一阶段。
-        """
-        session = SessionLocal()
-        try:
-            tournament = session.get(TournamentConfig, tournament_id)
-            if not tournament:
-                return {"success": False, "error": "比赛不存在"}
+        db = TournamentService._db()
+        tournament = TournamentService._get_tournament(tournament_id)
 
-            if tournament.current_round == ROUND_QF:
-                round_number = ROUND_QF
-                series_ids = ["qf1", "qf2", "qf3", "qf4"]
-                next_round = ROUND_SF
-                next_prefix = "sf"
-                expected_series_count = 4
-            elif tournament.current_round == ROUND_SF:
-                round_number = ROUND_SF
-                series_ids = ["sf1", "sf2"]
-                next_round = ROUND_FINAL
-                next_prefix = "final"
-                expected_series_count = 2
-            elif tournament.current_round == ROUND_FINAL:
-                round_number = ROUND_FINAL
-                series_ids = ["final"]
-                next_round = None
-                next_prefix = None
-                expected_series_count = 1
-            else:
-                return {"success": False, "error": "当前不是淘汰赛阶段"}
+        if not tournament:
+            return
 
-            series_winners = {}
-            all_series_complete = True
+        round_number = int(tournament.get("current_round") or 0)
 
-            for series_id in series_ids:
-                games, wins = TournamentService._completed_series_wins(
-                    session,
-                    tournament_id,
-                    series_id,
-                )
+        if round_number == ROUND_QF:
+            series_ids = ["qf1", "qf2", "qf3", "qf4"]
+            next_round = ROUND_SF
+            next_series_ids = ["sf1", "sf2"]
+            next_pairs_source = [("qf1", "qf2"), ("qf3", "qf4")]
+        elif round_number == ROUND_SF:
+            series_ids = ["sf1", "sf2"]
+            next_round = ROUND_FINAL
+            next_series_ids = ["final"]
+            next_pairs_source = [("sf1", "sf2")]
+        elif round_number == ROUND_FINAL:
+            series_ids = ["final"]
+            next_round = None
+            next_series_ids = []
+            next_pairs_source = []
+        else:
+            return
 
-                if not games:
-                    all_series_complete = False
-                    continue
+        winners = {}
 
-                player1_id = games[0].player1_id
-                player2_id = games[0].player2_id
-                player1_wins = wins.get(player1_id, 0)
-                player2_wins = wins.get(player2_id, 0)
-
-                if player1_wins >= BEST_OF_THREE_WINS:
-                    series_winners[series_id] = player1_id
-                    continue
-
-                if player2_wins >= BEST_OF_THREE_WINS:
-                    series_winners[series_id] = player2_id
-                    continue
-
-                all_series_complete = False
-                played_games = len(games)
-
-                if played_games < 3:
-                    TournamentService._start_next_series_game(
-                        session=session,
-                        tournament=tournament,
-                        series_id=series_id,
-                        round_number=round_number,
-                        player1_id=player1_id,
-                        player2_id=player2_id,
-                        previous_games=played_games,
-                    )
-
-            if not all_series_complete:
-                session.commit()
-                return {
-                    "success": True,
-                    "stage": "series_continues",
-                    "waiting": True,
-                }
-
-            if len(series_winners) != expected_series_count:
-                session.commit()
-                return {
-                    "success": True,
-                    "stage": "waiting_for_series",
-                    "waiting": True,
-                }
-
-            if round_number == ROUND_FINAL:
-                tournament.status = "finished"
-                champion_id = series_winners["final"]
-                session.commit()
-                return {
-                    "success": True,
-                    "stage": "finished",
-                    "champion": champion_id,
-                }
-
-            if round_number == ROUND_QF:
-                next_pairs = [
-                    (series_winners["qf1"], series_winners["qf2"]),
-                    (series_winners["qf3"], series_winners["qf4"]),
-                ]
-            else:
-                next_pairs = [
-                    (series_winners["sf1"], series_winners["sf2"]),
-                ]
-
-            start_time = datetime.utcnow()
-            end_time = start_time + timedelta(
-                hours=KNOCKOUT_GAME_HOURS
+        for series_id in series_ids:
+            games = TournamentService._series_games(
+                tournament_id,
+                series_id,
+                round_number,
             )
 
-            for index, (player1_id, player2_id) in enumerate(next_pairs, 1):
-                series_id = (
-                    f"{next_prefix}{index}"
-                    if next_prefix != "final"
-                    else "final"
-                )
+            if not games:
+                return
 
-                session.add(TournamentMatch(
-                    tournament_id=tournament_id,
-                    match_id=f"{series_id}g1",
-                    round_number=next_round,
-                    player1_id=player1_id,
-                    player2_id=player2_id,
-                    start_time=start_time,
-                    end_time=end_time,
-                    status="running",
-                ))
+            completed = [g for g in games if g.get("status") == "completed"]
+            if any(g.get("status") == "running" for g in games):
+                return
 
-            tournament.current_round = next_round
-            tournament.status = "running"
-            session.commit()
+            wins = defaultdict(int)
+            for game in completed:
+                if game.get("winner_id"):
+                    wins[str(game["winner_id"])] += 1
 
-            return {
-                "success": True,
-                "stage": (
-                    "semifinals"
-                    if next_round == ROUND_SF
-                    else "final"
-                ),
-                "matches_created": len(next_pairs),
-                "format": "BO3",
-            }
+            player1 = str(games[0].get("player1_id"))
+            player2 = str(games[0].get("player2_id"))
 
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+            if wins[player1] >= BEST_OF_THREE_WINS:
+                winners[series_id] = player1
+                continue
+            if wins[player2] >= BEST_OF_THREE_WINS:
+                winners[series_id] = player2
+                continue
+
+            if len(games) >= 3:
+                # 理论上 BO3 不应走到三局仍无胜者；留作数据异常保护。
+                return
+
+            next_game_number = len(games) + 1
+            start = _utc_now_naive()
+            end = start + timedelta(hours=KNOCKOUT_GAME_HOURS)
+            next_match_id = f"{series_id}g{next_game_number}"
+
+            db.insert(TABLE_MATCHES, {
+                "tournament_id": int(tournament_id),
+                "match_id": next_match_id,
+                "round_number": round_number,
+                "player1_id": games[0]["player1_id"],
+                "player2_id": games[0]["player2_id"],
+                "start_time": start.isoformat(sep=" "),
+                "end_time": end.isoformat(sep=" "),
+                "status": "running",
+            })
+            return
+
+        if len(winners) != len(series_ids):
+            return
+
+        if round_number == ROUND_FINAL:
+            db.update(
+                TABLE_TOURNAMENTS,
+                {"id": f"eq.{int(tournament_id)}"},
+                {"status": "finished"},
+            )
+            return
+
+        start = _utc_now_naive()
+        end = start + timedelta(hours=KNOCKOUT_GAME_HOURS)
+        new_rows = []
+
+        for index, (source1, source2) in enumerate(next_pairs_source):
+            player1_id = winners[source1]
+            player2_id = winners[source2]
+            series_id = next_series_ids[index]
+
+            new_rows.append({
+                "tournament_id": int(tournament_id),
+                "match_id": f"{series_id}g1",
+                "round_number": next_round,
+                "player1_id": player1_id,
+                "player2_id": player2_id,
+                "start_time": start.isoformat(sep=" "),
+                "end_time": end.isoformat(sep=" "),
+                "status": "running",
+            })
+
+        db.insert(TABLE_MATCHES, new_rows)
+        db.update(
+            TABLE_TOURNAMENTS,
+            {"id": f"eq.{int(tournament_id)}"},
+            {"current_round": next_round, "status": "running"},
+        )
 
     @staticmethod
-    def auto_advance_knockout(tournament_id: int):
-        """兼容原有调用名，执行 BO3 阶段推进。"""
-        return TournamentService._advance_knockout(tournament_id)
-
-    @staticmethod
-    def get_player_revenue(
-        room_id: str,
-        start_time: datetime,
-        end_time: datetime = None,
-    ):
-        """查询指定比赛时间窗口内的真实营收。"""
+    def get_player_revenue(room_id, start_time, end_time=None):
         if not room_id or not start_time:
-            raise ValueError("查询营收需要 room_id 和 start_time")
+            raise ValueError("营收查询需要 room_id 和 start_time")
 
-        start_utc = _as_utc(start_time)
-        end_utc = _as_utc(end_time or datetime.now(UTC_TZ))
+        start = _parse_db_time(start_time)
+        end = _parse_db_time(end_time) if end_time else _utc_now_naive()
 
-        if end_utc <= start_utc:
+        if end <= start:
             return {
                 "sc_amount": 0.0,
                 "gift_amount": 0.0,
@@ -602,20 +729,17 @@ class TournamentService:
                 "avg_viewers": 0,
             }
 
-        start_bj = start_utc.astimezone(BEIJING_TZ)
-        end_bj = end_utc.astimezone(BEIJING_TZ)
-
-        total = {
-            "gift_amount": 0.0,
-            "guard_amount": 0.0,
-            "sc_amount": 0.0,
-            "danmaku_count": 0.0,
+        totals = {
+            "gift": 0.0,
+            "guard": 0.0,
+            "sc": 0.0,
+            "danmaku": 0.0,
             "peak_viewers": 0,
-            "concurrency_weighted_sum": 0.0,
-            "concurrency_weight": 0.0,
+            "viewers_weighted": 0.0,
+            "viewers_weight": 0.0,
         }
 
-        for month in _month_strings(start_bj, end_bj):
+        for month in _month_strings(start, end):
             sessions = _get_room_sessions(room_id, month)
 
             for live_session in sessions:
@@ -623,12 +747,7 @@ class TournamentService:
 
                 if buckets:
                     for bucket in buckets:
-                        _accumulate_bucket(
-                            total,
-                            bucket,
-                            start_utc,
-                            end_utc,
-                        )
+                        _add_bucket(totals, bucket, start, end)
                     continue
 
                 session_start = _parse_api_time(
@@ -638,501 +757,444 @@ class TournamentService:
                     live_session.get("end_time")
                 )
 
-                if (
-                    session_start is None
-                    or session_end is None
-                    or session_start < start_utc
-                    or session_end > end_utc
-                ):
+                if not session_start or not session_end:
                     continue
 
-                total["gift_amount"] += float(
-                    live_session.get("gift") or 0
-                )
-                total["guard_amount"] += float(
-                    live_session.get("guard") or 0
-                )
-                total["sc_amount"] += float(
-                    live_session.get("super_chat") or 0
-                )
-                total["danmaku_count"] += float(
+                start_aware = start.replace(tzinfo=UTC_TZ)
+                end_aware = end.replace(tzinfo=UTC_TZ)
+
+                if session_start < start_aware or session_end > end_aware:
+                    continue
+
+                totals["gift"] += float(live_session.get("gift") or 0)
+                totals["guard"] += float(live_session.get("guard") or 0)
+                totals["sc"] += float(live_session.get("super_chat") or 0)
+                totals["danmaku"] += float(
                     live_session.get("danmaku_count") or 0
                 )
-                total["peak_viewers"] = max(
-                    total["peak_viewers"],
+                totals["peak_viewers"] = max(
+                    totals["peak_viewers"],
                     int(live_session.get("max_concurrency") or 0),
                 )
 
-                average = live_session.get("avg_concurrency")
-                duration = max(
-                    1.0,
-                    (session_end - session_start).total_seconds(),
-                )
-                if average is not None:
-                    total["concurrency_weighted_sum"] += (
-                        float(average) * duration
-                    )
-                    total["concurrency_weight"] += duration
-
-        gift = round(total["gift_amount"], 2)
-        guard = round(total["guard_amount"], 2)
-        sc = round(total["sc_amount"], 2)
-
-        average_viewers = 0
-        if total["concurrency_weight"] > 0:
-            average_viewers = round(
-                total["concurrency_weighted_sum"]
-                / total["concurrency_weight"]
-            )
+        gift = round(totals["gift"], 2)
+        guard = round(totals["guard"], 2)
+        sc = round(totals["sc"], 2)
 
         return {
             "sc_amount": sc,
             "gift_amount": gift,
             "guard_amount": guard,
             "total_revenue": round(gift + guard + sc, 2),
-            "danmaku_count": round(total["danmaku_count"]),
-            "peak_viewers": total["peak_viewers"],
-            "avg_viewers": average_viewers,
+            "danmaku_count": round(totals["danmaku"]),
+            "peak_viewers": totals["peak_viewers"],
+            "avg_viewers": 0,
         }
 
     @staticmethod
-    def _save_revenue_snapshot(session, match, player, revenue, now):
-        """保存营收快照。模型没有 guard 列，因此 gift_amount 存 gift+guard。"""
-        session.add(TournamentRevenue(
-            player_id=player.player_id,
-            match_id=match.match_id,
-            sc_amount=revenue["sc_amount"],
-            gift_amount=(
+    def _save_snapshot(match, player_id, revenue, snapshot_time):
+        db = TournamentService._db()
+
+        # 表没有 guard_amount 列，因此 gift_amount 中保存 gift + guard。
+        db.insert(TABLE_REVENUE, {
+            "player_id": str(player_id),
+            "match_id": str(match["match_id"]),
+            "sc_amount": revenue["sc_amount"],
+            "gift_amount": (
                 revenue["gift_amount"] + revenue["guard_amount"]
             ),
-            total_revenue=revenue["total_revenue"],
-            danmaku_count=revenue["danmaku_count"],
-            peak_viewers=revenue["peak_viewers"],
-            avg_viewers=revenue["avg_viewers"],
-            snapshot_time=now,
-        ))
+            "total_revenue": revenue["total_revenue"],
+            "danmaku_count": revenue["danmaku_count"],
+            "peak_viewers": revenue["peak_viewers"],
+            "avg_viewers": revenue["avg_viewers"],
+            "snapshot_time": snapshot_time.isoformat(sep=" "),
+        })
 
     @staticmethod
-    def update_match_revenue(match_id: str):
-        """更新当前进行中的单局营收快照。"""
-        session = SessionLocal()
-        try:
-            match = session.query(TournamentMatch).filter_by(
-                match_id=match_id
-            ).first()
-
-            if not match or match.status != "running":
-                return None
-
-            player1 = session.query(TournamentPlayer).filter_by(
-                player_id=match.player1_id
-            ).first()
-            player2 = session.query(TournamentPlayer).filter_by(
-                player_id=match.player2_id
-            ).first()
-
-            if not player1 or not player2:
-                return None
-
-            now = datetime.utcnow()
-            cutoff = min(now, match.end_time) if match.end_time else now
-
-            revenue1 = TournamentService.get_player_revenue(
-                player1.room_id,
-                match.start_time,
-                cutoff,
-            )
-            revenue2 = TournamentService.get_player_revenue(
-                player2.room_id,
-                match.start_time,
-                cutoff,
-            )
-
-            TournamentService._save_revenue_snapshot(
-                session, match, player1, revenue1, now
-            )
-            TournamentService._save_revenue_snapshot(
-                session, match, player2, revenue2, now
-            )
-
-            session.commit()
-            return {
-                "match_id": match_id,
-                "player1": revenue1,
-                "player2": revenue2,
-            }
-
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            session.close()
-
-    @staticmethod
-    def _final_revenue_for_player(session, match, player, now):
-        """重新查询整局时间窗口，作为最终营收，不依赖旧快照。"""
-        revenue = TournamentService.get_player_revenue(
-            player.room_id,
-            match.start_time,
-            match.end_time or now,
+    def update_match_revenue(match_id):
+        db = TournamentService._db()
+        rows = db.select(
+            TABLE_MATCHES,
+            filters={"match_id": f"eq.{_json_match_id(match_id)}"},
+            limit=1,
         )
 
-        TournamentService._save_revenue_snapshot(
-            session, match, player, revenue, now
+        if not rows or rows[0].get("status") != "running":
+            return None
+
+        match = rows[0]
+        players = TournamentService._get_players(match["tournament_id"])
+        by_id = {str(p["player_id"]): p for p in players}
+
+        player1 = by_id.get(str(match.get("player1_id")))
+        player2 = by_id.get(str(match.get("player2_id")))
+        if not player1 or not player2:
+            return None
+
+        now = _utc_now_naive()
+        match_start = _parse_db_time(match.get("start_time"))
+        match_end = _parse_db_time(match.get("end_time"))
+        cutoff = min(now, match_end) if match_end else now
+
+        revenue1 = TournamentService.get_player_revenue(
+            player1["room_id"], match_start, cutoff
         )
-        return revenue
+        revenue2 = TournamentService.get_player_revenue(
+            player2["room_id"], match_start, cutoff
+        )
+
+        TournamentService._save_snapshot(
+            match, player1["player_id"], revenue1, now
+        )
+        TournamentService._save_snapshot(
+            match, player2["player_id"], revenue2, now
+        )
+
+        return {
+            "match_id": match_id,
+            "player1": revenue1,
+            "player2": revenue2,
+        }
 
     @staticmethod
-    def _pick_winner(match, revenue1, revenue2):
-        """总营收较高者胜；营收相同按弹幕数判定。"""
-        if revenue1["total_revenue"] > revenue2["total_revenue"]:
-            return match.player1_id
+    def _latest_snapshots(match_ids):
+        if not match_ids:
+            return {}
 
-        if revenue2["total_revenue"] > revenue1["total_revenue"]:
-            return match.player2_id
+        joined = ",".join(str(item) for item in match_ids)
+        rows = TournamentService._db().select(
+            TABLE_REVENUE,
+            filters={"match_id": f"in.({joined})"},
+        )
 
-        if revenue1["danmaku_count"] >= revenue2["danmaku_count"]:
-            return match.player1_id
+        latest = {}
+        for row in rows:
+            key = (str(row["match_id"]), str(row["player_id"]))
+            previous = latest.get(key)
+            if not previous or str(row.get("snapshot_time", "")) > str(
+                previous.get("snapshot_time", "")
+            ):
+                latest[key] = row
 
-        return match.player2_id
+        return latest
 
     @staticmethod
-    def check_and_finish_matches():
-        """结束到期单局，并自动推进瑞士轮或 BO3 淘汰赛。"""
-        session = SessionLocal()
-        try:
-            now = datetime.utcnow()
+    def get_vote_counts(match_ids):
+        if isinstance(match_ids, str):
+            match_ids = [match_ids]
+        if not match_ids:
+            return {}
 
-            expired = session.query(TournamentMatch).filter(
-                TournamentMatch.status == "running",
-                TournamentMatch.end_time <= now,
-            ).all()
+        joined = ",".join(str(item) for item in match_ids)
+        votes = TournamentService._db().select(
+            TABLE_VOTES,
+            filters={"match_id": f"in.({joined})"},
+        )
 
-            finished_count = 0
-            tournament_ids = set()
+        counts = defaultdict(lambda: defaultdict(int))
+        for vote in votes:
+            counts[str(vote["match_id"])][str(vote["player_id"])] += 1
 
-            for match in expired:
-                player1 = session.query(TournamentPlayer).filter_by(
-                    player_id=match.player1_id
-                ).first()
-                player2 = session.query(TournamentPlayer).filter_by(
-                    player_id=match.player2_id
-                ).first()
-
-                if not player1 or not player2:
-                    continue
-
-                try:
-                    revenue1 = TournamentService._final_revenue_for_player(
-                        session, match, player1, now
-                    )
-                    revenue2 = TournamentService._final_revenue_for_player(
-                        session, match, player2, now
-                    )
-                except Exception as exc:
-                    print(
-                        f"最终营收查询失败，暂不结束 {match.match_id}: {exc}"
-                    )
-                    continue
-
-                match.player1_revenue = revenue1["total_revenue"]
-                match.player2_revenue = revenue2["total_revenue"]
-                match.winner_id = TournamentService._pick_winner(
-                    match, revenue1, revenue2
-                )
-                match.status = "completed"
-
-                # 瑞士轮更新选手战绩；淘汰赛局数不改瑞士轮战绩。
-                if match.round_number < ROUND_QF:
-                    winner = session.query(TournamentPlayer).filter_by(
-                        player_id=match.winner_id
-                    ).first()
-
-                    loser_id = (
-                        match.player2_id
-                        if match.winner_id == match.player1_id
-                        else match.player1_id
-                    )
-                    loser = session.query(TournamentPlayer).filter_by(
-                        player_id=loser_id
-                    ).first()
-
-                    if winner:
-                        winner.wins += 1
-                        if winner.wins >= 3:
-                            winner.status = "advanced"
-
-                    if loser:
-                        loser.losses += 1
-                        if loser.losses >= 3:
-                            loser.status = "eliminated"
-
-                finished_count += 1
-                tournament_ids.add(match.tournament_id)
-
-            session.commit()
-
-            for tournament_id in tournament_ids:
-                tournament = session.get(
-                    TournamentConfig,
-                    tournament_id
-                )
-                if not tournament:
-                    continue
-
-                if tournament.current_round < ROUND_QF:
-                    current_matches = session.query(
-                        TournamentMatch
-                    ).filter_by(
-                        tournament_id=tournament_id,
-                        round_number=tournament.current_round,
-                    ).all()
-
-                    if (
-                        not current_matches
-                        or not all(m.status == "completed" for m in current_matches)
-                    ):
-                        continue
-
-                    players = session.query(TournamentPlayer).filter_by(
-                        tournament_id=tournament_id
-                    ).all()
-
-                    advanced = sum(
-                        1 for p in players if p.status == "advanced"
-                    )
-                    eliminated = sum(
-                        1 for p in players if p.status == "eliminated"
-                    )
-
-                    if advanced == 8 and eliminated == 8:
-                        TournamentService.start_knockout_stage(
-                            tournament_id
-                        )
-                    elif tournament.current_round < SWISS_MAX_ROUNDS:
-                        TournamentService.auto_start_next_swiss_round(
-                            tournament_id
-                        )
-                else:
-                    TournamentService._advance_knockout(tournament_id)
-
-            return finished_count
-
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+        return {key: dict(value) for key, value in counts.items()}
 
     @staticmethod
     def vote(match_id, player_id, voter_fingerprint, voter_ip):
-        """同一访客指纹在同一单局只能投票一次。"""
-        if not voter_fingerprint:
-            return {"success": False, "error": "missing_fingerprint"}
+        db = TournamentService._db()
 
-        session = SessionLocal()
+        matches = db.select(
+            TABLE_MATCHES,
+            filters={"match_id": f"eq.{match_id}"},
+            limit=1,
+        )
+        if not matches:
+            return {"success": False, "error": "match_not_found"}
+
+        match = matches[0]
+        if str(player_id) not in (
+            str(match.get("player1_id")),
+            str(match.get("player2_id")),
+        ):
+            return {"success": False, "error": "player_not_in_match"}
+
         try:
-            match = session.query(TournamentMatch).filter_by(
-                match_id=match_id
-            ).first()
-
-            if not match:
-                return {"success": False, "error": "match_not_found"}
-
-            if player_id not in (match.player1_id, match.player2_id):
-                return {"success": False, "error": "player_not_in_match"}
-
-            existing = session.query(TournamentVote).filter_by(
-                match_id=match_id,
-                voter_fingerprint=voter_fingerprint,
-            ).first()
-
-            if existing:
-                return {"success": False, "error": "already_voted"}
-
-            session.add(TournamentVote(
-                match_id=match_id,
-                player_id=player_id,
-                voter_fingerprint=voter_fingerprint,
-                voter_ip=voter_ip,
-            ))
-            session.commit()
+            db.insert(TABLE_VOTES, {
+                "match_id": str(match_id),
+                "player_id": str(player_id),
+                "voter_fingerprint": str(voter_fingerprint),
+                "voter_ip": voter_ip,
+            })
             return {"success": True}
-
-        except Exception:
-            session.rollback()
+        except MemFireError as exc:
+            if exc.status_code == 409:
+                return {"success": False, "error": "already_voted"}
             raise
-        finally:
-            session.close()
 
     @staticmethod
-    def get_vote_counts(match_id):
-        """获取单局双方票数。"""
-        session = SessionLocal()
-        try:
-            rows = session.query(
-                TournamentVote.player_id,
-                func.count(TournamentVote.id),
-            ).filter_by(
-                match_id=match_id
-            ).group_by(
-                TournamentVote.player_id
-            ).all()
-            return {player_id: count for player_id, count in rows}
-        finally:
-            session.close()
+    def _finish_match(match, players_by_id, now):
+        player1 = players_by_id.get(str(match.get("player1_id")))
+        player2 = players_by_id.get(str(match.get("player2_id")))
+
+        if not player1 or not player2:
+            return False
+
+        revenue1 = TournamentService.get_player_revenue(
+            player1["room_id"],
+            match.get("start_time"),
+            match.get("end_time"),
+        )
+        revenue2 = TournamentService.get_player_revenue(
+            player2["room_id"],
+            match.get("start_time"),
+            match.get("end_time"),
+        )
+
+        if revenue1["total_revenue"] > revenue2["total_revenue"]:
+            winner_id = match["player1_id"]
+        elif revenue2["total_revenue"] > revenue1["total_revenue"]:
+            winner_id = match["player2_id"]
+        else:
+            winner_id = (
+                match["player1_id"]
+                if revenue1["danmaku_count"] >= revenue2["danmaku_count"]
+                else match["player2_id"]
+            )
+
+        TournamentService._save_snapshot(
+            match, match["player1_id"], revenue1, now
+        )
+        TournamentService._save_snapshot(
+            match, match["player2_id"], revenue2, now
+        )
+
+        TournamentService._db().update(
+            TABLE_MATCHES,
+            {"match_id": f"eq.{match['match_id']}"},
+            {
+                "winner_id": str(winner_id),
+                "player1_revenue": revenue1["total_revenue"],
+                "player2_revenue": revenue2["total_revenue"],
+                "status": "completed",
+            },
+        )
+        return True
+
+    @staticmethod
+    def check_and_finish_matches():
+        db = TournamentService._db()
+        tournaments = db.select(TABLE_TOURNAMENTS)
+        finished_count = 0
+
+        for tournament in tournaments:
+            tournament_id = int(tournament["id"])
+            players = TournamentService._get_players(tournament_id)
+            players_by_id = {str(p["player_id"]): p for p in players}
+            matches = TournamentService._get_matches(tournament_id)
+            now = _utc_now_naive()
+
+            for match in matches:
+                if match.get("status") != "running":
+                    continue
+
+                end = _parse_db_time(match.get("end_time"))
+                if not end or end > now:
+                    continue
+
+                try:
+                    if TournamentService._finish_match(
+                        match, players_by_id, now
+                    ):
+                        finished_count += 1
+                except Exception as exc:
+                    print(
+                        f"最终营收查询失败，暂不结束 {match.get('match_id')}: {exc}"
+                    )
+
+            TournamentService._recompute_swiss_records(tournament_id)
+
+            current_round = int(tournament.get("current_round") or 1)
+
+            if current_round < ROUND_QF:
+                current_matches = TournamentService._get_matches(
+                    tournament_id,
+                    current_round,
+                )
+
+                if current_matches and all(
+                    item.get("status") == "completed"
+                    for item in current_matches
+                ):
+                    current_players = TournamentService._get_players(
+                        tournament_id
+                    )
+                    advanced = sum(
+                        1 for p in current_players
+                        if p.get("status") == "advanced"
+                    )
+                    eliminated = sum(
+                        1 for p in current_players
+                        if p.get("status") == "eliminated"
+                    )
+
+                    if advanced == 8 and eliminated == 8:
+                        TournamentService.start_knockout_stage(tournament_id)
+                    elif current_round < SWISS_MAX_ROUNDS:
+                        TournamentService.auto_start_next_swiss_round(
+                            tournament_id
+                        )
+            else:
+                TournamentService._advance_knockout(tournament_id)
+
+        return finished_count
+
+    @staticmethod
+    def update_all_running_revenues():
+        db = TournamentService._db()
+        matches = db.select(
+            TABLE_MATCHES,
+            filters={"status": "eq.running"},
+        )
+
+        updated = 0
+        for match in matches:
+            try:
+                result = TournamentService.update_match_revenue(
+                    match["match_id"]
+                )
+                if result:
+                    updated += 1
+            except Exception as exc:
+                print(
+                    f"更新比赛 {match.get('match_id')} 营收失败: {exc}"
+                )
+
+        return updated
+
+    @staticmethod
+    def run_scheduler_cycle(update_revenue=True):
+        if update_revenue:
+            TournamentService.update_all_running_revenues()
+        return TournamentService.check_and_finish_matches()
 
     @staticmethod
     def get_current_state(tournament_id):
-        """返回比赛、选手、单局、BO3系列赛比分、营收和投票。"""
-        session = SessionLocal()
-        try:
-            tournament = session.get(
-                TournamentConfig,
-                tournament_id
-            )
-            if not tournament:
-                return None
+        tournament = TournamentService._get_tournament(tournament_id)
+        if not tournament:
+            return None
 
-            players = session.query(TournamentPlayer).filter_by(
-                tournament_id=tournament_id
-            ).all()
+        players = TournamentService._get_players(tournament_id)
+        matches = TournamentService._get_matches(tournament_id)
+        match_ids = [m["match_id"] for m in matches]
 
-            matches = session.query(TournamentMatch).filter_by(
-                tournament_id=tournament_id
-            ).order_by(
-                TournamentMatch.round_number,
-                TournamentMatch.match_id,
-            ).all()
+        snapshots = TournamentService._latest_snapshots(match_ids)
+        votes = TournamentService.get_vote_counts(match_ids)
 
-            players_data = [{
-                "id": p.player_id,
-                "name": p.player_name,
-                "room_id": p.room_id,
-                "avatar": p.avatar_url,
-                "wins": p.wins,
-                "losses": p.losses,
-                "status": p.status,
-            } for p in players]
+        players_by_id = {str(p["player_id"]): p for p in players}
 
-            # 汇总淘汰赛各 BO3 系列赛的局分
-            series_rows = {}
-            for match in matches:
-                series_id, game_number = _series_id_and_game_number(
-                    match.match_id
-                )
-                if not series_id:
+        series_map = {}
+        for match in matches:
+            series_id, game_number = _series_info(match["match_id"])
+            if not series_id:
+                continue
+
+            row = series_map.setdefault(series_id, {
+                "series_id": series_id,
+                "player1_id": match.get("player1_id"),
+                "player2_id": match.get("player2_id"),
+                "player1_game_wins": 0,
+                "player2_game_wins": 0,
+                "series_winner": None,
+                "games_played": 0,
+            })
+
+            if match.get("status") == "completed":
+                row["games_played"] += 1
+                if str(match.get("winner_id")) == str(row["player1_id"]):
+                    row["player1_game_wins"] += 1
+                elif str(match.get("winner_id")) == str(row["player2_id"]):
+                    row["player2_game_wins"] += 1
+
+        for row in series_map.values():
+            if row["player1_game_wins"] >= 2:
+                row["series_winner"] = row["player1_id"]
+            elif row["player2_game_wins"] >= 2:
+                row["series_winner"] = row["player2_id"]
+
+        matches_data = []
+
+        for match in matches:
+            revenue = {}
+            for player_id in (
+                match.get("player1_id"),
+                match.get("player2_id"),
+            ):
+                if not player_id:
                     continue
 
-                row = series_rows.setdefault(series_id, {
-                    "series_id": series_id,
-                    "player1_id": match.player1_id,
-                    "player2_id": match.player2_id,
-                    "player1_game_wins": 0,
-                    "player2_game_wins": 0,
-                    "series_winner": None,
-                    "games_played": 0,
-                })
-
-                if match.status == "completed":
-                    row["games_played"] += 1
-                    if match.winner_id == row["player1_id"]:
-                        row["player1_game_wins"] += 1
-                    elif match.winner_id == row["player2_id"]:
-                        row["player2_game_wins"] += 1
-
-                if row["player1_game_wins"] >= BEST_OF_THREE_WINS:
-                    row["series_winner"] = row["player1_id"]
-                elif row["player2_game_wins"] >= BEST_OF_THREE_WINS:
-                    row["series_winner"] = row["player2_id"]
-
-            matches_data = []
-
-            for match in matches:
-                series_id, game_number = _series_id_and_game_number(
-                    match.match_id
+                snapshot = snapshots.get(
+                    (str(match["match_id"]), str(player_id))
                 )
 
-                match_data = {
-                    "id": match.match_id,
-                    "round": match.round_number,
-                    "p1": match.player1_id,
-                    "p2": match.player2_id,
-                    "winner": match.winner_id,
-                    "status": match.status,
-                    "start_time": (
-                        match.start_time.isoformat()
-                        if match.start_time else None
-                    ),
-                    "end_time": (
-                        match.end_time.isoformat()
-                        if match.end_time else None
-                    ),
-                }
+                if snapshot:
+                    revenue[str(player_id)] = {
+                        "sc": snapshot.get("sc_amount") or 0,
+                        "gift": snapshot.get("gift_amount") or 0,
+                        "total": snapshot.get("total_revenue") or 0,
+                        "danmaku": snapshot.get("danmaku_count") or 0,
+                        "peak_viewers": snapshot.get("peak_viewers") or 0,
+                        "avg_viewers": snapshot.get("avg_viewers") or 0,
+                    }
+                else:
+                    revenue[str(player_id)] = {
+                        "sc": 0,
+                        "gift": 0,
+                        "total": 0,
+                        "danmaku": 0,
+                        "peak_viewers": 0,
+                        "avg_viewers": 0,
+                    }
 
-                if series_id:
-                    match_data["series_id"] = series_id
-                    match_data["game_number"] = game_number
-                    match_data["series"] = series_rows[series_id]
+            series_id, game_number = _series_info(match["match_id"])
 
-                revenue = {}
-                for player_id in (match.player1_id, match.player2_id):
-                    latest = session.query(TournamentRevenue).filter_by(
-                        match_id=match.match_id,
-                        player_id=player_id,
-                    ).order_by(
-                        TournamentRevenue.snapshot_time.desc()
-                    ).first()
-
-                    if latest:
-                        revenue[player_id] = {
-                            "sc": latest.sc_amount or 0,
-                            "gift": latest.gift_amount or 0,
-                            "total": latest.total_revenue or 0,
-                            "danmaku": latest.danmaku_count or 0,
-                            "peak_viewers": latest.peak_viewers or 0,
-                            "avg_viewers": latest.avg_viewers or 0,
-                        }
-                    else:
-                        total = 0
-                        if match.status == "completed":
-                            total = (
-                                match.player1_revenue or 0
-                                if player_id == match.player1_id
-                                else match.player2_revenue or 0
-                            )
-
-                        revenue[player_id] = {
-                            "sc": 0,
-                            "gift": 0,
-                            "total": total,
-                            "danmaku": 0,
-                            "peak_viewers": 0,
-                            "avg_viewers": 0,
-                        }
-
-                match_data["revenue"] = revenue
-                match_data["votes"] = TournamentService.get_vote_counts(
-                    match.match_id
-                )
-                matches_data.append(match_data)
-
-            return {
-                "tournament": {
-                    "id": tournament.id,
-                    "name": tournament.name,
-                    "status": tournament.status,
-                    "start_time": (
-                        tournament.start_time.isoformat()
-                        if tournament.start_time else None
-                    ),
-                    "current_round": tournament.current_round,
-                    "match_duration_days": tournament.match_duration_days,
-                },
-                "players": players_data,
-                "matches": matches_data,
-                "series": list(series_rows.values()),
+            item = {
+                "id": match["match_id"],
+                "round": int(match["round_number"]),
+                "p1": match.get("player1_id"),
+                "p2": match.get("player2_id"),
+                "winner": match.get("winner_id"),
+                "status": match.get("status"),
+                "start_time": match.get("start_time"),
+                "end_time": match.get("end_time"),
+                "revenue": revenue,
+                "votes": votes.get(str(match["match_id"]), {}),
             }
 
-        finally:
-            session.close()
+            if series_id:
+                item["series_id"] = series_id
+                item["game_number"] = game_number
+                item["series"] = series_map[series_id]
+
+            matches_data.append(item)
+
+        return {
+            "tournament": {
+                "id": tournament["id"],
+                "name": tournament["name"],
+                "status": tournament["status"],
+                "start_time": tournament.get("start_time"),
+                "current_round": int(tournament.get("current_round") or 1),
+                "match_duration_days": int(
+                    tournament.get("match_duration_days") or 3
+                ),
+            },
+            "players": [{
+                "id": player["player_id"],
+                "name": player["player_name"],
+                "room_id": player["room_id"],
+                "avatar": player.get("avatar_url"),
+                "wins": int(player.get("wins") or 0),
+                "losses": int(player.get("losses") or 0),
+                "status": player.get("status") or "active",
+            } for player in players],
+            "matches": matches_data,
+            "series": list(series_map.values()),
+        }
