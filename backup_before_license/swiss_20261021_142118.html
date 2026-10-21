@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VR斗虫大赛 2026 · 比赛详情</title>
+    <style>
+        :root {
+            --bg: #080b12;
+            --panel: #111824;
+            --card: #182231;
+            --card-inner: #101722;
+            --text: #eef4fb;
+            --muted: #9aaabd;
+            --border: #33445a;
+            --blue: #38bdf8;
+            --green: #6ee7b7;
+            --gold: #fbbf24;
+            --red: #fb7185;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            background: var(--bg);
+            font-family: system-ui, "Microsoft YaHei", sans-serif;
+            line-height: 1.55;
+        }
+
+        header {
+            text-align: center;
+            padding: 38px 16px 28px;
+            border-bottom: 2px solid var(--blue);
+            background: linear-gradient(180deg, #10182a, var(--bg));
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(28px, 5vw, 48px);
+            color: var(--blue);
+        }
+
+        .subtitle { color: var(--muted); margin-top: 8px; }
+
+        .container {
+            width: min(1500px, 96%);
+            margin: 0 auto;
+            padding: 20px 0 48px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 4px 0 22px;
+        }
+
+        nav a {
+            color: var(--muted);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 9px 17px;
+            text-decoration: none;
+        }
+
+        nav a.active, nav a:hover {
+            color: #06111b;
+            background: var(--blue);
+        }
+
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+            gap: 12px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .status-item { text-align: center; }
+        .status-label { color: var(--muted); font-size: 13px; }
+        .status-value { color: var(--blue); font-size: 19px; font-weight: 800; margin-top: 5px; }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(290px, 1fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .panel {
+            min-width: 0;
+            padding: 20px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        h2 {
+            color: var(--blue);
+            font-size: 21px;
+            margin: 0 0 16px;
+        }
+
+        .round-heading {
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin: 22px 0 12px;
+            font-weight: 700;
+        }
+
+        .match-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .match-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .badge {
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #08111b;
+            background: var(--gold);
+        }
+
+        .badge.running { background: var(--green); }
+        .badge.completed { background: #a6b3c5; }
+
+        .player {
+            display: grid;
+            grid-template-columns: 48px minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+            padding: 11px;
+            border: 2px solid transparent;
+            border-radius: 9px;
+            background: var(--card-inner);
+        }
+
+        .player.winner {
+            border-color: var(--green);
+            background: rgba(110, 231, 183, .08);
+        }
+
+        .avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--blue);
+            background: #263348;
+        }
+
+        .player-name { font-weight: 800; font-size: 17px; }
+        .record { color: var(--muted); font-size: 13px; }
+        .revenue { text-align: right; }
+        .revenue-label { color: var(--muted); font-size: 12px; }
+        .revenue-value { color: var(--blue); font-size: 18px; font-weight: 800; }
+        .vs { text-align: center; color: var(--muted); font-weight: 800; padding: 8px; }
+
+        .match-time {
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+            margin-top: 11px;
+        }
+
+        .vote {
+            border-top: 1px solid var(--border);
+            margin-top: 13px;
+            padding-top: 12px;
+        }
+
+        .vote-title { text-align: center; color: var(--muted); font-size: 13px; }
+
+        .vote-bar {
+            display: flex;
+            height: 10px;
+            overflow: hidden;
+            background: #263348;
+            border-radius: 20px;
+            margin: 10px 0 7px;
+        }
+
+        .vote-bar-left { background: var(--blue); transition: width .25s ease; }
+        .vote-bar-right { background: var(--gold); transition: width .25s ease; }
+
+        .vote-totals {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .vote-totals strong { color: var(--text); }
+
+        .vote-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            margin-top: 11px;
+        }
+
+        .vote-button {
+            color: var(--text);
+            background: var(--card-inner);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .vote-button:hover:not(:disabled) {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .vote-button.voted-left {
+            border-color: var(--blue);
+            color: var(--blue);
+            background: rgba(56, 189, 248, .12);
+        }
+
+        .vote-button.voted-right {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(251, 191, 36, .12);
+        }
+
+        .vote-button:disabled { opacity: .65; cursor: default; }
+
+        .standings {
+            max-height: 820px;
+            overflow-y: auto;
+        }
+
+        .standing-row {
+            display: grid;
+            grid-template-columns: 30px 42px minmax(0, 1fr) auto;
+            gap: 8px;
+            align-items: center;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 7px;
+        }
+
+        .standing-row.qualified { border-color: var(--green); }
+        .standing-row.eliminated { opacity: .55; }
+        .rank { color: var(--muted); font-weight: 800; }
+        .standing-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .standing-name { font-weight: 700; }
+        .standing-record { font-weight: 800; white-space: nowrap; }
+        .standing-row.qualified .standing-record { color: var(--green); }
+        .standing-row.eliminated .standing-record { color: var(--red); }
+
+        .notice, .error {
+            padding: 18px;
+            border-radius: 10px;
+            text-align: center;
+            color: var(--muted);
+            background: var(--card);
+        }
+
+        .error { color: var(--red); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            padding: 16px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .78);
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-content {
+            width: min(760px, 100%);
+            max-height: 90vh;
+            overflow: auto;
+            padding: 20px;
+            background: var(--panel);
+            border: 1px solid var(--blue);
+            border-radius: 14px;
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .close {
+            color: var(--muted);
+            background: transparent;
+            border: 0;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .detail-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .detail-player {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 13px;
+        }
+
+        .detail-player h3 { color: var(--blue); text-align: center; }
+        .detail-stat { display: flex; justify-content: space-between; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+        .detail-stat:last-child { border-bottom: 0; }
+        .detail-stat span:first-child { color: var(--muted); }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            padding: 22px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
+            .standings { max-height: 500px; }
+        }
+
+        @media (max-width: 520px) {
+            .panel { padding: 13px; }
+            .player { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 8px; padding: 8px; }
+            .avatar { width: 38px; height: 38px; }
+            .player-name { font-size: 15px; }
+            .revenue-value { font-size: 15px; }
+            .vote-buttons { grid-template-columns: 1fr; }
+            .vote-totals { font-size: 11px; }
+            .detail-columns { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>VR斗虫大赛 2026</h1>
+    <div class="subtitle">比赛详情 · 当前轮次 · 实时支持率</div>
+</header>
+
+<main class="container">
+    <nav>
+        <a href="swiss.html" class="active">比赛详情</a>
+        <a href="swiss_bracket.html">瑞士轮晋级图</a>
+        <a href="playoffs.html">淘汰赛</a>
+    </nav>
+
+    <section class="status-bar">
+        <div class="status-item">
+            <div class="status-label">赛事状态</div>
+            <div class="status-value" id="event-status">加载中</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">当前阶段</div>
+            <div class="status-value" id="stage-label">--</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">已晋级</div>
+            <div class="status-value" id="qualified-count">0</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">已淘汰</div>
+            <div class="status-value" id="eliminated-count">0</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">页面更新时间</div>
+            <div class="status-value" id="updated-time">--:--</div>
+        </div>
+    </section>
+
+    <div class="layout">
+        <section class="panel">
+            <h2>比赛对阵</h2>
+            <div id="matches-container"><div class="notice">正在读取比赛数据…</div></div>
+        </section>
+
+        <aside class="panel">
+            <h2>选手战绩</h2>
+            <div id="standings-container" class="standings"></div>
+        </aside>
+    </div>
+</main>
+
+<footer>VR斗虫大赛 2026 · 比赛状态和投票由赛事服务器提供
+<div class="data-license">
+    <strong>数据来源与许可声明</strong><br>
+    本网站部分直播数据来自
+    <a href="https://github.com/qianqiuzy/VR_douchong"
+       target="_blank"
+       rel="noopener noreferrer">
+        VR_douchong
+    </a>
+    项目及其相关数据接口
+    <code>vr.qianqiuzy.cn</code> /
+    <code>psp.qianqiuzy.cn</code>。<br>
+    数据许可说明请参阅
+    <a href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
+       target="_blank"
+       rel="noopener noreferrer">
+        LICENSE-DATA.md
+    </a>。<br>
+    本网站仅用于非商业兴趣展示和赛事娱乐用途。
+    如需商业使用，请先取得数据权利人授权。
+</div>
+
+</footer>
+
+<div class="modal" id="detail-modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+        <div class="modal-head">
+            <h2 id="modal-title">对局数据</h2>
+            <button class="close" type="button" aria-label="关闭" onclick="closeDetail()">×</button>
+        </div>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+const API_BASE = '/api/tournament';
+const TOURNAMENT_ID = 1;
+const JPG_PLAYERS = new Set(['Rhea', 'Melody']);
+const STAGE_NAMES = {100: '八强赛', 101: '半决赛', 102: '决赛'};
+let currentData = null;
+
+function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[ch]);
+}
+
+function avatarUrl(player) {
+    if (!player) return '';
+    const ext = JPG_PLAYERS.has(player.name) ? 'jpg' : 'webp';
+    return `/static/avatars/${encodeURIComponent(player.name)}.${ext}`;
+}
+
+function money(value) {
+    const n = Number(value || 0);
+    return '¥' + Math.round(n).toLocaleString('zh-CN');
+}
+
+function beijingTime(value) {
+    if (!value) return '';
+    // 后端存储的是无时区 UTC 字符串；显式按 UTC 解析，再显示北京时间。
+    const normalized = value.endsWith('Z') ? value : value + 'Z';
+    const date = new Date(normalized);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('zh-CN', {
+        timeZone: 'Asia/Shanghai',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    }).format(date).replaceAll('-', '/');
+}
+
+function playerById(id) {
+    return currentData?.players?.find(p => p.id === id);
+}
+
+function matchRevenue(match, playerId) {
+    return match?.revenue?.[playerId] || {};
+}
+
+function getVoteCounts(match) {
+    const votes = match.votes || {};
+    return {
+        left: Number(votes[match.p1] || 0),
+        right: Number(votes[match.p2] || 0)
+    };
+}
+
+function savedVote(matchId) {
+    try {
+        return localStorage.getItem(`vr-vote-${matchId}`);
+    } catch {
+        return null;
+    }
+}
+
+function renderMatch(match, label) {
+    const p1 = playerById(match.p1);
+    const p2 = playerById(match.p2);
+
+    if (!p1 || !p2) return '';
+
+    const r1 = matchRevenue(match, match.p1);
+    const r2 = matchRevenue(match, match.p2);
+    const votes = getVoteCounts(match);
+    const totalVotes = votes.left + votes.right;
+    const leftPercent = totalVotes ? Math.round(votes.left * 100 / totalVotes) : 50;
+    const rightPercent = 100 - leftPercent;
+    const myVote = savedVote(match.id);
+    const statusText = match.status === 'running'
+        ? '进行中'
+        : match.status === 'completed' ? '已结束' : '未开始';
+    const timeText = match.start_time
+        ? `比赛时间：${beijingTime(match.start_time)} - ${beijingTime(match.end_time)}`
+        : '比赛时间待定';
+
+    const card = document.createElement('article');
+    card.className = 'match-card';
+
+    card.innerHTML = `
+        <div class="match-top">
+            <span>${esc(label || match.id)}</span>
+            <span class="badge ${esc(match.status)}">${statusText}</span>
+        </div>
+
+        <div class="player ${match.winner === p1.id ? 'winner' : ''}">
+            <img class="avatar" src="${avatarUrl(p1)}" alt="${esc(p1.name)}">
+            <div>
+                <div class="player-name">${esc(p1.name)}</div>
+                <div class="record">瑞士轮战绩 ${p1.wins}-${p1.losses}</div>
+            </div>
+            <div class="revenue">
+                <div class="revenue-label">本场营收</div>
+                <div class="revenue-value">${money(r1.total)}</div>
+            </div>
+        </div>
+
+        <div class="vs">VS</div>
+
+        <div class="player ${match.winner === p2.id ? 'winner' : ''}">
+            <img class="avatar" src="${avatarUrl(p2)}" alt="${esc(p2.name)}">
+            <div>
+                <div class="player-name">${esc(p2.name)}</div>
+                <div class="record">瑞士轮战绩 ${p2.wins}-${p2.losses}</div>
+            </div>
+            <div class="revenue">
+                <div class="revenue-label">本场营收</div>
+                <div class="revenue-value">${money(r2.total)}</div>
+            </div>
+        </div>
+
+        <div class="match-time">${timeText}</div>
+
+        <div class="vote">
+            <div class="vote-title">为你支持的选手投票</div>
+            <div class="vote-bar" aria-label="双方支持率">
+                <div class="vote-bar-left" style="width:${leftPercent}%"></div>
+                <div class="vote-bar-right" style="width:${rightPercent}%"></div>
+            </div>
+            <div class="vote-totals">
+                <span>${esc(p1.name)}：<strong>${votes.left}</strong> 票 · ${leftPercent}%</span>
+                <span>${esc(p2.name)}：<strong>${votes.right}</strong> 票 · ${rightPercent}%</span>
+            </div>
+            <div class="vote-buttons">
+                <button class="vote-button ${myVote === p1.id ? 'voted-left' : ''}"
+                    type="button"
+                    onclick="castVote('${esc(match.id)}','${esc(p1.id)}')"
+                    ${myVote ? 'disabled' : ''}>
+                    支持 ${esc(p1.name)}
+                </button>
+                <button class="vote-button ${myVote === p2.id ? 'voted-right' : ''}"
+                    type="button"
+                    onclick="castVote('${esc(match.id)}','${esc(p2.id)}')"
+                    ${myVote ? 'disabled' : ''}>
+                    支持 ${esc(p2.name)}
+                </button>
+            </div>
+        </div>
+
+        <button type="button" class="vote-button" style="width:100%;margin-top:10px"
+            onclick="showMatchDetail('${esc(match.id)}')">
+            查看本场详细数据
+        </button>
+    `;
+
+    return card;
+}
+
+function renderMatches(data) {
+    const container = document.getElementById('matches-container');
+    container.replaceChildren();
+
+    const round = Number(data.tournament.current_round);
+    const matches = data.matches.filter(m => Number(m.round) === round);
+
+    if (!matches.length) {
+        const empty = document.createElement('div');
+        empty.className = 'notice';
+        empty.textContent = data.tournament.status === 'pending'
+            ? '比赛尚未开始，对阵会在设定时间开放。'
+            : '当前阶段暂无比赛。';
+        container.appendChild(empty);
+        return;
+    }
+
+    const heading = document.createElement('div');
+    heading.className = 'round-heading';
+    heading.textContent = round < 100
+        ? `瑞士轮 · 第 ${round} 轮`
+        : (STAGE_NAMES[round] || '淘汰赛');
+    container.appendChild(heading);
+
+    matches.forEach((match, index) => {
+        const label = round < 100 ? match.id : `${STAGE_NAMES[round] || '淘汰赛'} ${index + 1}`;
+        const card = renderMatch(match, label);
+        if (card) container.appendChild(card);
+    });
+
+    if (round >= 100) {
+        const link = document.createElement('p');
+        link.className = 'notice';
+        link.innerHTML = '<a href="playoffs.html" style="color:var(--blue)">查看完整淘汰赛晋级图 →</a>';
+        container.appendChild(link);
+    }
+}
+
+function renderStandings(data) {
+    const container = document.getElementById('standings-container');
+    container.replaceChildren();
+
+    const ordered = [...data.players].sort((a, b) =>
+        b.wins - a.wins || a.losses - b.losses || a.name.localeCompare(b.name)
+    );
+
+    ordered.forEach((p, index) => {
+        const row = document.createElement('div');
+        row.className = 'standing-row';
+        if (p.status === 'advanced' || p.wins >= 3) row.classList.add('qualified');
+        if (p.status === 'eliminated' || p.losses >= 3) row.classList.add('eliminated');
+
+        row.innerHTML = `
+            <span class="rank">#${index + 1}</span>
+            <img class="standing-avatar" src="${avatarUrl(p)}" alt="${esc(p.name)}">
+            <span class="standing-name">${esc(p.name)}</span>
+            <span class="standing-record">${p.wins}-${p.losses}</span>
+        `;
+        container.appendChild(row);
+    });
+}
+
+function detailStat(label, value) {
+    return `<div class="detail-stat"><span>${label}</span><strong>${value}</strong></div>`;
+}
+
+function showMatchDetail(matchId) {
+    if (!currentData) return;
+    const match = currentData.matches.find(m => m.id === matchId);
+    if (!match) return;
+
+    const p1 = playerById(match.p1);
+    const p2 = playerById(match.p2);
+    if (!p1 || !p2) return;
+
+    const r1 = matchRevenue(match, match.p1);
+    const r2 = matchRevenue(match, match.p2);
+
+    document.getElementById('modal-title').textContent = `${p1.name} vs ${p2.name}`;
+
+    document.getElementById('modal-body').innerHTML = `
+        <div class="detail-columns">
+            <div class="detail-player">
+                <h3>${esc(p1.name)}</h3>
+                ${detailStat('本场营收', money(r1.total))}
+                ${detailStat('SC', money(r1.sc))}
+                ${detailStat('礼物', money(r1.gift))}
+                ${detailStat('弹幕数', Number(r1.danmaku || 0).toLocaleString('zh-CN'))}
+                ${detailStat('峰值人气', Number(r1.peak_viewers || 0).toLocaleString('zh-CN'))}
+                ${detailStat('平均人气', Number(r1.avg_viewers || 0).toLocaleString('zh-CN'))}
+            </div>
+            <div class="detail-player">
+                <h3>${esc(p2.name)}</h3>
+                ${detailStat('本场营收', money(r2.total))}
+                ${detailStat('SC', money(r2.sc))}
+                ${detailStat('礼物', money(r2.gift))}
+                ${detailStat('弹幕数', Number(r2.danmaku || 0).toLocaleString('zh-CN'))}
+                ${detailStat('峰值人气', Number(r2.peak_viewers || 0).toLocaleString('zh-CN'))}
+                ${detailStat('平均人气', Number(r2.avg_viewers || 0).toLocaleString('zh-CN'))}
+            </div>
+        </div>
+        <p class="match-time">
+            比赛时间：${beijingTime(match.start_time)} - ${beijingTime(match.end_time)}
+        </p>
+    `;
+
+    document.getElementById('detail-modal').classList.add('open');
+}
+
+function closeDetail() {
+    document.getElementById('detail-modal').classList.remove('open');
+}
+
+function makeFingerprint() {
+    const key = 'vr-voter-fingerprint';
+    let value = localStorage.getItem(key);
+    if (!value) {
+        value = 'v_' + crypto.randomUUID();
+        localStorage.setItem(key, value);
+    }
+    return value;
+}
+
+async function castVote(matchId, playerId) {
+    const key = `vr-vote-${matchId}`;
+    if (localStorage.getItem(key)) {
+        alert('你已经为这场比赛投过票了。');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/vote`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                match_id: matchId,
+                player_id: playerId,
+                fingerprint: makeFingerprint()
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.error || '投票失败，请稍后再试。');
+            return;
+        }
+
+        if (result.success) {
+            localStorage.setItem(key, playerId);
+            await loadData();
+            alert('投票成功！');
+        } else if (result.error === 'already_voted') {
+            localStorage.setItem(key, playerId);
+            await loadData();
+            alert('你已经为这场比赛投过票了。');
+        } else {
+            alert(result.error || '投票失败。');
+        }
+    } catch (error) {
+        console.error('投票失败:', error);
+        alert('无法连接投票服务，请稍后重试。');
+    }
+}
+
+async function loadData() {
+    try {
+        const response = await fetch(`${API_BASE}/state/${TOURNAMENT_ID}`, {
+            cache: 'no-store'
+        });
+
+        if (!response.ok) {
+            throw new Error(`服务器返回 ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.tournament || !Array.isArray(data.players) || !Array.isArray(data.matches)) {
+            throw new Error('服务器返回的数据格式不正确');
+        }
+
+        currentData = data;
+        const round = Number(data.tournament.current_round);
+
+        document.getElementById('event-status').textContent =
+            data.tournament.status === 'running' ? '进行中' :
+            data.tournament.status === 'pending' ? '未开始' :
+            data.tournament.status === 'finished' ? '已结束' : data.tournament.status;
+
+        document.getElementById('stage-label').textContent =
+            round < 100 ? `瑞士轮 R${round}` : (STAGE_NAMES[round] || '淘汰赛');
+
+        document.getElementById('qualified-count').textContent =
+            data.players.filter(p => p.status === 'advanced' || p.wins >= 3).length;
+
+        document.getElementById('eliminated-count').textContent =
+            data.players.filter(p => p.status === 'eliminated' || p.losses >= 3).length;
+
+        document.getElementById('updated-time').textContent =
+            new Intl.DateTimeFormat('zh-CN', {
+                timeZone: 'Asia/Shanghai',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).format(new Date());
+
+        renderMatches(data);
+        renderStandings(data);
+    } catch (error) {
+        console.error('加载比赛数据失败:', error);
+        document.getElementById('matches-container').innerHTML =
+            `<div class="error">读取比赛数据失败：${esc(error.message)}</div>`;
+    }
+}
+
+document.getElementById('detail-modal').addEventListener('click', event => {
+    if (event.target.id === 'detail-modal') closeDetail();
+});
+
+loadData();
+setInterval(loadData, 30000);
+</script>
+</body>
+</html>
