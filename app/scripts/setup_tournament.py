@@ -2,7 +2,7 @@
 import requests
 import json
 
-API_BASE = "https://vr-douchong-tournament.onrender.com/api/tournament"
+API_BASE = "https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/api/tournament"
 ADMIN_TOKEN = "my_secret_password_123"
 
 headers = {
