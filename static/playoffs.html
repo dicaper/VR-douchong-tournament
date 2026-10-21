@@ -2,547 +2,772 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>淘汰赛 - VR斗虫大赛 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>淘汰赛 · VR斗虫大赛2026</title>
+
     <style>
         :root {
-            --bg-deepest: #05070C;
-            --bg-deep: #0A0D12;
-            --bg-mid: #0F131C;
-            --bg-elevated: #161D2B;
-            --accent: #38BDF8;
-            --accent-dim: #0EA5E9;
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --border: #334155;
-            --success: #6EE7B7;
-            --warning: #FBBF24;
-            --gold: #FBBF24;
+            --bg: #080b12;
+            --panel: #111824;
+            --card: #182231;
+            --inner: #101722;
+            --text: #eef4fb;
+            --muted: #9aaabd;
+            --border: #33445a;
+            --blue: #38bdf8;
+            --green: #6ee7b7;
+            --gold: #fbbf24;
+            --red: #fb7185;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-deepest);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: clamp(1rem, 3vw, 2rem);
+            margin: 0;
+            color: var(--text);
+            background: var(--bg);
+            font-family: system-ui, "Microsoft YaHei", sans-serif;
         }
 
         header {
+            padding: 38px 16px 28px;
             text-align: center;
-            padding: clamp(2rem, 5vw, 3rem) 0;
-            background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deepest) 100%);
-            border-bottom: 2px solid var(--accent);
-            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--blue);
+            background: linear-gradient(180deg, #10182a, var(--bg));
         }
 
         h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--text-primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin: 0;
+            color: var(--blue);
+            font-size: clamp(28px, 5vw, 48px);
         }
 
-        .stage-title {
-            font-size: clamp(1rem, 2vw, 1.25rem);
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+        .subtitle {
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        .container {
+            width: min(1500px, 96%);
+            margin: 0 auto;
+            padding: 20px 0 48px;
         }
 
         nav {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin: 1rem 0 2rem;
             flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 22px;
         }
 
         nav a {
-            padding: 0.75rem 1.5rem;
-            background: var(--bg-elevated);
+            color: var(--muted);
+            background: var(--panel);
             border: 1px solid var(--border);
-            border-radius: 999px;
-            color: var(--text-secondary);
+            border-radius: 24px;
+            padding: 9px 17px;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s ease;
         }
 
-        nav a:hover, nav a.active {
-            background: var(--accent);
-            color: var(--bg-deepest);
-            border-color: var(--accent);
+        nav a.active,
+        nav a:hover {
+            color: #06111b;
+            background: var(--blue);
         }
 
-        .bracket-wrap {
-            overflow-x: auto;
-            padding: 2rem;
-            background: var(--bg-mid);
-            border-radius: 16px;
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 18px;
+            background: var(--panel);
             border: 1px solid var(--border);
-            margin-bottom: 2rem;
+            border-radius: 14px;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-label {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .status-value {
+            margin-top: 5px;
+            color: var(--blue);
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .bracket-panel {
+            overflow-x: auto;
+            padding: 22px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
         }
 
         .bracket {
             display: grid;
-            grid-template-columns: repeat(4, 280px);
-            gap: 0;
-            min-width: 1120px;
+            grid-template-columns: repeat(4, minmax(250px, 1fr));
+            min-width: 1080px;
+            gap: 24px;
             align-items: start;
         }
 
-        .bracket-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .round-column {
+            min-width: 0;
         }
 
-        .round-label {
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--accent);
-            font-weight: 700;
-            text-align: center;
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
+        .round-title {
+            padding-bottom: 10px;
+            margin-bottom: 16px;
             border-bottom: 1px solid var(--border);
-            width: 100%;
+            color: var(--blue);
+            text-align: center;
+            font-size: 16px;
+            font-weight: 800;
         }
 
-        .match-wrap {
-            width: 100%;
-            padding: 0 1rem;
-            margin-bottom: 1rem;
+        .series-card {
+            margin-bottom: 26px;
+            padding: 13px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
         }
 
-        .col-sf .match-wrap { margin-bottom: 4.5rem; }
-        .col-final .match-wrap { margin-bottom: 0; }
-
-        .bracket-match {
-            background: var(--bg-elevated);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            transition: border-color 0.2s ease;
+        .series-card.finished {
+            border-color: var(--green);
         }
 
-        .bracket-match:hover { border-color: var(--accent); }
-        .bracket-match.completed { border-color: var(--accent-dim); }
-
-        .bracket-match-header {
+        .series-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 0.3rem 0.75rem;
-            background: var(--bg-mid);
+            gap: 8px;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
             border-bottom: 1px solid var(--border);
-            font-size: 0.7rem;
-            color: var(--text-secondary);
+            color: var(--muted);
+            font-size: 13px;
         }
 
-        .match-status-badge {
-            font-size: 0.65rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 4px;
-            font-weight: 700;
+        .series-score {
+            color: var(--text);
+            font-weight: 800;
         }
 
-        .match-status-badge.running { background: var(--success); color: var(--bg-deepest); }
-        .match-status-badge.pending { background: var(--warning); color: var(--bg-deepest); }
-        .match-status-badge.completed { background: var(--text-secondary); color: var(--bg-deepest); }
+        .series-status {
+            padding: 3px 8px;
+            border-radius: 20px;
+            color: #06111b;
+            background: var(--gold);
+            font-size: 11px;
+            font-weight: 800;
+        }
 
-        .bracket-player {
-            display: flex;
+        .series-status.running {
+            background: var(--green);
+        }
+
+        .series-status.finished {
+            background: #a6b3c5;
+        }
+
+        .player {
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr) auto;
+            gap: 9px;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.6rem 0.75rem;
-            border-bottom: 1px solid var(--border);
+            padding: 9px;
+            background: var(--inner);
+            border: 2px solid transparent;
+            border-radius: 8px;
         }
 
-        .bracket-player.winner {
-            background: linear-gradient(90deg, rgba(110, 231, 183, 0.18) 0%, transparent 100%);
+        .player.winner {
+            border-color: var(--green);
+            background: rgba(110, 231, 183, .1);
         }
 
-        .bracket-player.loser { opacity: 0.5; }
-
-        .b-avatar {
-            width: 32px;
-            height: 32px;
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--blue);
             border-radius: 50%;
-            border: 2px solid var(--accent);
-            overflow: hidden;
-            flex-shrink: 0;
+            object-fit: cover;
         }
 
-        .b-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .player-name {
+            font-weight: 800;
+        }
 
-        .b-name {
-            font-size: 0.9rem;
+        .player-record {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .game-score {
+            color: var(--blue);
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .vs {
+            padding: 5px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .game-list {
+            margin-top: 11px;
+            padding-top: 9px;
+            border-top: 1px solid var(--border);
+        }
+
+        .game-row {
+            display: grid;
+            grid-template-columns: 70px minmax(0, 1fr) auto;
+            gap: 7px;
+            align-items: center;
+            padding: 6px 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .game-row.active {
+            color: var(--blue);
+            font-weight: 800;
+        }
+
+        .game-row.completed {
+            color: var(--green);
+        }
+
+        .revenue {
+            color: var(--blue);
             font-weight: 700;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        .b-record { font-size: 0.72rem; color: var(--text-secondary); }
-
-        .b-revenue {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--accent);
-            text-align: right;
-            flex-shrink: 0;
-        }
-
-        .match-vs {
+        .empty {
+            grid-column: 1 / -1;
+            padding: 70px 20px;
+            color: var(--muted);
             text-align: center;
-            font-size: 0.68rem;
-            letter-spacing: 0.1em;
-            color: var(--text-secondary);
-            padding: 0.2rem 0;
-            background: var(--bg-mid);
         }
 
-        .match-time {
+        .data-license {
+            width: min(1100px, 94%);
+            margin: 28px auto 0;
+            padding: 16px 20px;
+            color: #9aaabd;
+            background: #101722;
+            border: 1px solid #33445a;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.8;
             text-align: center;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            padding: 0.3rem 0.75rem;
-            background: var(--bg-mid);
-            border-top: 1px solid var(--border);
         }
 
-        .tbd-player {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.6rem 0.75rem;
-            opacity: 0.4;
+        .data-license strong {
+            color: #eef4fb;
         }
 
-        .tbd-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px dashed var(--border);
-            background: var(--bg-mid);
-            flex-shrink: 0;
+        .data-license a {
+            color: #38bdf8;
+            text-decoration: none;
         }
 
-        .tbd-name { font-size: 0.88rem; color: var(--text-secondary); font-style: italic; }
-
-        .champion-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 1rem;
+        .data-license a:hover {
+            text-decoration: underline;
         }
 
-        .champion-title {
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--gold);
-            font-weight: 700;
-            text-align: center;
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-            width: 100%;
+        .data-license code {
+            color: #d7e3f1;
+            background: #182231;
+            padding: 2px 5px;
+            border-radius: 4px;
         }
-
-        .champion-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1.5rem;
-            background: var(--bg-elevated);
-            border: 2px solid var(--gold);
-            border-radius: 12px;
-            width: 100%;
-            text-align: center;
-            margin-top: 9rem;
-        }
-
-        .champion-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid var(--gold);
-            overflow: hidden;
-        }
-
-        .champion-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .champion-name { font-size: 1.25rem; font-weight: 700; color: var(--gold); }
-
-        .champion-tbd {
-            margin-top: 9rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            text-align: center;
-            opacity: 0.6;
-        }
-
-        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-secondary); }
-        .empty-state a { color: var(--accent); text-decoration: none; font-weight: 600; }
 
         footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
+            padding: 22px;
             border-top: 1px solid var(--border);
-            margin-top: 3rem;
+            color: var(--muted);
+            text-align: center;
         }
-    
-.data-license {
-    width: min(1100px, 94%);
-    margin: 28px auto 0;
-    padding: 16px 20px;
-    color: #9aaabd;
-    background: #101722;
-    border: 1px solid #33445a;
-    border-radius: 10px;
-    font-size: 13px;
-    line-height: 1.8;
-    text-align: center;
-}
-
-.data-license strong {
-    color: #eef4fb;
-}
-
-.data-license a {
-    color: #38bdf8;
-    text-decoration: none;
-}
-
-.data-license a:hover {
-    text-decoration: underline;
-}
-
-.data-license code {
-    color: #d7e3f1;
-    background: #182231;
-    padding: 2px 5px;
-    border-radius: 4px;
-}
-</style>
+    </style>
 </head>
+
 <body>
-    <header>
-        <h1>VR斗虫大赛 2026</h1>
-        <p class="stage-title">淘汰赛阶段</p>
-    </header>
+<header>
+    <h1>VR斗虫大赛 2026</h1>
+    <div class="subtitle">淘汰赛 BO3 · 每局72小时 · 先赢2局晋级</div>
+</header>
 
-    <div class="container">
-        <nav>
-            <a href="swiss.html">比赛详情</a>
-            <a href="swiss_bracket.html">晋级路线图</a>
-            <a href="playoffs.html" class="active">淘汰赛</a>
-        </nav>
+<main class="container">
+    <nav>
+        <a href="swiss.html">比赛详情</a>
+        <a href="swiss_bracket.html">瑞士轮晋级图</a>
+        <a href="playoffs.html" class="active">淘汰赛</a>
+    </nav>
 
-        <div class="bracket-wrap">
-            <div class="bracket" id="bracket"></div>
+    <section class="status-bar">
+        <div class="status-item">
+            <div class="status-label">赛事状态</div>
+            <div class="status-value" id="event-status">加载中</div>
         </div>
-    </div>
 
-    <footer>
+        <div class="status-item">
+            <div class="status-label">当前阶段</div>
+            <div class="status-value" id="stage-status">--</div>
+        </div>
+
+        <div class="status-item">
+            <div class="status-label">BO3规则</div>
+            <div class="status-value">2胜晋级</div>
+        </div>
+
+        <div class="status-item">
+            <div class="status-label">页面更新时间</div>
+            <div class="status-value" id="updated-time">--:--</div>
+        </div>
+    </section>
+
+    <section class="bracket-panel">
+        <div id="bracket" class="bracket">
+            <div class="empty">正在读取淘汰赛数据…</div>
+        </div>
+    </section>
+</main>
+
+<footer>
     <p>VR斗虫大赛 2026 · 非商业兴趣项目</p>
-    
-<div class="data-license">
-    <strong>数据来源与许可声明</strong><br>
 
-    本网站部分直播数据来自
-    <a
-        href="https://github.com/qianqiuzy/VR_douchong"
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        VR_douchong
-    </a>
-    项目及其相关数据接口
-    <code>vr.qianqiuzy.cn</code> /
-    <code>psp.qianqiuzy.cn</code>。<br>
+    <div class="data-license">
+        <strong>数据来源与许可声明</strong><br>
 
-    数据许可说明请参阅
-    <a
-        href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        LICENSE-DATA.md
-    </a>。<br>
+        本网站部分直播数据来自
+        <a
+            href="https://github.com/qianqiuzy/VR_douchong"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            VR_douchong
+        </a>
+        项目及其相关数据接口
+        <code>vr.qianqiuzy.cn</code> /
+        <code>psp.qianqiuzy.cn</code>。<br>
 
-    本网站仅用于非商业兴趣展示和赛事娱乐用途。
-    如需将相关数据用于商业宣传、商业服务、广告、
-    付费服务或其他商业目的，请先取得数据权利人授权。
-</div>
+        数据许可说明请参阅
+        <a
+            href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            LICENSE-DATA.md
+        </a>。<br>
 
+        本网站仅用于非商业兴趣展示和赛事娱乐用途。
+        如需将相关数据用于商业宣传、商业服务、广告、
+        付费服务或其他商业目的，请先取得数据权利人授权。
+    </div>
 </footer>
 
-    <script>
-        const API_BASE = '/api/tournament';
-        const TOURNAMENT_ID = 1;
-        const JPG_PLAYERS = ['Rhea', 'Melody'];
+<script>
+const API_BASE = "/api/tournament";
+const TOURNAMENT_ID = 1;
 
-        function getAvatarUrl(player) {
-            if (!player) return '';
-            const ext = JPG_PLAYERS.includes(player.name) ? 'jpg' : 'webp';
-            return `/static/avatars/${player.name}.${ext}`;
+const JPG_PLAYERS = new Set(["Rhea", "Melody"]);
+
+const STAGE_NAMES = {
+    100: "八强赛",
+    101: "半决赛",
+    102: "决赛"
+};
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    }[char]));
+}
+
+function avatarUrl(player) {
+    if (!player) return "";
+
+    const extension = JPG_PLAYERS.has(player.name)
+        ? "jpg"
+        : "webp";
+
+    return `/static/avatars/${encodeURIComponent(player.name)}.${extension}`;
+}
+
+function money(value) {
+    return "¥" + Math.round(Number(value || 0))
+        .toLocaleString("zh-CN");
+}
+
+function beijingTime(value) {
+    if (!value) return "";
+
+    const normalized = value.endsWith("Z")
+        ? value
+        : `${value}Z`;
+
+    const date = new Date(normalized);
+
+    return new Intl.DateTimeFormat("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+    }).format(date).replaceAll("-", "/");
+}
+
+function groupSeries(data) {
+    const seriesMap = new Map();
+
+    for (const match of data.matches) {
+        if (Number(match.round) < 100) continue;
+
+        const seriesId = match.series_id || inferSeriesId(match.id);
+        if (!seriesId) continue;
+
+        if (!seriesMap.has(seriesId)) {
+            seriesMap.set(seriesId, {
+                id: seriesId,
+                round: Number(match.round),
+                games: [],
+                player1: match.p1,
+                player2: match.p2
+            });
         }
 
-        function formatMoney(amount) {
-            if (!amount) return '¥0';
-            return '¥' + Math.round(amount).toLocaleString('zh-CN');
-        }
+        const series = seriesMap.get(seriesId);
+        series.games.push(match);
+        series.player1 = series.player1 || match.p1;
+        series.player2 = series.player2 || match.p2;
+    }
 
-        function utcToBeijing(utcStr) {
-            if (!utcStr) return '';
-            const d = new Date(utcStr.endsWith('Z') ? utcStr : utcStr + 'Z');
-            const bj = new Date(d.getTime() + 8 * 3600 * 1000);
-            const pad = n => String(n).padStart(2, '0');
-            return `${bj.getUTCFullYear()}/${pad(bj.getUTCMonth() + 1)}/${pad(bj.getUTCDate())} ${pad(bj.getUTCHours())}:${pad(bj.getUTCMinutes())}`;
-        }
+    for (const series of seriesMap.values()) {
+        series.games.sort((a, b) => {
+            const ga = Number(a.game_number || inferGameNumber(a.id) || 1);
+            const gb = Number(b.game_number || inferGameNumber(b.id) || 1);
+            return ga - gb;
+        });
 
-        function renderPlayer(player, isWinner, isCompleted, revenue) {
-            if (!player) {
-                return `
-                    <div class="tbd-player">
-                        <div class="tbd-avatar"></div>
-                        <span class="tbd-name">待定</span>
-                    </div>`;
+        series.player1Wins = 0;
+        series.player2Wins = 0;
+
+        for (const game of series.games) {
+            if (game.status !== "completed") continue;
+
+            if (game.winner === series.player1) {
+                series.player1Wins++;
             }
-            const cls = isCompleted ? (isWinner ? 'winner' : 'loser') : '';
+
+            if (game.winner === series.player2) {
+                series.player2Wins++;
+            }
+        }
+
+        series.winner =
+            series.player1Wins >= 2
+                ? series.player1
+                : series.player2Wins >= 2
+                    ? series.player2
+                    : null;
+    }
+
+    return [...seriesMap.values()];
+}
+
+function inferSeriesId(matchId) {
+    if (!matchId || !matchId.includes("g")) return null;
+    return matchId.split("g")[0];
+}
+
+function inferGameNumber(matchId) {
+    if (!matchId || !matchId.includes("g")) return null;
+
+    const value = matchId.split("g")[1];
+    const number = Number(value);
+
+    return Number.isFinite(number) ? number : null;
+}
+
+function playerById(data, id) {
+    return data.players.find(player => player.id === id);
+}
+
+function renderPlayer(data, playerId, wins, isWinner) {
+    const player = playerById(data, playerId);
+
+    if (!player) {
+        return `<div class="player">
+            <div></div>
+            <div class="player-name">待定</div>
+            <div class="game-score">-</div>
+        </div>`;
+    }
+
+    return `
+        <div class="player ${isWinner ? "winner" : ""}">
+            <img
+                class="avatar"
+                src="${avatarUrl(player)}"
+                alt="${escapeHtml(player.name)}"
+            >
+
+            <div>
+                <div class="player-name">
+                    ${escapeHtml(player.name)}
+                </div>
+
+                <div class="player-record">
+                    瑞士轮战绩 ${player.wins}-${player.losses}
+                </div>
+            </div>
+
+            <div class="game-score">${wins}</div>
+        </div>
+    `;
+}
+
+function renderSeries(data, series) {
+    const firstGame = series.games[0];
+
+    if (!firstGame) return "";
+
+    const isFinished = Boolean(series.winner);
+
+    const statusText = isFinished
+        ? "系列赛结束"
+        : "进行中";
+
+    const statusClass = isFinished
+        ? "finished"
+        : "running";
+
+    const firstPlayer = playerById(data, series.player1);
+    const secondPlayer = playerById(data, series.player2);
+
+    const gameRows = series.games.map(game => {
+        const gameNumber = Number(
+            game.game_number || inferGameNumber(game.id) || 1
+        );
+
+        const gameStatus = game.status === "completed"
+            ? "completed"
+            : "active";
+
+        const winnerName = game.winner
+            ? playerById(data, game.winner)?.name || game.winner
+            : "进行中";
+
+        const p1Revenue = game.revenue?.[game.p1]?.total || 0;
+        const p2Revenue = game.revenue?.[game.p2]?.total || 0;
+
+        const revenueText = `${money(p1Revenue)} : ${money(p2Revenue)}`;
+
+        return `
+            <div class="game-row ${gameStatus}">
+                <span>第${gameNumber}局</span>
+                <span>
+                    ${game.status === "completed"
+                        ? `${escapeHtml(winnerName)} 获胜`
+                        : "当前进行中"}
+                </span>
+                <span class="revenue">${revenueText}</span>
+            </div>
+        `;
+    }).join("");
+
+    const currentGame = series.games.find(
+        game => game.status === "running"
+    );
+
+    let timeText = "";
+
+    if (currentGame) {
+        timeText = `
+            比赛时间：
+            ${beijingTime(currentGame.start_time)}
+            -
+            ${beijingTime(currentGame.end_time)}
+        `;
+    }
+
+    return `
+        <article class="series-card ${isFinished ? "finished" : ""}">
+            <div class="series-header">
+                <span>${escapeHtml(series.id.toUpperCase())}</span>
+
+                <span class="series-score">
+                    ${firstPlayer?.name || "待定"}
+                    ${series.player1Wins}
+                    :
+                    ${series.player2Wins}
+                    ${secondPlayer?.name || "待定"}
+                </span>
+
+                <span class="series-status ${statusClass}">
+                    ${statusText}
+                </span>
+            </div>
+
+            ${renderPlayer(
+                data,
+                series.player1,
+                series.player1Wins,
+                series.winner === series.player1
+            )}
+
+            <div class="vs">BO3 · 先赢2局</div>
+
+            ${renderPlayer(
+                data,
+                series.player2,
+                series.player2Wins,
+                series.winner === series.player2
+            )}
+
+            <div class="game-list">
+                ${gameRows}
+            </div>
+
+            ${timeText
+                ? `<div class="player-record" style="text-align:center;margin-top:10px">
+                    ${timeText}
+                   </div>`
+                : ""}
+        </article>
+    `;
+}
+
+function renderBracket(data) {
+    const bracket = document.getElementById("bracket");
+    const seriesList = groupSeries(data);
+
+    if (!seriesList.length) {
+        bracket.innerHTML = `
+            <div class="empty">
+                瑞士轮结束后，八强 BO3 将自动出现在这里。
+            </div>
+        `;
+        return;
+    }
+
+    const rounds = {
+        100: [],
+        101: [],
+        102: []
+    };
+
+    for (const series of seriesList) {
+        if (!rounds[series.round]) {
+            rounds[series.round] = [];
+        }
+
+        rounds[series.round].push(series);
+    }
+
+    const renderRound = (roundNumber, title) => {
+        const list = rounds[roundNumber] || [];
+
+        if (!list.length) {
             return `
-                <div class="bracket-player ${cls}">
-                    <div class="b-avatar"><img src="${getAvatarUrl(player)}" alt="${player.name}"></div>
-                    <div style="flex:1;min-width:0">
-                        <div class="b-name">${player.name}</div>
-                        <div class="b-record">瑞士轮 ${player.wins}-${player.losses}</div>
-                    </div>
-                    ${revenue > 0 ? `<div class="b-revenue">${formatMoney(revenue)}</div>` : ''}
-                </div>`;
-        }
-
-        function renderMatch(match, players, label) {
-            if (!match) {
-                return `
-                    <div class="bracket-match">
-                        <div class="bracket-match-header">
-                            <span>${label}</span>
-                            <span class="match-status-badge pending">待定</span>
-                        </div>
-                        ${renderPlayer(null)}
-                        <div class="match-vs">VS</div>
-                        ${renderPlayer(null)}
-                    </div>`;
-            }
-
-            const p1 = players.find(p => p.id === match.p1);
-            const p2 = players.find(p => p.id === match.p2);
-            const done = match.status === 'completed';
-            const statusText = match.status === 'running' ? '进行中' :
-                               match.status === 'pending' ? '未开始' : '已结束';
-            const r1 = match.revenue?.[match.p1]?.total || 0;
-            const r2 = match.revenue?.[match.p2]?.total || 0;
-            const start = utcToBeijing(match.start_time);
-            const end = utcToBeijing(match.end_time);
-
-            return `
-                <div class="bracket-match ${done ? 'completed' : ''}">
-                    <div class="bracket-match-header">
-                        <span>${label}</span>
-                        <span class="match-status-badge ${match.status}">${statusText}</span>
-                    </div>
-                    ${renderPlayer(p1, match.winner === match.p1, done, r1)}
-                    <div class="match-vs">VS</div>
-                    ${renderPlayer(p2, match.winner === match.p2, done, r2)}
-                    ${start ? `<div class="match-time">${start} - ${end}</div>` : ''}
-                </div>`;
-        }
-
-        function renderBracket(data) {
-            const bracket = document.getElementById('bracket');
-            const matches = data.matches.filter(m => m.round >= 100);
-            const players = data.players;
-
-            if (matches.length === 0) {
-                bracket.innerHTML = `
-                    <div class="empty-state" style="grid-column:1/-1">
-                        <p style="font-size:1.25rem;font-weight:700;margin-bottom:0.5rem">瑞士轮进行中</p>
-                        <p>淘汰赛将在瑞士轮结束后自动开始</p>
-                        <a href="swiss.html">→ 查看瑞士轮对阵</a>
-                    </div>`;
-                return;
-            }
-
-            // 注意：接口返回的比赛编号字段是 id，不是 match_id
-            const qf = [1, 2, 3, 4].map(n => matches.find(m => m.id === `qf${n}`) || null);
-            const sf = [1, 2].map(n => matches.find(m => m.id === `sf${n}`) || null);
-            const fn = matches.find(m => m.id === 'final') || null;
-            const champion = fn && fn.winner ? players.find(p => p.id === fn.winner) : null;
-
-            bracket.innerHTML = `
-                <div class="bracket-col col-qf">
-                    <div class="round-label">八强 Quarterfinal</div>
-                    ${qf.map((m, i) => `<div class="match-wrap">${renderMatch(m, players, `QF-${i + 1}`)}</div>`).join('')}
+                <div class="round-column">
+                    <div class="round-title">${title}</div>
+                    <div class="empty">待定</div>
                 </div>
-
-                <div class="bracket-col col-sf">
-                    <div class="round-label">半决赛 Semifinal</div>
-                    <div style="height:3.5rem"></div>
-                    ${sf.map((m, i) => `<div class="match-wrap">${renderMatch(m, players, `SF-${i + 1}`)}</div>`).join('')}
-                </div>
-
-                <div class="bracket-col col-final">
-                    <div class="round-label">决赛 Grand Final</div>
-                    <div style="height:9rem"></div>
-                    <div class="match-wrap">${renderMatch(fn, players, 'FINAL')}</div>
-                </div>
-
-                <div class="champion-col">
-                    <div class="champion-title">冠军 Champion</div>
-                    ${champion ? `
-                        <div class="champion-card">
-                            <div style="font-size:2.5rem">🏆</div>
-                            <div class="champion-avatar"><img src="${getAvatarUrl(champion)}" alt="${champion.name}"></div>
-                            <div class="champion-name">${champion.name}</div>
-                            <div class="b-record">瑞士轮 ${champion.wins}-${champion.losses}</div>
-                        </div>` : `
-                        <div class="champion-tbd">
-                            <div style="font-size:2rem;margin-bottom:0.5rem">?</div>
-                            <p>待决赛揭晓</p>
-                        </div>`}
-                </div>`;
+            `;
         }
 
-        async function loadData() {
-            try {
-                const resp = await fetch(`${API_BASE}/state/${TOURNAMENT_ID}`);
-                renderBracket(await resp.json());
-            } catch (e) {
-                console.error('加载数据失败:', e);
-                document.getElementById('bracket').innerHTML =
-                    `<div class="empty-state" style="grid-column:1/-1"><p>加载失败: ${e.message}</p></div>`;
-            }
+        return `
+            <div class="round-column">
+                <div class="round-title">${title}</div>
+                ${list.map(series => renderSeries(data, series)).join("")}
+            </div>
+        `;
+    };
+
+    bracket.innerHTML = `
+        ${renderRound(100, "八强 BO3")}
+        ${renderRound(101, "半决赛 BO3")}
+        ${renderRound(102, "决赛 BO3")}
+        <div class="round-column">
+            <div class="round-title">冠军</div>
+            <div class="empty">
+                决赛结束后显示冠军
+            </div>
+        </div>
+    `;
+}
+
+async function loadData() {
+    try {
+        const response = await fetch(
+            `${API_BASE}/state/${TOURNAMENT_ID}`,
+            {cache: "no-store"}
+        );
+
+        if (!response.ok) {
+            throw new Error(`服务器返回 ${response.status}`);
         }
 
-        loadData();
-        setInterval(loadData, 30000);
-    </script>
+        const data = await response.json();
+
+        const round = Number(
+            data.tournament.current_round
+        );
+
+        document.getElementById("event-status").textContent =
+            data.tournament.status === "running"
+                ? "进行中"
+                : data.tournament.status;
+
+        document.getElementById("stage-status").textContent =
+            STAGE_NAMES[round] || "瑞士轮";
+
+        document.getElementById("updated-time").textContent =
+            new Intl.DateTimeFormat("zh-CN", {
+                timeZone: "Asia/Shanghai",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+            }).format(new Date());
+
+        renderBracket(data);
+
+    } catch (error) {
+        console.error(error);
+
+        document.getElementById("bracket").innerHTML = `
+            <div class="empty">
+                读取淘汰赛数据失败：${escapeHtml(error.message)}
+            </div>
+        `;
+    }
+}
+
+loadData();
+setInterval(loadData, 30000);
+</script>
 </body>
 </html>

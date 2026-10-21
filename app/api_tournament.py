@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from functools import wraps
+import random
 
 from flask import Blueprint, jsonify, request
 
@@ -10,13 +11,24 @@ from app.models.tournament import (
     TournamentConfig,
     TournamentMatch,
     TournamentPlayer,
+    TournamentRevenue,
+    TournamentVote,
 )
-from app.services.tournament_service import TournamentService
+
+from app.services.tournament_service import (
+    ROUND_QF,
+    ROUND_SF,
+    ROUND_FINAL,
+    TournamentService,
+)
 
 
-bp = Blueprint("tournament", __name__, url_prefix="/api/tournament")
+bp = Blueprint(
+    "tournament",
+    __name__,
+    url_prefix="/api/tournament",
+)
 
-# 必须和你现有的 scripts/setup_tournament.py 中 ADMIN_TOKEN 一致
 ADMIN_TOKEN = "my_secret_password_123"
 
 
@@ -24,8 +36,13 @@ def admin_required(function):
     @wraps(function)
     def decorated(*args, **kwargs):
         token = request.headers.get("X-Admin-Token")
+
         if token != ADMIN_TOKEN:
-            return jsonify({"error": "Unauthorized"}), 401
+            return jsonify({
+                "success": False,
+                "error": "Unauthorized",
+            }), 401
+
         return function(*args, **kwargs)
 
     return decorated
@@ -33,18 +50,27 @@ def admin_required(function):
 
 @bp.route("/state/<int:tournament_id>", methods=["GET"])
 def get_state(tournament_id):
-    """读取比赛、选手、对阵、营收和投票。"""
-    state = TournamentService.get_current_state(tournament_id)
+    """读取比赛完整状态。"""
+    try:
+        state = TournamentService.get_current_state(tournament_id)
+    except Exception as error:
+        return jsonify({
+            "success": False,
+            "error": str(error),
+        }), 500
 
     if not state:
-        return jsonify({"error": "Tournament not found"}), 404
+        return jsonify({
+            "success": False,
+            "error": "Tournament not found",
+        }), 404
 
     return jsonify(state)
 
 
 @bp.route("/vote", methods=["POST"])
 def vote():
-    """访客为一场比赛投票。"""
+    """访客投票。"""
     data = request.get_json(silent=True) or {}
 
     match_id = data.get("match_id")
@@ -52,14 +78,23 @@ def vote():
     fingerprint = data.get("fingerprint")
 
     if not match_id or not player_id or not fingerprint:
-        return jsonify({"error": "Missing parameters"}), 400
+        return jsonify({
+            "success": False,
+            "error": "Missing parameters",
+        }), 400
 
-    result = TournamentService.vote(
-        match_id=match_id,
-        player_id=player_id,
-        voter_fingerprint=fingerprint,
-        voter_ip=request.remote_addr,
-    )
+    try:
+        result = TournamentService.vote(
+            match_id=match_id,
+            player_id=player_id,
+            voter_fingerprint=fingerprint,
+            voter_ip=request.remote_addr,
+        )
+    except Exception as error:
+        return jsonify({
+            "success": False,
+            "error": str(error),
+        }), 500
 
     if result.get("success"):
         return jsonify(result), 200
@@ -73,13 +108,19 @@ def vote():
 @bp.route("/admin/init", methods=["POST"])
 @admin_required
 def admin_init():
-    """创建比赛和参赛选手。"""
+    """初始化比赛和选手。"""
     data = request.get_json(silent=True) or {}
 
-    if not data.get("name") or not isinstance(data.get("players"), list):
+    if not data.get("name"):
         return jsonify({
             "success": False,
-            "error": "需要提供 name 和 players",
+            "error": "缺少比赛名称",
+        }), 400
+
+    if not isinstance(data.get("players"), list):
+        return jsonify({
+            "success": False,
+            "error": "缺少 players 数组",
         }), 400
 
     try:
@@ -103,10 +144,8 @@ def admin_init():
 @admin_required
 def admin_start_round1(tournament_id):
     """
-    在线创建并立即开始第一轮。
-    固定对阵按用户提供的名单。
-    比赛持续72小时。
-    只能成功执行一次。
+    创建并开始第一轮固定对阵。
+    仅供第一次初始化时使用。
     """
     pairings = [
         ("Ameki", "chu2u"),
@@ -122,56 +161,58 @@ def admin_start_round1(tournament_id):
     session = SessionLocal()
 
     try:
-        tournament = session.get(TournamentConfig, tournament_id)
+        tournament = session.get(
+            TournamentConfig,
+            tournament_id,
+        )
 
         if not tournament:
             return jsonify({
                 "success": False,
-                "error": f"找不到比赛 ID {tournament_id}",
+                "error": "比赛不存在",
             }), 404
 
-        existing_match = session.query(TournamentMatch).filter_by(
+        old_match = session.query(TournamentMatch).filter_by(
             tournament_id=tournament_id,
             round_number=1,
         ).first()
 
-        if existing_match:
+        if old_match:
             return jsonify({
                 "success": False,
-                "error": "第一轮对阵已经存在；为避免重复创建，本次没有修改比赛",
+                "error": "第一轮已经存在，不能重复创建",
             }), 409
 
         players = session.query(TournamentPlayer).filter_by(
-            tournament_id=tournament_id
+            tournament_id=tournament_id,
         ).all()
 
-        players_by_name = {
+        player_map = {
             player.player_name.strip().casefold(): player
             for player in players
         }
 
-        missing_names = []
+        missing = []
 
-        for player1_name, player2_name in pairings:
-            if player1_name.casefold() not in players_by_name:
-                missing_names.append(player1_name)
+        for name1, name2 in pairings:
+            if name1.casefold() not in player_map:
+                missing.append(name1)
 
-            if player2_name.casefold() not in players_by_name:
-                missing_names.append(player2_name)
+            if name2.casefold() not in player_map:
+                missing.append(name2)
 
-        if missing_names:
+        if missing:
             return jsonify({
                 "success": False,
-                "error": "线上数据库缺少选手：" + ", ".join(missing_names),
+                "error": "缺少选手：" + ", ".join(missing),
             }), 400
 
-        # 数据库时间按 UTC naive datetime 保存
         start_time = datetime.utcnow()
         end_time = start_time + timedelta(hours=72)
 
-        for index, (player1_name, player2_name) in enumerate(pairings, start=1):
-            player1 = players_by_name[player1_name.casefold()]
-            player2 = players_by_name[player2_name.casefold()]
+        for index, (name1, name2) in enumerate(pairings, start=1):
+            player1 = player_map[name1.casefold()]
+            player2 = player_map[name2.casefold()]
 
             session.add(TournamentMatch(
                 tournament_id=tournament_id,
@@ -184,10 +225,10 @@ def admin_start_round1(tournament_id):
                 status="running",
             ))
 
-        tournament.status = "running"
-        tournament.current_round = 1
         tournament.start_time = start_time
+        tournament.current_round = 1
         tournament.match_duration_days = 3
+        tournament.status = "running"
 
         session.commit()
 
@@ -199,11 +240,11 @@ def admin_start_round1(tournament_id):
             "duration_hours": 72,
             "start_time_utc": start_time.isoformat(),
             "end_time_utc": end_time.isoformat(),
-            "message": "第一轮已在线开始，持续72小时",
         })
 
     except Exception as error:
         session.rollback()
+
         return jsonify({
             "success": False,
             "error": str(error),
@@ -213,23 +254,137 @@ def admin_start_round1(tournament_id):
         session.close()
 
 
-@bp.route("/admin/update-revenue/<match_id>", methods=["POST"])
+@bp.route(
+    "/admin/reset-knockout/<int:tournament_id>",
+    methods=["POST"],
+)
+@admin_required
+def reset_knockout(tournament_id):
+    """
+    仅重置淘汰赛。
+    不删除瑞士轮、不删除选手。
+    仅在旧的单局淘汰赛记录存在时使用。
+    """
+    session = SessionLocal()
+
+    try:
+        tournament = session.get(
+            TournamentConfig,
+            tournament_id,
+        )
+
+        if not tournament:
+            return jsonify({
+                "success": False,
+                "error": "比赛不存在",
+            }), 404
+
+        advanced = session.query(TournamentPlayer).filter_by(
+            tournament_id=tournament_id,
+            status="advanced",
+        ).all()
+
+        if len(advanced) != 8:
+            return jsonify({
+                "success": False,
+                "error": f"当前晋级人数为{len(advanced)}，需要8人",
+            }), 400
+
+        old_matches = session.query(TournamentMatch).filter(
+            TournamentMatch.tournament_id == tournament_id,
+            TournamentMatch.round_number >= ROUND_QF,
+        ).all()
+
+        old_match_ids = [
+            match.match_id
+            for match in old_matches
+        ]
+
+        for match_id in old_match_ids:
+            session.query(TournamentRevenue).filter_by(
+                match_id=match_id,
+            ).delete(
+                synchronize_session=False,
+            )
+
+            session.query(TournamentVote).filter_by(
+                match_id=match_id,
+            ).delete(
+                synchronize_session=False,
+            )
+
+        session.query(TournamentMatch).filter(
+            TournamentMatch.tournament_id == tournament_id,
+            TournamentMatch.round_number >= ROUND_QF,
+        ).delete(
+            synchronize_session=False,
+        )
+
+        random.shuffle(advanced)
+
+        start_time = datetime.utcnow()
+        end_time = start_time + timedelta(hours=72)
+
+        for index in range(4):
+            player1 = advanced[index * 2]
+            player2 = advanced[index * 2 + 1]
+
+            session.add(TournamentMatch(
+                tournament_id=tournament_id,
+                match_id=f"qf{index + 1}g1",
+                round_number=ROUND_QF,
+                player1_id=player1.player_id,
+                player2_id=player2.player_id,
+                start_time=start_time,
+                end_time=end_time,
+                status="running",
+            ))
+
+        tournament.current_round = ROUND_QF
+        tournament.status = "running"
+
+        session.commit()
+
+        return jsonify({
+            "success": True,
+            "stage": "quarterfinals",
+            "format": "BO3",
+            "matches_created": 4,
+            "game_duration_hours": 72,
+            "old_matches_deleted": len(old_match_ids),
+        })
+
+    except Exception as error:
+        session.rollback()
+
+        return jsonify({
+            "success": False,
+            "error": str(error),
+        }), 500
+
+    finally:
+        session.close()
+
+
+@bp.route(
+    "/admin/update-revenue/<match_id>",
+    methods=["POST"],
+)
 @admin_required
 def admin_update_revenue(match_id):
-    """管理员手动更新一场比赛营收。"""
+    """手动更新某一局营收。"""
     try:
         result = TournamentService.update_match_revenue(match_id)
     except Exception as error:
         return jsonify({
             "success": False,
-            "error": "更新营收失败",
-            "detail": str(error),
+            "error": str(error),
         }), 500
 
     if result is None:
         return jsonify({
             "success": False,
-            "error": "比赛不存在或比赛尚未进行",
+            "error": "比赛不存在或没有进行中",
         }), 404
 
     return jsonify(result)
@@ -238,14 +393,13 @@ def admin_update_revenue(match_id):
 @bp.route("/admin/check-finish", methods=["POST"])
 @admin_required
 def admin_check_finish():
-    """检查到期比赛并尝试推进赛事。"""
+    """检查到期单局并自动推进瑞士轮或淘汰赛。"""
     try:
         count = TournamentService.check_and_finish_matches()
     except Exception as error:
         return jsonify({
             "success": False,
-            "error": "检查比赛失败",
-            "detail": str(error),
+            "error": str(error),
         }), 500
 
     return jsonify({
