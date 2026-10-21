@@ -405,4 +405,147 @@ def admin_check_finish():
     return jsonify({
         "success": True,
         "finished_matches": count,
-    })
+    })@bp.route(
+    "/admin/reset-first-round-time/<int:tournament_id>",
+    methods=["POST"],
+)
+@admin_required
+def reset_first_round_time(tournament_id):
+    """
+    重置第一轮时间：
+
+    北京时间：
+    2026/10/22 00:00:00 开始
+    2026/10/25 00:00:00 结束
+    """
+
+    session = SessionLocal()
+
+    try:
+        tournament = session.get(
+            TournamentConfig,
+            tournament_id,
+        )
+
+        if not tournament:
+            return jsonify({
+                "success": False,
+                "error": "比赛不存在",
+            }), 404
+
+        first_round_matches = session.query(
+            TournamentMatch
+        ).filter_by(
+            tournament_id=tournament_id,
+            round_number=1,
+        ).all()
+
+        if len(first_round_matches) != 8:
+            return jsonify({
+                "success": False,
+                "error": (
+                    f"第一轮当前有 {len(first_round_matches)} 场，"
+                    "预期为8场，未执行修改"
+                ),
+            }), 400
+
+        # 删除第二轮及之后已经产生的比赛
+        later_matches = session.query(
+            TournamentMatch
+        ).filter(
+            TournamentMatch.tournament_id == tournament_id,
+            TournamentMatch.round_number > 1,
+        ).all()
+
+        for match in later_matches:
+            session.query(TournamentRevenue).filter_by(
+                match_id=match.match_id
+            ).delete(synchronize_session=False)
+
+            session.query(TournamentVote).filter_by(
+                match_id=match.match_id
+            ).delete(synchronize_session=False)
+
+        session.query(TournamentMatch).filter(
+            TournamentMatch.tournament_id == tournament_id,
+            TournamentMatch.round_number > 1,
+        ).delete(synchronize_session=False)
+
+        # UTC naive datetime
+        start_time_utc = datetime(
+            2026,
+            10,
+            21,
+            16,
+            0,
+            0,
+        )
+
+        end_time_utc = datetime(
+            2026,
+            10,
+            24,
+            16,
+            0,
+            0,
+        )
+
+        # 清除第一轮的营收和投票
+        for match in first_round_matches:
+            session.query(TournamentRevenue).filter_by(
+                match_id=match.match_id
+            ).delete(synchronize_session=False)
+
+            session.query(TournamentVote).filter_by(
+                match_id=match.match_id
+            ).delete(synchronize_session=False)
+
+            match.start_time = start_time_utc
+            match.end_time = end_time_utc
+            match.status = "pending"
+            match.winner_id = None
+            match.player1_revenue = 0
+            match.player2_revenue = 0
+
+        # 恢复所有选手瑞士轮战绩
+        players = session.query(TournamentPlayer).filter_by(
+            tournament_id=tournament_id
+        ).all()
+
+        for player in players:
+            player.wins = 0
+            player.losses = 0
+            player.status = "active"
+
+        tournament.start_time = start_time_utc
+        tournament.current_round = 1
+        tournament.status = "pending"
+
+        session.commit()
+
+        return jsonify({
+            "success": True,
+            "tournament_id": tournament_id,
+            "round": 1,
+            "status": "pending",
+            "start_time_beijing": "2026/10/22 00:00:00",
+            "end_time_beijing": "2026/10/25 00:00:00",
+            "start_time_utc": start_time_utc.isoformat(),
+            "end_time_utc": end_time_utc.isoformat(),
+            "later_matches_deleted": len(later_matches),
+            "message": (
+                "第一轮已重置，将在北京时间 "
+                "2026/10/22 00:00 自动开始"
+            ),
+        })
+
+    except Exception as error:
+        session.rollback()
+
+        return jsonify({
+            "success": False,
+            "error": str(error),
+        }), 500
+
+    finally:
+        session.close()
