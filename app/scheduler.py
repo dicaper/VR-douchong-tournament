@@ -1,5 +1,4 @@
 # app/scheduler.py
-import os
 import threading
 import time
 from datetime import datetime, timezone
@@ -9,20 +8,20 @@ from app.models.tournament import TABLE_MATCHES, TABLE_TOURNAMENTS
 from app.services.tournament_service import TournamentService
 
 
+# 营收抓取、待开始比赛检查、到期比赛结算统一每30分钟执行一次。
+SCHEDULER_INTERVAL_SECONDS = 30 * 60
+
 _started = False
 _start_lock = threading.Lock()
 
 
 def _utc_now_text():
-    """返回带 UTC 时区的 ISO 时间，供 PostgREST 时间过滤使用。"""
+    """返回带 UTC 时区的时间，供 MemFire REST 时间过滤使用。"""
     return datetime.now(timezone.utc).isoformat()
 
 
 def _activate_due_matches():
-    """
-    将已到开始时间的 pending 比赛切换为 running。
-    例如北京时间 2026-10-22 00:00 对应数据库 UTC 2026-10-21 16:00。
-    """
+    """将开始时间已到的 pending 比赛改为 running。"""
     db = get_memfire()
     now = _utc_now_text()
 
@@ -34,15 +33,12 @@ def _activate_due_matches():
         },
     )
 
-    if not due_matches:
-        return 0
-
-    tournament_rounds = {}
+    activated_tournaments = set()
 
     for match in due_matches:
         match_id = str(match["match_id"])
 
-        # 再读一次当前记录，避免重复处理已被其他调度周期启动的比赛。
+        # 再检查一次当前状态，避免重复激活。
         current = db.select(
             TABLE_MATCHES,
             filters={
@@ -64,14 +60,14 @@ def _activate_due_matches():
             {"status": "running"},
         )
 
-        tournament_id = int(match["tournament_id"])
-        round_number = int(match["round_number"])
-        tournament_rounds[tournament_id] = max(
-            tournament_rounds.get(tournament_id, 0),
-            round_number,
+        activated_tournaments.add(
+            (
+                int(match["tournament_id"]),
+                int(match["round_number"]),
+            )
         )
 
-    for tournament_id, round_number in tournament_rounds.items():
+    for tournament_id, round_number in activated_tournaments:
         db.update(
             TABLE_TOURNAMENTS,
             {"id": f"eq.{tournament_id}"},
@@ -81,59 +77,45 @@ def _activate_due_matches():
             },
         )
 
-    return len(tournament_rounds)
+    return len(activated_tournaments)
 
 
 def _scheduler_loop():
-    interval = int(os.environ.get("SCHEDULER_INTERVAL_SECONDS", "60"))
-    revenue_interval = int(
-        os.environ.get("REVENUE_INTERVAL_SECONDS", "300")
-    )
-    last_revenue_update = 0.0
+    interval = SCHEDULER_INTERVAL_SECONDS
 
     print(
-        f"⏰ 比赛调度器已启动：检查间隔 {interval} 秒，"
-        f"营收刷新间隔 {revenue_interval} 秒"
+        "⏰ 比赛调度器已启动："
+        f"待开始检查、营收抓取和结束结算统一每 {interval // 60} 分钟执行一次"
     )
 
+    # 服务启动时先运行一次，之后每30分钟运行一次。
     while True:
-        cycle_started = time.time()
+        try:
+            activated = _activate_due_matches()
+            if activated:
+                print(f"✅ 已激活比赛，涉及 {activated} 个赛事轮次")
+
+        except Exception as exc:
+            print(f"⚠️ 检查并启动待开始比赛失败：{exc}")
 
         try:
-            activated_tournaments = _activate_due_matches()
-            if activated_tournaments:
-                print(
-                    f"✅ 已启动到时比赛，涉及 "
-                    f"{activated_tournaments} 个赛事"
-                )
+            updated = TournamentService.update_all_running_revenues()
+            print(f"📊 本轮营收抓取完成，更新 {updated} 场比赛")
         except Exception as exc:
-            print(f"⚠️ 启动待开始比赛失败：{exc}")
-
-        update_revenue = (
-            cycle_started - last_revenue_update >= revenue_interval
-        )
-
-        try:
-            if update_revenue:
-                updated = TournamentService.update_all_running_revenues()
-                last_revenue_update = cycle_started
-                if updated:
-                    print(f"✅ 已更新 {updated} 场比赛营收")
-        except Exception as exc:
-            print(f"⚠️ 批量更新营收失败：{exc}")
+            print(f"⚠️ 本轮营收抓取失败：{exc}")
 
         try:
             finished = TournamentService.check_and_finish_matches()
             if finished:
-                print(f"✅ 本轮自动结束比赛：{finished} 场")
+                print(f"✅ 本轮结束比赛：{finished} 场")
         except Exception as exc:
-            print(f"⚠️ 检查和推进比赛失败：{exc}")
+            print(f"⚠️ 检查并推进比赛失败：{exc}")
 
         time.sleep(interval)
 
 
 def start_scheduler():
-    """单个 Gunicorn worker 进程只启动一个调度线程。"""
+    """每个容器进程只启动一个调度线程。"""
     global _started
 
     with _start_lock:
