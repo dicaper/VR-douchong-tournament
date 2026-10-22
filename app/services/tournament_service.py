@@ -1071,9 +1071,50 @@ class TournamentService:
 
     @staticmethod
     def _latest_snapshots(match_ids):
-        """每场、每位选手取时间最新的快照；按 datetime 比较而非字符串比较。"""
+        """
+        对每场比赛的每位选手，直接向 MemFire 查询时间最新的一条快照。
+        避免一次拉取大量历史快照时受 REST API 行数上限影响。
+        """
         if not match_ids:
             return {}
+
+        db = TournamentService._db()
+        joined_ids = ",".join(str(match_id) for match_id in match_ids)
+
+        matches = db.select(
+            TABLE_MATCHES,
+            filters={"match_id": f"in.({joined_ids})"},
+            select="match_id,player1_id,player2_id",
+        )
+
+        latest = {}
+
+        for match in matches:
+            match_id = str(match.get("match_id") or "")
+            if not match_id:
+                continue
+
+            player_ids = {
+                str(match.get("player1_id")),
+                str(match.get("player2_id")),
+            }
+            player_ids.discard("None")
+
+            for player_id in player_ids:
+                rows = db.select(
+                    TABLE_REVENUE,
+                    filters={
+                        "match_id": f"eq.{match_id}",
+                        "player_id": f"eq.{player_id}",
+                    },
+                    order="snapshot_time.desc",
+                    limit=1,
+                )
+
+                if rows:
+                    latest[(match_id, player_id)] = rows[0]
+
+        return latest
 
         joined = ",".join(str(match_id) for match_id in match_ids)
 
