@@ -1,8 +1,10 @@
 # app/services/tournament_service.py
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 from zoneinfo import ZoneInfo
 import random
+import re
 
 import requests
 
@@ -39,7 +41,7 @@ def _utc_now_naive():
 
 
 def _parse_db_time(value):
-    """解析数据库时间；无时区值按 UTC 解释。"""
+    """解析数据库时间；数据库中的无时区时间按 UTC 解释。"""
     if value is None:
         return None
 
@@ -58,7 +60,7 @@ def _parse_db_time(value):
 
 
 def _parse_api_time(value):
-    """解析 API 时间；无时区值按北京时间解释。"""
+    """解析 API 时间；无时区的场次时间按北京时间解释。"""
     if value is None:
         return None
 
@@ -74,25 +76,23 @@ def _parse_api_time(value):
     return parsed.astimezone(UTC_TZ)
 
 
-def _month_strings(start_utc_naive, end_utc_naive):
-    """返回时间窗口覆盖月份，格式为 YYYYMM。"""
-    start_bj = start_utc_naive.replace(
-        tzinfo=UTC_TZ
-    ).astimezone(BEIJING_TZ)
-    end_bj = end_utc_naive.replace(
-        tzinfo=UTC_TZ
-    ).astimezone(BEIJING_TZ)
+def _to_decimal(value, field_name, room_id, date_text):
+    """把 API 数值安全转换成 Decimal，避免二进制浮点累计误差。"""
+    try:
+        return Decimal(str(value or 0))
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        raise ValueError(
+            f"直播间 {room_id} 在 {date_text} 的 "
+            f"{field_name} 字段不是有效金额：{value!r}"
+        ) from exc
 
+
+def _month_strings(start_day, end_day_exclusive):
+    """返回日期区间覆盖的月份，格式 YYYYMM。"""
     months = []
-    cursor = start_bj.replace(
-        day=1,
-        hour=0,
-        minute=0,
-        second=0,
-        microsecond=0,
-    )
+    cursor = start_day.replace(day=1)
 
-    while cursor < end_bj:
+    while cursor < end_day_exclusive:
         months.append(cursor.strftime("%Y%m"))
 
         if cursor.month == 12:
@@ -105,8 +105,6 @@ def _month_strings(start_utc_naive, end_utc_naive):
 
 def _series_info(match_id):
     """解析淘汰赛单局 ID，例如 qf1g2 -> (qf1, 2)。"""
-    import re
-
     found = re.match(
         r"^(qf[1-4]|sf[1-2]|final)g([1-3])$",
         str(match_id or ""),
@@ -118,19 +116,19 @@ def _series_info(match_id):
     return found.group(1), int(found.group(2))
 
 
-def _get_room_sessions(room_id, month):
+def _get_room_attention(room_id, month):
     """
-    逐个检查 VR / PSP 数据源，按返回的 room_id 判断房间属于哪个源。
-    一个源返回空场次时继续尝试另一个源，避免把错误主机的空结果当作真实零营收。
+    从 /gift/attention 获取某房间某月的日汇总。
+    通过响应 room_id 确认数据源对应的直播间。
     """
     room_id = str(room_id)
     errors = []
-    empty_responses = []
+    matching_empty_response = None
 
     for base_url in DATA_API_BASES:
         try:
             response = requests.get(
-                f"{base_url}/gift/live_sessions",
+                f"{base_url}/gift/attention",
                 params={
                     "room_id": room_id,
                     "month": str(month),
@@ -139,7 +137,7 @@ def _get_room_sessions(room_id, month):
             )
 
             if response.status_code in (400, 404):
-                errors.append(f"{base_url}: 房间或月份不存在")
+                errors.append(f"{base_url}: 房间或月份数据不存在")
                 continue
 
             response.raise_for_status()
@@ -149,118 +147,39 @@ def _get_room_sessions(room_id, month):
                 raise RuntimeError("接口响应不是 JSON 对象")
 
             returned_room_id = payload.get("room_id")
-            sessions = payload.get("sessions")
-
-            if not isinstance(sessions, list):
-                raise RuntimeError("接口响应中没有 sessions 数组")
-
             if (
                 returned_room_id is not None
                 and str(returned_room_id) != room_id
             ):
-                errors.append(f"{base_url}: 返回的房间号不匹配")
+                errors.append(f"{base_url}: 返回的 room_id 不匹配")
                 continue
 
-            if sessions:
-                return sessions
+            rows = payload.get("attention")
+            if not isinstance(rows, list):
+                raise RuntimeError("接口响应中没有 attention 数组")
 
-            # 返回 room_id 匹配但场次为空，先继续试另一个数据源。
-            empty_responses.append((returned_room_id, sessions))
+            if rows:
+                return rows
+
+            # 房间号匹配但当月为空：记下结果，继续检查另一个源。
+            matching_empty_response = []
 
         except Exception as exc:
             errors.append(f"{base_url}: {exc}")
 
-    if empty_responses:
-        return []
+    if matching_empty_response is not None:
+        return matching_empty_response
 
     raise RuntimeError(
-        f"查询直播间 {room_id} 的 {month} 数据失败；"
+        f"查询直播间 {room_id} 的 {month} 日营收失败；"
         + " | ".join(errors)
     )
 
 
-def _new_revenue_accumulator():
-    return {
-        "gift": 0.0,
-        "guard": 0.0,
-        "sc": 0.0,
-        "danmaku": 0.0,
-        "peak_viewers": 0,
-        "viewers_weighted": 0.0,
-        "viewers_weight": 0.0,
-    }
-
-
-def _accumulate_bucket(result, bucket, window_start, window_end):
-    """按15分钟桶与比赛窗口的重叠时长比例累计。"""
-    bucket_start = _parse_api_time(bucket.get("start_time"))
-    bucket_end = _parse_api_time(bucket.get("end_time"))
-
-    if not bucket_start:
-        return
-
-    if not bucket_end:
-        bucket_end = bucket_start + timedelta(minutes=15)
-
-    if bucket_end <= bucket_start:
-        return
-
-    overlap_start = max(bucket_start, window_start)
-    overlap_end = min(bucket_end, window_end)
-    overlap_seconds = (overlap_end - overlap_start).total_seconds()
-
-    if overlap_seconds <= 0:
-        return
-
-    bucket_seconds = (bucket_end - bucket_start).total_seconds()
-    ratio = min(1.0, overlap_seconds / bucket_seconds)
-
-    result["gift"] += float(bucket.get("gift") or 0) * ratio
-    result["guard"] += float(bucket.get("guard") or 0) * ratio
-    result["sc"] += float(bucket.get("super_chat") or 0) * ratio
-    result["danmaku"] += (
-        float(bucket.get("danmaku_count") or 0) * ratio
-    )
-
-    result["peak_viewers"] = max(
-        result["peak_viewers"],
-        int(bucket.get("max_concurrency") or 0),
-    )
-
-    average = bucket.get("avg_concurrency")
-    sample_count = float(bucket.get("sample_count") or 0)
-
-    if average is not None and sample_count > 0:
-        weighted = sample_count * ratio
-        result["viewers_weighted"] += float(average) * weighted
-        result["viewers_weight"] += weighted
-
-
-def _accumulate_session_summary(result, live_session, ratio=1.0):
-    """累加场次汇总；部分重叠时按 ratio 估算。"""
-    result["gift"] += float(live_session.get("gift") or 0) * ratio
-    result["guard"] += float(live_session.get("guard") or 0) * ratio
-    result["sc"] += float(live_session.get("super_chat") or 0) * ratio
-    result["danmaku"] += (
-        float(live_session.get("danmaku_count") or 0) * ratio
-    )
-
-    result["peak_viewers"] = max(
-        result["peak_viewers"],
-        int(live_session.get("max_concurrency") or 0),
-    )
-
-    average = live_session.get("avg_concurrency")
-    session_start = _parse_api_time(live_session.get("start_time"))
-    session_end = _parse_api_time(live_session.get("end_time"))
-
-    if average is not None and session_start and session_end:
-        duration = max(
-            1.0,
-            (session_end - session_start).total_seconds() * ratio,
-        )
-        result["viewers_weighted"] += float(average) * duration
-        result["viewers_weight"] += duration
+def _first_day_of_next_month(day_value):
+    if day_value.month == 12:
+        return date(day_value.year + 1, 1, 1)
+    return date(day_value.year, day_value.month + 1, 1)
 
 
 class TournamentService:
@@ -282,9 +201,7 @@ class TournamentService:
     def _get_players(tournament_id):
         return TournamentService._db().select(
             TABLE_PLAYERS,
-            filters={
-                "tournament_id": f"eq.{int(tournament_id)}",
-            },
+            filters={"tournament_id": f"eq.{int(tournament_id)}"},
         )
 
     @staticmethod
@@ -311,6 +228,7 @@ class TournamentService:
 
     @staticmethod
     def init_tournament(name, players):
+        """通过 MemFire REST 创建赛事和参赛选手。"""
         db = TournamentService._db()
 
         created = db.insert(
@@ -356,7 +274,7 @@ class TournamentService:
 
     @staticmethod
     def schedule_first_round(tournament_id, start_utc):
-        """创建固定第一轮；start_utc 是 UTC naive datetime。"""
+        """创建固定第一轮；start_utc 为 UTC naive datetime。"""
         db = TournamentService._db()
         tournament = TournamentService._get_tournament(tournament_id)
 
@@ -365,7 +283,7 @@ class TournamentService:
 
         existing = TournamentService._get_matches(tournament_id, 1)
         if existing:
-            raise ValueError("第一轮已存在，为避免覆盖未重复创建")
+            raise ValueError("第一轮已存在，为避免覆盖，本次没有创建")
 
         pairings = [
             ("Ameki", "chu2u"),
@@ -437,17 +355,17 @@ class TournamentService:
             if int(match.get("round_number") or 0) >= ROUND_QF:
                 continue
 
-            player1 = match.get("player1_id")
-            player2 = match.get("player2_id")
+            player1_id = match.get("player1_id")
+            player2_id = match.get("player2_id")
 
-            if player1 and player2:
-                played.add(frozenset((str(player1), str(player2))))
+            if player1_id and player2_id:
+                played.add(frozenset((str(player1_id), str(player2_id))))
 
         return played
 
     @staticmethod
     def _pair_swiss_players(players, played):
-        """优先同战绩配对，并尝试避免重复对手。"""
+        """同战绩组内随机配对，尽量避免重复对手。"""
         groups = defaultdict(list)
 
         for player in players:
@@ -848,27 +766,23 @@ class TournamentService:
     @staticmethod
     def get_player_revenue(room_id, start_time, end_time=None):
         """
-        统计本场比赛时间窗口里的全部直播营收。
-
-        - 完整落在比赛窗口内的直播，使用该场直播的汇总值；
-        - 跨过比赛开始或结束边界的直播，使用15分钟桶按重叠时间统计；
-        - 正在直播、end_time为空或为 '-'，按查询时刻作为临时结束时间；
-        - 营收总额 = 礼物 + 守护 + SC。
+        通过 /gift/attention 按日累计比赛时间窗口内的 gift、guard、super_chat。
+        用 Decimal 累加并在输出时保留两位小数。
         """
         if not room_id or not start_time:
             raise ValueError("营收查询需要 room_id 和 start_time")
 
-        window_start_naive = _parse_db_time(start_time)
-        window_end_naive = (
+        start_naive = _parse_db_time(start_time)
+        end_naive = (
             _parse_db_time(end_time)
-            if end_time
+            if end_time is not None
             else _utc_now_naive()
         )
 
-        if window_start_naive is None or window_end_naive is None:
-            raise ValueError("比赛时间格式无效")
+        if start_naive is None or end_naive is None:
+            raise ValueError("比赛开始或结束时间无效")
 
-        if window_end_naive <= window_start_naive:
+        if end_naive <= start_naive:
             return {
                 "sc_amount": 0.0,
                 "gift_amount": 0.0,
@@ -879,116 +793,94 @@ class TournamentService:
                 "avg_viewers": 0,
             }
 
-        window_start = window_start_naive.replace(tzinfo=UTC_TZ)
-        window_end = window_end_naive.replace(tzinfo=UTC_TZ)
-        now_utc = datetime.now(UTC_TZ)
-        totals = _new_revenue_accumulator()
+        start_bj = start_naive.replace(
+            tzinfo=UTC_TZ
+        ).astimezone(BEIJING_TZ)
 
-        for month in _month_strings(
-            window_start_naive,
-            window_end_naive,
-        ):
-            sessions = _get_room_sessions(room_id, month)
+        end_bj = end_naive.replace(
+            tzinfo=UTC_TZ
+        ).astimezone(BEIJING_TZ)
 
-            for live_session in sessions:
-                session_start = _parse_api_time(
-                    live_session.get("start_time")
-                )
+        first_day = start_bj.date()
+        end_day_exclusive = end_bj.date()
 
-                if session_start is None:
+        # 结束时间不是北京时间当天零点时，结束日期也有重叠，
+        # 日级接口无法拆分，因此整日纳入并记录该限制。
+        if end_bj.time() != datetime.min.time():
+            end_day_exclusive += timedelta(days=1)
+
+        if end_day_exclusive <= first_day:
+            end_day_exclusive = first_day + timedelta(days=1)
+
+        total_gift = Decimal("0")
+        total_guard = Decimal("0")
+        total_sc = Decimal("0")
+
+        cursor = first_day.replace(day=1)
+
+        while cursor < end_day_exclusive:
+            month = cursor.strftime("%Y%m")
+            daily_rows = _get_room_attention(room_id, month)
+
+            for row in daily_rows:
+                date_text = str(row.get("date", "")).strip()
+
+                try:
+                    row_day = datetime.strptime(
+                        date_text,
+                        "%Y%m%d",
+                    ).date()
+                except ValueError:
                     continue
 
-                session_end = _parse_api_time(
-                    live_session.get("end_time")
-                )
-
-                is_active = session_end is None
-
-                if is_active:
-                    effective_end = min(now_utc, window_end)
-                else:
-                    effective_end = session_end
-
-                if (
-                    effective_end <= window_start
-                    or session_start >= window_end
-                ):
+                if row_day < first_day or row_day >= end_day_exclusive:
                     continue
 
-                overlap_start = max(session_start, window_start)
-                overlap_end = min(effective_end, window_end)
-                overlap_seconds = (
-                    overlap_end - overlap_start
-                ).total_seconds()
-
-                if overlap_seconds <= 0:
-                    continue
-
-                # 直播完整处于比赛窗口内时，顶层场次汇总是该场直播当前总额。
-                # 这包括从比赛开始后开播、目前仍在直播的场次。
-                fully_inside_window = (
-                    session_start >= window_start
-                    and effective_end <= window_end
+                total_gift += _to_decimal(
+                    row.get("gift"),
+                    "gift",
+                    room_id,
+                    date_text,
+                )
+                total_guard += _to_decimal(
+                    row.get("guard"),
+                    "guard",
+                    room_id,
+                    date_text,
+                )
+                total_sc += _to_decimal(
+                    row.get("super_chat"),
+                    "super_chat",
+                    room_id,
+                    date_text,
                 )
 
-                if fully_inside_window:
-                    _accumulate_session_summary(
-                        totals,
-                        live_session,
-                        1.0,
-                    )
-                    continue
+            cursor = _first_day_of_next_month(cursor)
 
-                # 直播跨越比赛起止边界时，用分桶数据裁出窗口内部分。
-                buckets = live_session.get("stats_15m") or []
-
-                if buckets:
-                    for bucket in buckets:
-                        _accumulate_bucket(
-                            totals,
-                            bucket,
-                            window_start,
-                            window_end,
-                        )
-                    continue
-
-                # 没有分桶时只能按直播时长占比估算边界直播。
-                session_duration = max(
-                    1.0,
-                    (effective_end - session_start).total_seconds(),
-                )
-                ratio = min(1.0, overlap_seconds / session_duration)
-
-                _accumulate_session_summary(
-                    totals,
-                    live_session,
-                    ratio,
-                )
-
-        gift = round(totals["gift"], 2)
-        guard = round(totals["guard"], 2)
-        sc = round(totals["sc"], 2)
-
-        avg_viewers = 0
-        if totals["viewers_weight"] > 0:
-            avg_viewers = round(
-                totals["viewers_weighted"]
-                / totals["viewers_weight"]
-            )
+        gift_value = total_gift.quantize(Decimal("0.01"))
+        guard_value = total_guard.quantize(Decimal("0.01"))
+        sc_value = total_sc.quantize(Decimal("0.01"))
+        total_value = (
+            total_gift + total_guard + total_sc
+        ).quantize(Decimal("0.01"))
 
         return {
-            "sc_amount": sc,
-            "gift_amount": gift,
-            "guard_amount": guard,
-            "total_revenue": round(gift + guard + sc, 2),
-            "danmaku_count": round(totals["danmaku"]),
-            "peak_viewers": totals["peak_viewers"],
-            "avg_viewers": avg_viewers,
+            "sc_amount": float(sc_value),
+            "gift_amount": float(gift_value),
+            "guard_amount": float(guard_value),
+            "total_revenue": float(total_value),
+            # /gift/attention 不提供这些字段，不伪造，使用0。
+            "danmaku_count": 0,
+            "peak_viewers": 0,
+            "avg_viewers": 0,
         }
 
     @staticmethod
     def _save_snapshot(match, player_id, revenue, snapshot_time):
-        """保存快照；当前表没有 guard_amount 列，gift 列存 gift+guard。"""
+        """
+        当前表没有 guard_amount 列，因此 gift_amount 保存 gift+guard；
+        total_revenue 单独保存三类收入总和。
+        """
         TournamentService._db().insert(
             TABLE_REVENUE,
             {
@@ -1072,8 +964,8 @@ class TournamentService:
     @staticmethod
     def _latest_snapshots(match_ids):
         """
-        对每场比赛的每位选手，直接向 MemFire 查询时间最新的一条快照。
-        避免一次拉取大量历史快照时受 REST API 行数上限影响。
+        对每场比赛、每位选手直接查询时间最新的一条快照，
+        避免拉取历史快照列表时受 REST 返回行数上限影响。
         """
         if not match_ids:
             return {}
@@ -1113,37 +1005,6 @@ class TournamentService:
 
                 if rows:
                     latest[(match_id, player_id)] = rows[0]
-
-        return latest
-
-        joined = ",".join(str(match_id) for match_id in match_ids)
-
-        rows = TournamentService._db().select(
-            TABLE_REVENUE,
-            filters={"match_id": f"in.({joined})"},
-        )
-
-        latest = {}
-
-        for row in rows:
-            key = (
-                str(row.get("match_id")),
-                str(row.get("player_id")),
-            )
-            current_time = _parse_db_time(row.get("snapshot_time"))
-
-            if current_time is None:
-                continue
-
-            previous = latest.get(key)
-            previous_time = (
-                _parse_db_time(previous.get("snapshot_time"))
-                if previous
-                else None
-            )
-
-            if previous_time is None or current_time > previous_time:
-                latest[key] = row
 
         return latest
 
@@ -1195,12 +1056,12 @@ class TournamentService:
             }
 
         match = matches[0]
-        eligible = {
+        eligible_ids = {
             str(match.get("player1_id")),
             str(match.get("player2_id")),
         }
 
-        if str(player_id) not in eligible:
+        if str(player_id) not in eligible_ids:
             return {
                 "success": False,
                 "error": "player_not_in_match",
@@ -1402,6 +1263,7 @@ class TournamentService:
         players = TournamentService._get_players(tournament_id)
         matches = TournamentService._get_matches(tournament_id)
         match_ids = [match["match_id"] for match in matches]
+
         snapshots = TournamentService._latest_snapshots(match_ids)
         votes = TournamentService.get_vote_counts(match_ids)
 
