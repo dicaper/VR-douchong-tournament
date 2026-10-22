@@ -789,7 +789,7 @@ function renderBracket(data) {
     if (!seriesList.length) {
         bracket.innerHTML = `
             <div class="empty">
-                瑞士轮结束后，八强 BO3 将自动出现在这里。
+                ????????? BO3 ?????????
             </div>
         `;
         return;
@@ -816,7 +816,7 @@ function renderBracket(data) {
             return `
                 <div class="round-column">
                     <div class="round-title">${title}</div>
-                    <div class="empty">待定</div>
+                    <div class="empty">??</div>
                 </div>
             `;
         }
@@ -829,15 +829,83 @@ function renderBracket(data) {
         `;
     };
 
-    bracket.innerHTML = `
-        ${renderRound(100, "八强 BO3")}
-        ${renderRound(101, "半决赛 BO3")}
-        ${renderRound(102, "决赛 BO3")}
+    const finalSeries = seriesList.find(
+        series => Number(series.round) === 102
+    );
 
-        <div class="round-column">
-            <div class="round-title">冠军</div>
-            <div class="empty">决赛结束后显示冠军</div>
-        </div>
+    const champion = finalSeries?.winner
+        ? playerById(data, finalSeries.winner)
+        : null;
+
+    let championColumn;
+
+    if (champion) {
+        const url = liveUrl(champion);
+
+        championColumn = `
+            <div class="round-column">
+                <div class="round-title">&#20896;&#20891;</div>
+                <article class="series-card finished"
+                    style="text-align:center;padding:24px 14px">
+                    <div style="
+                        color:var(--gold);
+                        font-size:32px;
+                        margin-bottom:12px
+                    ">&#127942;</div>
+
+                    ${url ? `
+                        <a
+                            href="${escapeHtml(url)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Open ${escapeHtml(champion.name)}'s Bilibili live room"
+                            style="display:inline-block"
+                        >
+                            <img
+                                class="avatar"
+                                src="${avatarUrl(champion)}"
+                                alt="${escapeHtml(champion.name)}"
+                                style="width:72px;height:72px"
+                            >
+                        </a>
+                    ` : `
+                        <img
+                            class="avatar"
+                            src="${avatarUrl(champion)}"
+                            alt="${escapeHtml(champion.name)}"
+                            style="width:72px;height:72px"
+                        >
+                    `}
+
+                    <div class="player-name" style="margin-top:12px">
+                        ${escapeHtml(champion.name)}
+                        ${champion.is_live
+                            ? '<span class="live-label">&#30452;&#25773;&#20013;</span>'
+                            : ""}
+                    </div>
+
+                    <div class="player-record" style="margin-top:6px">
+                        BO3 &#31995;&#21015;&#36187;&#33719;&#32988;
+                    </div>
+                </article>
+            </div>
+        `;
+    } else {
+        championColumn = `
+            <div class="round-column">
+                <div class="round-title">&#20896;&#20891;</div>
+                <div class="empty">
+                    The champion will appear after the final.
+                </div>
+            </div>
+        `;
+    }
+
+    bracket.innerHTML = `
+        ${renderRound(100, "?? BO3")}
+        ${renderRound(101, "??? BO3")}
+        ${renderRound(102, "?? BO3")}
+        ${championColumn}
     `;
 }
 

@@ -1,4 +1,5 @@
 # wsgi.py
+import os
 from pathlib import Path
 
 from flask import Flask, abort, send_from_directory
@@ -17,17 +18,19 @@ app = Flask(
     static_url_path="/static",
 )
 
-# 比赛 API
+# 注册比赛 API
 app.register_blueprint(tournament_blueprint)
 
-# 浏览量记录与管理员统计 API
+# 注册浏览量统计 API
 app.register_blueprint(analytics_bp)
 
 
 @app.route("/")
 def home():
-    """首页默认显示瑞士轮比赛详情页。"""
-    if not (STATIC_DIR / "swiss.html").is_file():
+    """根路径默认打开瑞士轮比赛详情页。"""
+    page = STATIC_DIR / "swiss.html"
+
+    if not page.is_file():
         abort(404)
 
     return send_from_directory(
@@ -38,7 +41,15 @@ def home():
 
 @app.route("/<path:page_name>")
 def serve_page(page_name):
-    """提供 static 目录下的页面，并限制路径不能越出该目录。"""
+    """
+    提供 static 目录中的页面，并防止路径越界。
+
+    示例：
+        /swiss.html
+        /swiss_bracket.html
+        /playoffs.html
+        /admin-stats.html
+    """
     page = (STATIC_DIR / page_name).resolve()
 
     try:
@@ -55,6 +66,10 @@ def serve_page(page_name):
     )
 
 
-# CloudBase 使用单个 Gunicorn worker。
-# 应用进程启动时启动一次赛事后台调度器。
-start_scheduler()
+# CloudBase 正常运行时保持调度器开启。
+# 本地测试时设置 DISABLE_SCHEDULER=1，
+# 这样本地启动不会自动结算或推进数据库中的比赛。
+if os.environ.get("DISABLE_SCHEDULER", "0") != "1":
+    start_scheduler()
+else:
+    print("⏸️ 本地测试模式：赛事自动调度器已关闭")

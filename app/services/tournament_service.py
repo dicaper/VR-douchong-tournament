@@ -998,103 +998,130 @@ class TournamentService:
         return played
 
     @staticmethod
-    def _pair_swiss_players(
-        players,
-        played,
-    ):
+    def _pair_swiss_players(players, played):
         """
-        同战绩组内随机配对，尽量避免重复对手。
-        """
-        groups = defaultdict(list)
+        ??????????????????????
 
-        for player in players:
-            record = (
+        ???????????????????????
+        ??????????????????
+
+        ????
+        1. ?????????
+        2. ???????????????
+        3. ?????????????????????
+
+        ???????????????????????
+        ???????????????
+        """
+        from functools import lru_cache
+
+        pool = list(players)
+
+        if not pool:
+            return []
+
+        if len(pool) % 2:
+            raise RuntimeError(
+                f"??????????{len(pool)}??"
+                "??????????"
+            )
+
+        random.shuffle(pool)
+
+        player_count = len(pool)
+        full_mask = (1 << player_count) - 1
+
+        records = [
+            (
                 int(player.get("wins") or 0),
                 int(player.get("losses") or 0),
             )
+            for player in pool
+        ]
 
-            groups[record].append(player)
+        played_pairs = {
+            frozenset(str(player_id) for player_id in pair)
+            for pair in played
+        }
 
-        pairs = []
-        floaters = []
+        # ?????????????
+        # ??????????????????????
+        rematch_penalty = 1_000_000_000
 
-        for record in sorted(
-            groups.keys(),
-            reverse=True,
-        ):
-            group = list(groups[record])
-            random.shuffle(group)
+        @lru_cache(maxsize=None)
+        def solve(mask):
+            if mask == 0:
+                return 0, ()
 
-            while len(group) >= 2:
-                player1 = group.pop()
+            # ??????????????????????
+            first_bit = mask & -mask
+            first_index = first_bit.bit_length() - 1
+            remaining = mask ^ first_bit
 
-                partner_index = next(
-                    (
-                        index
-                        for index, player2
-                        in enumerate(group)
-                        if frozenset((
-                            str(player1["player_id"]),
-                            str(player2["player_id"]),
-                        )) not in played
-                    ),
-                    None,
-                )
+            candidates = []
+            bits = remaining
 
-                if partner_index is None:
-                    floaters.append(player1)
-                    continue
+            while bits:
+                bit = bits & -bits
+                candidate_index = bit.bit_length() - 1
+                candidates.append(candidate_index)
+                bits ^= bit
 
-                player2 = group.pop(
-                    partner_index
-                )
+            # ?????????????????????
+            random.shuffle(candidates)
 
-                pairs.append((
-                    player1,
-                    player2,
+            best_cost = None
+            best_pairs = None
+
+            for partner_index in candidates:
+                partner_bit = 1 << partner_index
+                next_mask = remaining ^ partner_bit
+
+                later_cost, later_pairs = solve(next_mask)
+
+                first_player = pool[first_index]
+                second_player = pool[partner_index]
+
+                pair_key = frozenset((
+                    str(first_player["player_id"]),
+                    str(second_player["player_id"]),
                 ))
 
-            floaters.extend(group)
+                is_rematch = pair_key in played_pairs
 
-        random.shuffle(floaters)
+                first_record = records[first_index]
+                second_record = records[partner_index]
 
-        while len(floaters) >= 2:
-            player1 = floaters.pop()
-
-            partner_index = next(
-                (
-                    index
-                    for index, player2
-                    in enumerate(floaters)
-                    if frozenset((
-                        str(player1["player_id"]),
-                        str(player2["player_id"]),
-                    )) not in played
-                ),
-                None,
-            )
-
-            if partner_index is None:
-                raise RuntimeError(
-                    f"无法避免重复配对："
-                    f"{player1.get('player_name')}"
+                record_distance = (
+                    abs(first_record[0] - second_record[0])
+                    + abs(first_record[1] - second_record[1])
                 )
 
-            player2 = floaters.pop(
-                partner_index
-            )
+                pair_cost = (
+                    (rematch_penalty if is_rematch else 0)
+                    + record_distance * 1000
+                )
 
-            pairs.append((
-                player1,
-                player2,
-            ))
+                total_cost = pair_cost + later_cost
 
-        if floaters:
-            raise RuntimeError(
-                "活动选手人数为奇数，当前没有定义轮空规则"
-            )
+                if best_cost is None or total_cost < best_cost:
+                    best_cost = total_cost
+                    best_pairs = (
+                        ((first_index, partner_index),)
+                        + later_pairs
+                    )
 
-        return pairs
+            return best_cost, best_pairs
+
+        _, index_pairs = solve(full_mask)
+
+        if not index_pairs or len(index_pairs) * 2 != player_count:
+            raise RuntimeError("????????????????")
+
+        return [
+            (pool[first_index], pool[second_index])
+            for first_index, second_index in index_pairs
+        ]
 
     @staticmethod
     def auto_start_next_swiss_round(
@@ -1415,9 +1442,14 @@ class TournamentService:
         )
 
     @staticmethod
-    def _advance_knockout(
-        tournament_id,
-    ):
+    def _advance_knockout(tournament_id):
+        """
+        ??????????? BO3 ????
+
+        ??????????????????????
+        ??????????????????????
+        2 ????????????????
+        """
         db = TournamentService._db()
         tournament = TournamentService._get_tournament(
             tournament_id
@@ -1431,43 +1463,20 @@ class TournamentService:
         )
 
         if current_round == ROUND_QF:
-            series_ids = [
-                "qf1",
-                "qf2",
-                "qf3",
-                "qf4",
-            ]
+            series_ids = ["qf1", "qf2", "qf3", "qf4"]
             next_round = ROUND_SF
-            next_pairs = [
-                ("qf1", "qf2"),
-                ("qf3", "qf4"),
-            ]
-            next_series_ids = [
-                "sf1",
-                "sf2",
-            ]
-
+            next_pairs = [("qf1", "qf2"), ("qf3", "qf4")]
+            next_series_ids = ["sf1", "sf2"]
         elif current_round == ROUND_SF:
-            series_ids = [
-                "sf1",
-                "sf2",
-            ]
+            series_ids = ["sf1", "sf2"]
             next_round = ROUND_FINAL
-            next_pairs = [
-                ("sf1", "sf2"),
-            ]
-            next_series_ids = [
-                "final",
-            ]
-
+            next_pairs = [("sf1", "sf2")]
+            next_series_ids = ["final"]
         elif current_round == ROUND_FINAL:
-            series_ids = [
-                "final",
-            ]
+            series_ids = ["final"]
             next_round = None
             next_pairs = []
             next_series_ids = []
-
         else:
             return
 
@@ -1481,52 +1490,45 @@ class TournamentService:
             )
 
             if not games:
-                return
+                # ???????????????????????
+                continue
 
-            if any(
-                game.get("status") == "running"
-                for game in games
-            ):
-                return
+            player1_id = str(games[0].get("player1_id"))
+            player2_id = str(games[0].get("player2_id"))
 
             wins = defaultdict(int)
 
             for game in games:
                 if (
-                    game.get("status")
-                    == "completed"
+                    game.get("status") == "completed"
                     and game.get("winner_id")
                 ):
-                    wins[
-                        str(game["winner_id"])
-                    ] += 1
-
-            player1_id = str(
-                games[0].get("player1_id")
-            )
-            player2_id = str(
-                games[0].get("player2_id")
-            )
+                    wins[str(game["winner_id"])] += 1
 
             if wins[player1_id] >= BEST_OF_THREE_WINS:
-                series_winners[
-                    series_id
-                ] = player1_id
+                series_winners[series_id] = player1_id
                 continue
 
             if wins[player2_id] >= BEST_OF_THREE_WINS:
-                series_winners[
-                    series_id
-                ] = player2_id
+                series_winners[series_id] = player2_id
+                continue
+
+            # ????????????????????????
+            if any(
+                game.get("status") in {"running", "pending"}
+                for game in games
+            ):
                 continue
 
             if len(games) >= 3:
                 print(
-                    f"淘汰赛数据异常：{series_id} "
-                    "已完成3局但无人达到2胜"
+                    f"????????{series_id} ???3??"
+                    "?????2?"
                 )
-                return
+                continue
 
+            # ?????????????????
+            # ?????????? game_number ???
             next_game_number = len(games) + 1
 
             start = _utc_now_naive()
@@ -1537,47 +1539,30 @@ class TournamentService:
             db.insert(
                 TABLE_MATCHES,
                 {
-                    "tournament_id": int(
-                        tournament_id
-                    ),
-                    "match_id": (
-                        f"{series_id}g"
-                        f"{next_game_number}"
-                    ),
+                    "tournament_id": int(tournament_id),
+                    "match_id": f"{series_id}g{next_game_number}",
                     "round_number": current_round,
-                    "player1_id": games[0][
-                        "player1_id"
-                    ],
-                    "player2_id": games[0][
-                        "player2_id"
-                    ],
-                    "start_time": start.isoformat(
-                        sep=" "
-                    ),
-                    "end_time": end.isoformat(
-                        sep=" "
-                    ),
+                    "player1_id": games[0]["player1_id"],
+                    "player2_id": games[0]["player2_id"],
+                    "start_time": start.isoformat(sep=" "),
+                    "end_time": end.isoformat(sep=" "),
                     "status": "running",
                 },
             )
 
-            return
-
+        # ????????????????????????
         if len(series_winners) != len(series_ids):
             return
 
         if current_round == ROUND_FINAL:
             db.update(
                 TABLE_TOURNAMENTS,
-                {
-                    "id": f"eq.{int(tournament_id)}",
-                },
-                {
-                    "status": "finished",
-                },
+                {"id": f"eq.{int(tournament_id)}"},
+                {"status": "finished"},
             )
             return
 
+        # ?????????????????????????
         start = _utc_now_naive()
         end = start + timedelta(
             hours=KNOCKOUT_GAME_HOURS
@@ -1585,43 +1570,23 @@ class TournamentService:
 
         next_matches = []
 
-        for index, (
-            source1,
-            source2,
-        ) in enumerate(next_pairs):
+        for index, (source1, source2) in enumerate(next_pairs):
             next_matches.append({
-                "tournament_id": int(
-                    tournament_id
-                ),
-                "match_id": (
-                    f"{next_series_ids[index]}g1"
-                ),
+                "tournament_id": int(tournament_id),
+                "match_id": f"{next_series_ids[index]}g1",
                 "round_number": next_round,
-                "player1_id": series_winners[
-                    source1
-                ],
-                "player2_id": series_winners[
-                    source2
-                ],
-                "start_time": start.isoformat(
-                    sep=" "
-                ),
-                "end_time": end.isoformat(
-                    sep=" "
-                ),
+                "player1_id": series_winners[source1],
+                "player2_id": series_winners[source2],
+                "start_time": start.isoformat(sep=" "),
+                "end_time": end.isoformat(sep=" "),
                 "status": "running",
             })
 
-        db.insert(
-            TABLE_MATCHES,
-            next_matches,
-        )
+        db.insert(TABLE_MATCHES, next_matches)
 
         db.update(
             TABLE_TOURNAMENTS,
-            {
-                "id": f"eq.{int(tournament_id)}",
-            },
+            {"id": f"eq.{int(tournament_id)}"},
             {
                 "current_round": next_round,
                 "status": "running",
