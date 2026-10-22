@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>网页访问统计 · 管理员</title>
+
+    <style>
+        :root {
+            --bg: #080b12;
+            --panel: #111824;
+            --card: #182231;
+            --text: #eef4fb;
+            --muted: #9aaabd;
+            --border: #33445a;
+            --blue: #38bdf8;
+            --green: #6ee7b7;
+            --red: #fb7185;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            color: var(--text);
+            background: var(--bg);
+            font-family: system-ui, "Microsoft YaHei", sans-serif;
+        }
+
+        main {
+            width: min(1000px, 100%);
+            margin: 0 auto;
+        }
+
+        h1,
+        h2 {
+            color: var(--blue);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .panel {
+            padding: 20px;
+            margin-bottom: 18px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .login-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        input,
+        button {
+            min-height: 42px;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font: inherit;
+        }
+
+        input {
+            flex: 1;
+            min-width: 220px;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        button {
+            color: #06111b;
+            background: var(--blue);
+            border-color: var(--blue);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            color: var(--text);
+            background: var(--card);
+            border-color: var(--border);
+        }
+
+        button:hover {
+            filter: brightness(1.08);
+        }
+
+        .message {
+            min-height: 24px;
+            margin-top: 10px;
+            color: var(--muted);
+        }
+
+        .message.error {
+            color: var(--red);
+        }
+
+        .message.success {
+            color: var(--green);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+        }
+
+        .stat-card {
+            padding: 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .stat-value {
+            margin-top: 7px;
+            color: var(--blue);
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            overflow-wrap: anywhere;
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 14px;
+            }
+
+            .panel {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main>
+    <h1>网页访问统计</h1>
+
+    <section class="panel">
+        <h2>管理员验证</h2>
+
+        <div class="login-row">
+            <input
+                id="token-input"
+                type="password"
+                autocomplete="current-password"
+                placeholder="输入 ADMIN_TOKEN"
+                aria-label="管理员令牌"
+            >
+
+            <button id="load-button" type="button">
+                查看统计
+            </button>
+
+            <button
+                id="logout-button"
+                class="secondary"
+                type="button"
+            >
+                清除令牌
+            </button>
+        </div>
+
+        <div id="message" class="message">
+            统计接口仅接受正确的管理员令牌。
+        </div>
+    </section>
+
+    <section id="stats-section" class="panel" hidden>
+        <div class="toolbar">
+            <h2>访问概览</h2>
+            <button
+                id="refresh-button"
+                class="secondary"
+                type="button"
+            >
+                刷新
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">今日访问量</div>
+                <div class="stat-value" id="today-views">--</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">今日独立访客</div>
+                <div class="stat-value" id="today-visitors">--</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">昨日访问量</div>
+                <div class="stat-value" id="yesterday-views">--</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">最近7天访问量</div>
+                <div class="stat-value" id="week-views">--</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">最近30天访问量</div>
+                <div class="stat-value" id="month-views">--</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">最近一次访问</div>
+                <div
+                    class="stat-value"
+                    id="latest-visit"
+                    style="font-size:16px"
+                >--</div>
+            </div>
+        </div>
+
+        <h2 style="margin-top:24px">页面访问量</h2>
+
+        <div style="overflow-x:auto">
+            <table>
+                <thead>
+                    <tr>
+                        <th>页面</th>
+                        <th>访问量</th>
+                        <th>独立访客</th>
+                    </tr>
+                </thead>
+                <tbody id="page-rows">
+                    <tr>
+                        <td colspan="3" class="muted">
+                            尚无数据
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script>
+"use strict";
+
+const API_URL = "/api/analytics/admin/overview";
+const TOKEN_KEY = "vr-admin-analytics-token";
+
+const tokenInput = document.getElementById("token-input");
+const message = document.getElementById("message");
+const statsSection = document.getElementById("stats-section");
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(
+        /[&<>"']/g,
+        char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[char]
+    );
+}
+
+function numberText(value) {
+    return Number(value || 0).toLocaleString("zh-CN");
+}
+
+function formatBeijingTime(value) {
+    if (!value) {
+        return "暂无";
+    }
+
+    const text = String(value).trim();
+    let parsed;
+
+    // 无时区时间按北京时间解释。
+    if (
+        text.endsWith("Z")
+        || /[+-]\d{2}:\d{2}$/.test(text)
+    ) {
+        parsed = new Date(text);
+    } else {
+        parsed = new Date(
+            text.replace(" ", "T") + "+08:00"
+        );
+    }
+
+    if (Number.isNaN(parsed.getTime())) {
+        return escapeHtml(text);
+    }
+
+    return new Intl.DateTimeFormat("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    }).format(parsed);
+}
+
+function setMessage(text, kind = "") {
+    message.textContent = text;
+    message.className = `message ${kind}`;
+}
+
+function setStat(id, value) {
+    document.getElementById(id).textContent = numberText(value);
+}
+
+function renderPageRows(viewsByPage) {
+    const body = document.getElementById("page-rows");
+    const entries = Object.entries(viewsByPage || {});
+
+    if (!entries.length) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="3" class="muted">尚无访问记录</td>
+            </tr>
+        `;
+        return;
+    }
+
+    entries.sort(
+        (a, b) => Number(b[1]?.views || 0) - Number(a[1]?.views || 0)
+    );
+
+    body.innerHTML = entries.map(([page, item]) => `
+        <tr>
+            <td>${escapeHtml(page)}</td>
+            <td>${numberText(item?.views)}</td>
+            <td>${numberText(item?.unique_visitors)}</td>
+        </tr>
+    `).join("");
+}
+
+function renderStats(data) {
+    setStat("today-views", data.today?.views);
+    setStat("today-visitors", data.today?.unique_visitors);
+    setStat("yesterday-views", data.yesterday?.views);
+    setStat("week-views", data.last_7_days?.views);
+    setStat("month-views", data.last_30_days?.views);
+
+    document.getElementById("latest-visit").textContent =
+        formatBeijingTime(data.latest_visit);
+
+    renderPageRows(data.views_by_page);
+    statsSection.hidden = false;
+}
+
+async function loadStats(token) {
+    if (!token) {
+        setMessage("请先输入管理员令牌。", "error");
+        return;
+    }
+
+    setMessage("正在读取统计数据…");
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "GET",
+            cache: "no-store",
+            headers: {
+                "X-Admin-Token": token
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.status === 401) {
+            statsSection.hidden = true;
+            setMessage("令牌无效或未授权。", "error");
+            return;
+        }
+
+        if (!response.ok || !data.success) {
+            statsSection.hidden = true;
+            setMessage(
+                data.error || `请求失败：HTTP ${response.status}`,
+                "error"
+            );
+            return;
+        }
+
+        sessionStorage.setItem(TOKEN_KEY, token);
+        renderStats(data);
+        setMessage("统计数据已加载。", "success");
+    } catch (error) {
+        statsSection.hidden = true;
+        setMessage(
+            `无法连接统计接口：${error.message}`,
+            "error"
+        );
+    }
+}
+
+document.getElementById("load-button").addEventListener(
+    "click",
+    () => loadStats(tokenInput.value.trim())
+);
+
+document.getElementById("refresh-button").addEventListener(
+    "click",
+    () => loadStats(
+        tokenInput.value.trim()
+        || sessionStorage.getItem(TOKEN_KEY)
+        || ""
+    )
+);
+
+document.getElementById("logout-button").addEventListener(
+    "click",
+    () => {
+        sessionStorage.removeItem(TOKEN_KEY);
+        tokenInput.value = "";
+        statsSection.hidden = true;
+        setMessage("已清除当前标签页保存的令牌。");
+    }
+);
+
+tokenInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        loadStats(tokenInput.value.trim());
+    }
+});
+
+const savedToken = sessionStorage.getItem(TOKEN_KEY);
+
+if (savedToken) {
+    tokenInput.value = savedToken;
+    loadStats(savedToken);
+}
+</script>
+</body>
+</html>

@@ -4,167 +4,199 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>瑞士轮晋级图 - VR斗虫大赛 2026</title>
+
     <style>
         :root {
-            --bg-deepest: #05070C;
-            --bg-deep: #0A0D12;
-            --bg-mid: #0F131C;
-            --bg-elevated: #161D2B;
-            --bg-highest: #1E2636;
-            --accent: #38BDF8;
-            --accent-dim: #0EA5E9;
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
+            --bg-deepest: #05070c;
+            --bg-deep: #0a0d12;
+            --bg-mid: #0f131c;
+            --bg-elevated: #161d2b;
+            --accent: #38bdf8;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
             --border: #334155;
-            --success: #6EE7B7;
-            --warning: #FBBF24;
-            --danger: #F87171;
+            --success: #6ee7b7;
+            --danger: #f87171;
             --eliminated: #475569;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-deepest);
-            color: var(--text-primary);
-            line-height: 1.6;
+            min-width: 1100px;
             overflow-x: auto;
+            color: var(--text-primary);
+            background: var(--bg-deepest);
+            font-family: system-ui, "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
         }
 
         .container {
             max-width: 2000px;
             margin: 0 auto;
-            padding: clamp(1rem, 3vw, 2rem);
+            padding: 24px;
         }
 
         header {
-            text-align: center;
-            padding: clamp(2rem, 5vw, 3rem) 0;
-            background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deepest) 100%);
+            padding: 42px 20px 30px;
+            background: linear-gradient(
+                180deg,
+                var(--bg-deep) 0%,
+                var(--bg-deepest) 100%
+            );
             border-bottom: 2px solid var(--accent);
-            margin-bottom: 2rem;
+            text-align: center;
         }
 
         h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--text-primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            color: var(--accent);
+            font-size: clamp(30px, 5vw, 48px);
         }
 
         .stage-title {
-            font-size: clamp(1rem, 2vw, 1.25rem);
             color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            font-size: 18px;
+            letter-spacing: .08em;
+        }
+
+        .data-license-top {
+            width: min(1100px, 94%);
+            margin: 22px auto 0;
+            padding: 14px 20px;
+            color: var(--text-secondary);
+            background: #101722;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .data-license-top strong {
+            color: var(--text-primary);
+        }
+
+        .data-license-top a {
+            color: var(--accent);
+        }
+
+        .data-license-top code {
+            padding: 2px 5px;
+            color: #d7e3f1;
+            background: #182231;
+            border-radius: 4px;
         }
 
         nav {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin: 1rem 0 2rem;
             flex-wrap: wrap;
+            gap: 12px;
+            margin: 0 0 24px;
         }
 
         nav a {
-            padding: 0.75rem 1.5rem;
+            padding: 10px 18px;
+            color: var(--text-secondary);
             background: var(--bg-elevated);
             border: 1px solid var(--border);
             border-radius: 999px;
-            color: var(--text-secondary);
-            text-decoration: none;
             font-weight: 600;
-            transition: all 0.2s ease;
+            text-decoration: none;
         }
 
-        nav a:hover, nav a.active {
-            background: var(--accent);
+        nav a:hover,
+        nav a.active {
             color: var(--bg-deepest);
+            background: var(--accent);
             border-color: var(--accent);
         }
 
         .legend {
             display: flex;
             justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            padding: 1rem;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 24px;
+            padding: 16px;
             background: var(--bg-mid);
             border-radius: 12px;
-            flex-wrap: wrap;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
         }
 
         .legend-box {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 4px;
         }
 
-        .legend-box.qualified { background: var(--success); }
-        .legend-box.eliminated { background: var(--eliminated); }
-        .legend-box.active { background: var(--accent); }
-        .legend-box.pending { background: var(--bg-elevated); border: 2px solid var(--border); }
+        .legend-box.qualified {
+            background: var(--success);
+        }
 
-        /* 瑞士轮流程图 */
+        .legend-box.eliminated {
+            background: var(--eliminated);
+        }
+
+        .legend-box.active {
+            background: var(--accent);
+        }
+
+        .legend-box.pending {
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+        }
+
         .swiss-flow {
-            position: relative;
             min-width: 1800px;
-            padding: 2rem;
-            background: var(--bg-mid);
-            border-radius: 16px;
-            border: 1px solid var(--border);
+            padding: 30px;
             overflow-x: auto;
+            background: var(--bg-mid);
+            border: 1px solid var(--border);
+            border-radius: 16px;
         }
 
         .rounds-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 3rem;
-            margin-bottom: 3rem;
+            gap: 34px;
+            margin-bottom: 48px;
         }
 
         .round-column {
-            position: relative;
+            min-width: 0;
         }
 
         .round-header {
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 700;
+            margin-bottom: 20px;
             color: var(--accent);
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
         }
 
         .round-matches {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 16px;
         }
 
         .bracket-match {
-            background: var(--bg-elevated);
-            border-radius: 8px;
-            border: 2px solid var(--border);
-            padding: 0.75rem;
             min-height: 120px;
-            transition: all 0.2s ease;
+            padding: 12px;
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            transition: .2s ease;
         }
 
         .bracket-match:hover {
@@ -173,61 +205,101 @@
         }
 
         .bracket-match.completed {
-            opacity: 0.9;
+            opacity: .9;
         }
 
         .match-player {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem;
-            margin: 0.25rem 0;
+            gap: 10px;
+            padding: 8px;
+            margin: 4px 0;
             background: var(--bg-mid);
-            border-radius: 6px;
             border: 2px solid transparent;
+            border-radius: 6px;
         }
 
         .match-player.winner {
+            background: rgba(110, 231, 183, .1);
             border-color: var(--success);
-            background: linear-gradient(90deg, var(--bg-mid) 0%, rgba(110, 231, 183, 0.1) 100%);
         }
 
         .match-player.qualified {
             border-color: var(--success);
-            background: linear-gradient(90deg, rgba(110, 231, 183, 0.2) 0%, rgba(110, 231, 183, 0.05) 100%);
         }
 
         .match-player.eliminated {
+            opacity: .6;
             border-color: var(--eliminated);
-            opacity: 0.6;
-            background: var(--bg-deepest);
+        }
+
+        .player-link {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+            flex: 1;
+            gap: 10px;
+            color: inherit;
+            text-decoration: none;
         }
 
         .player-avatar-small {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            position: relative;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
             border: 2px solid var(--accent);
-            overflow: hidden;
-            flex-shrink: 0;
+            border-radius: 50%;
         }
 
         .player-avatar-small img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .player-avatar-small:hover {
+            border-color: var(--success);
+        }
+
+        .live-dot {
+            position: absolute;
+            right: -3px;
+            bottom: -2px;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border: 2px solid var(--bg-mid);
+            border-radius: 50%;
         }
 
         .player-name-small {
-            font-size: 0.875rem;
+            min-width: 0;
+            overflow: hidden;
+            font-size: 14px;
             font-weight: 600;
-            flex: 1;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .live-label {
+            display: inline-block;
+            padding: 1px 5px;
+            margin-left: 5px;
+            color: #06111b;
+            background: var(--success);
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            vertical-align: middle;
         }
 
         .player-record {
-            font-size: 0.75rem;
             color: var(--text-secondary);
+            font-size: 12px;
             font-weight: 700;
+            white-space: nowrap;
         }
 
         .player-record.qualified {
@@ -239,25 +311,23 @@
         }
 
         .vs-small {
-            text-align: center;
-            font-size: 0.625rem;
+            margin: 2px 0;
             color: var(--text-secondary);
-            margin: 0.125rem 0;
+            font-size: 10px;
+            text-align: center;
         }
 
-        /* 晋级/淘汰区域 */
         .results-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
+            gap: 28px;
         }
 
         .result-section {
+            padding: 22px;
             background: var(--bg-elevated);
-            border-radius: 12px;
-            padding: 1.5rem;
             border: 2px solid var(--border);
+            border-radius: 12px;
         }
 
         .result-section.qualified {
@@ -269,54 +339,59 @@
         }
 
         .result-title {
-            font-size: 1.5rem;
+            margin-bottom: 18px;
+            font-size: 22px;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
         }
 
-        .result-title.qualified { color: var(--success); }
-        .result-title.eliminated { color: var(--eliminated); }
+        .result-title.qualified {
+            color: var(--success);
+        }
+
+        .result-title.eliminated {
+            color: var(--eliminated);
+        }
 
         .result-list {
             display: grid;
-            gap: 0.75rem;
+            gap: 12px;
         }
 
         .result-player {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
+            gap: 14px;
+            padding: 12px;
             background: var(--bg-mid);
-            border-radius: 8px;
             border: 2px solid var(--border);
+            border-radius: 8px;
         }
 
         .result-player.qualified {
+            background: rgba(110, 231, 183, .08);
             border-color: var(--success);
-            background: linear-gradient(90deg, var(--bg-mid) 0%, rgba(110, 231, 183, 0.1) 100%);
         }
 
         .result-player.eliminated {
+            opacity: .7;
             border-color: var(--eliminated);
-            opacity: 0.7;
         }
 
         .result-avatar {
+            position: relative;
             width: 48px;
             height: 48px;
-            border-radius: 50%;
+            flex: 0 0 48px;
             border: 2px solid var(--accent);
-            overflow: hidden;
+            border-radius: 50%;
         }
 
         .result-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 50%;
         }
 
         .result-info {
@@ -324,368 +399,612 @@
         }
 
         .result-name {
-            font-size: 1.125rem;
+            font-size: 18px;
             font-weight: 700;
         }
 
         .result-record {
-            font-size: 0.875rem;
             color: var(--text-secondary);
+            font-size: 14px;
         }
 
         .result-badge {
-            padding: 0.25rem 0.75rem;
+            padding: 4px 12px;
             border-radius: 999px;
-            font-size: 0.75rem;
+            font-size: 12px;
             font-weight: 700;
-            text-transform: uppercase;
         }
 
-        .result-badge.q30 { background: #10B981; color: white; }
-        .result-badge.q31 { background: #6EE7B7; color: var(--bg-deepest); }
-        .result-badge.q32 { background: #A7F3D0; color: var(--bg-deepest); }
-        .result-badge.e03 { background: var(--danger); color: white; }
-        .result-badge.e13 { background: var(--eliminated); color: white; }
-        .result-badge.e23 { background: #64748B; color: white; }
+        .result-badge.q30 {
+            color: white;
+            background: #10b981;
+        }
+
+        .result-badge.q31 {
+            color: #06111b;
+            background: #6ee7b7;
+        }
+
+        .result-badge.q32 {
+            color: #06111b;
+            background: #a7f3d0;
+        }
+
+        .result-badge.e03 {
+            color: white;
+            background: var(--danger);
+        }
+
+        .result-badge.e13 {
+            color: white;
+            background: var(--eliminated);
+        }
+
+        .result-badge.e23 {
+            color: white;
+            background: #64748b;
+        }
+
+        .empty {
+            padding: 30px 12px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
 
         footer {
-            text-align: center;
-            padding: 2rem;
+            padding: 28px;
+            margin-top: 36px;
             color: var(--text-secondary);
             border-top: 1px solid var(--border);
-            margin-top: 3rem;
+            text-align: center;
         }
-    
-.data-license {
-    width: min(1100px, 94%);
-    margin: 28px auto 0;
-    padding: 16px 20px;
-    color: #9aaabd;
-    background: #101722;
-    border: 1px solid #33445a;
-    border-radius: 10px;
-    font-size: 13px;
-    line-height: 1.8;
-    text-align: center;
-}
 
-.data-license strong {
-    color: #eef4fb;
-}
-
-.data-license a {
-    color: #38bdf8;
-    text-decoration: none;
-}
-
-.data-license a:hover {
-    text-decoration: underline;
-}
-
-.data-license code {
-    color: #d7e3f1;
-    background: #182231;
-    padding: 2px 5px;
-    border-radius: 4px;
-}
-
-.data-license-top {
-    width: min(1100px, 94%);
-    margin: 22px auto 0;
-    padding: 14px 20px;
-    color: #9aaabd;
-    background: #101722;
-    border: 1px solid #33445a;
-    border-radius: 10px;
-    font-size: 13px;
-    line-height: 1.8;
-    text-align: center;
-}
-
-.data-license-top strong {
-    color: #eef4fb;
-}
-
-.data-license-top a {
-    color: #38bdf8;
-    text-decoration: none;
-}
-
-.data-license-top a:hover {
-    text-decoration: underline;
-}
-
-.data-license-top code {
-    color: #d7e3f1;
-    background: #182231;
-    padding: 2px 5px;
-    border-radius: 4px;
-}
-</style>
+        @media (max-width: 900px) {
+            .results-area {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <header>
-        <h1>VR斗虫大赛 2026</h1>
-        <p class="stage-title">瑞士轮晋级路线图</p>
-    
-<div class="data-license-top">
-    <strong>数据来源与许可声明</strong><br>
+<header>
+    <h1>VR斗虫大赛 2026</h1>
+    <p class="stage-title">瑞士轮晋级路线图</p>
 
-    本网站部分直播数据来自
-    <a
-        href="https://github.com/qianqiuzy/VR_douchong"
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        VR_douchong
-    </a>
-    项目及其相关数据接口
-    <code>vr.qianqiuzy.cn</code> /
-    <code>psp.qianqiuzy.cn</code>。<br>
-
-    数据许可说明请参阅
-    <a
-        href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        LICENSE-DATA.md
-    </a>。<br>
-
-    本网站仅用于非商业兴趣展示和赛事娱乐用途。
-    如需将相关数据用于商业宣传、商业服务、广告、
-    付费服务或其他商业目的，请先取得数据权利人授权。
-</div>
+    <div class="data-license-top">
+        <strong>数据来源与许可声明</strong><br>
+        本网站部分直播数据来自
+        <a
+            href="https://github.com/qianqiuzy/VR_douchong"
+            target="_blank"
+            rel="noopener noreferrer"
+        >VR_douchong</a>
+        项目及其相关数据接口
+        <code>vr.qianqiuzy.cn</code> /
+        <code>psp.qianqiuzy.cn</code>。<br>
+        本网站仅用于非商业兴趣展示和赛事娱乐用途。
+    </div>
 </header>
 
-    <div class="container">
-        <nav>
-            <a href="swiss.html">比赛详情</a>
-            <a href="swiss_bracket.html" class="active">晋级路线图</a>
-            <a href="playoffs.html">淘汰赛</a>
-        </nav>
+<div class="container">
+    <nav>
+        <a href="swiss.html">比赛详情</a>
+        <a href="swiss_bracket.html" class="active">晋级路线图</a>
+        <a href="playoffs.html">淘汰赛</a>
+    </nav>
 
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-box qualified"></div>
-                <span>已晋级</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box eliminated"></div>
-                <span>已淘汰</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box active"></div>
-                <span>进行中</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box pending"></div>
-                <span>未开始</span>
-            </div>
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-box qualified"></div>
+            <span>已晋级</span>
         </div>
 
-        <div class="swiss-flow">
-            <div class="rounds-container" id="rounds-container">
-                <!-- 动态生成5轮比赛 -->
-            </div>
+        <div class="legend-item">
+            <div class="legend-box eliminated"></div>
+            <span>已淘汰</span>
+        </div>
 
-            <div class="results-area">
-                <div class="result-section qualified">
-                    <div class="result-title qualified">✅ 晋级八强 (8人)</div>
-                    <div class="result-list" id="qualified-list"></div>
-                </div>
-                <div class="result-section eliminated">
-                    <div class="result-title eliminated">❌ 淘汰 (8人)</div>
-                    <div class="result-list" id="eliminated-list"></div>
-                </div>
-            </div>
+        <div class="legend-item">
+            <div class="legend-box active"></div>
+            <span>进行中</span>
+        </div>
+
+        <div class="legend-item">
+            <div class="legend-box pending"></div>
+            <span>未开始</span>
         </div>
     </div>
 
-    <footer>
+    <div class="swiss-flow">
+        <div
+            class="rounds-container"
+            id="rounds-container"
+        ></div>
+
+        <div class="results-area">
+            <div class="result-section qualified">
+                <div class="result-title qualified">
+                    ✅ 晋级八强（8人）
+                </div>
+                <div
+                    class="result-list"
+                    id="qualified-list"
+                ></div>
+            </div>
+
+            <div class="result-section eliminated">
+                <div class="result-title eliminated">
+                    ❌ 淘汰（8人）
+                </div>
+                <div
+                    class="result-list"
+                    id="eliminated-list"
+                ></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
     <p>VR斗虫大赛 2026 · 非商业兴趣项目</p>
-    
-
-
 </footer>
 
-    <script>
-        const API_BASE = '/api/tournament';
-        const TOURNAMENT_ID = 1;
+<script>
+"use strict";
 
-        let currentData = null;
+const API_BASE = "/api/tournament";
+const TOURNAMENT_ID = 1;
+const JPG_PLAYERS = new Set(["Rhea", "Melody"]);
 
-        function getAvatarUrl(player) {
-            if (!player) return '';
-            const jpgPlayers = ['Rhea', 'Melody'];
-            const ext = jpgPlayers.includes(player.name) ? 'jpg' : 'webp';
-            return `/static/avatars/${player.name}.${ext}`;
+let currentData = null;
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(
+        /[&<>"']/g,
+        char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[char]
+    );
+}
+
+function getAvatarUrl(player) {
+    if (!player) {
+        return "";
+    }
+
+    const extension = JPG_PLAYERS.has(player.name)
+        ? "jpg"
+        : "webp";
+
+    return `/static/avatars/${encodeURIComponent(
+        player.name
+    )}.${extension}`;
+}
+
+function getLiveUrl(player) {
+    if (!player) {
+        return "#";
+    }
+
+    if (player.live_url) {
+        return player.live_url;
+    }
+
+    if (player.room_id) {
+        return `https://live.bilibili.com/${encodeURIComponent(
+            player.room_id
+        )}`;
+    }
+
+    return "#";
+}
+
+function getPlayerStatus(player) {
+    if (Number(player.wins || 0) >= 3) {
+        return "qualified";
+    }
+
+    if (Number(player.losses || 0) >= 3) {
+        return "eliminated";
+    }
+
+    return "active";
+}
+
+function getBadgeText(wins, losses) {
+    wins = Number(wins || 0);
+    losses = Number(losses || 0);
+
+    if (wins >= 3) {
+        if (wins === 3 && losses === 0) {
+            return {
+                text: "3-0晋级",
+                className: "q30"
+            };
         }
 
-        function getPlayerStatus(player) {
-            if (player.wins >= 3) return 'qualified';
-            if (player.losses >= 3) return 'eliminated';
-            return 'active';
+        if (wins === 3 && losses === 1) {
+            return {
+                text: "3-1晋级",
+                className: "q31"
+            };
         }
 
-        function getBadgeText(wins, losses) {
-            if (wins >= 3) {
-                if (wins === 3 && losses === 0) return { text: '3-0晋级', class: 'q30' };
-                if (wins === 3 && losses === 1) return { text: '3-1晋级', class: 'q31' };
-                if (wins === 3 && losses === 2) return { text: '3-2晋级', class: 'q32' };
+        if (wins === 3 && losses === 2) {
+            return {
+                text: "3-2晋级",
+                className: "q32"
+            };
+        }
+    }
+
+    if (losses >= 3) {
+        if (losses === 3 && wins === 0) {
+            return {
+                text: "0-3淘汰",
+                className: "e03"
+            };
+        }
+
+        if (losses === 3 && wins === 1) {
+            return {
+                text: "1-3淘汰",
+                className: "e13"
+            };
+        }
+
+        if (losses === 3 && wins === 2) {
+            return {
+                text: "2-3淘汰",
+                className: "e23"
+            };
+        }
+    }
+
+    return null;
+}
+
+function playerLinkHtml(player, small = true) {
+    const url = getLiveUrl(player);
+    const avatarClass = small
+        ? "player-avatar-small"
+        : "result-avatar";
+
+    const nameClass = small
+        ? "player-name-small"
+        : "result-name";
+
+    const liveHtml = player.is_live
+        ? '<span class="live-label">直播中</span>'
+        : "";
+
+    return `
+        <a
+            class="player-link"
+            href="${escapeHtml(url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="打开 ${escapeHtml(player.name)} 的Bilibili直播间"
+        >
+            <div class="${avatarClass}">
+                <img
+                    src="${getAvatarUrl(player)}"
+                    alt="${escapeHtml(player.name)}"
+                >
+                ${player.is_live
+                    ? '<span class="live-dot"></span>'
+                    : ""}
+            </div>
+
+            <div class="${nameClass}">
+                ${escapeHtml(player.name)}
+                ${liveHtml}
+            </div>
+        </a>
+    `;
+}
+
+function renderSwissBracket(data) {
+    const container = document.getElementById(
+        "rounds-container"
+    );
+
+    container.replaceChildren();
+
+    const matchesByRound = {};
+
+    data.matches
+        .filter(match => Number(match.round) < 100)
+        .forEach(match => {
+            const round = Number(match.round);
+
+            if (!matchesByRound[round]) {
+                matchesByRound[round] = [];
             }
-            if (losses >= 3) {
-                if (losses === 3 && wins === 0) return { text: '0-3淘汰', class: 'e03' };
-                if (losses === 3 && wins === 1) return { text: '1-3淘汰', class: 'e13' };
-                if (losses === 3 && wins === 2) return { text: '2-3淘汰', class: 'e23' };
-            }
-            return null;
-        }
 
-        function renderSwissBracket(data) {
-            const container = document.getElementById('rounds-container');
-            container.innerHTML = '';
+            matchesByRound[round].push(match);
+        });
 
-            // 按轮次分组比赛
-            const matchesByRound = {};
-            data.matches.filter(m => m.round < 100).forEach(match => {
-                if (!matchesByRound[match.round]) matchesByRound[match.round] = [];
-                matchesByRound[match.round].push(match);
-            });
+    for (let round = 1; round <= 5; round += 1) {
+        const roundDiv = document.createElement("div");
+        roundDiv.className = "round-column";
 
-            // 渲染5轮
-            for (let round = 1; round <= 5; round++) {
-                const roundDiv = document.createElement('div');
-                roundDiv.className = 'round-column';
+        const header = document.createElement("div");
+        header.className = "round-header";
+        header.textContent = `第 ${round} 轮`;
+        roundDiv.appendChild(header);
 
-                const header = document.createElement('div');
-                header.className = 'round-header';
-                header.textContent = `第 ${round} 轮`;
-                roundDiv.appendChild(header);
+        const matchesDiv = document.createElement("div");
+        matchesDiv.className = "round-matches";
 
-                const matchesDiv = document.createElement('div');
-                matchesDiv.className = 'round-matches';
+        const roundMatches = matchesByRound[round] || [];
 
-                const roundMatches = matchesByRound[round] || [];
-                
-                if (roundMatches.length === 0) {
-                    matchesDiv.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:2rem;">未开始</div>';
-                } else {
-                    roundMatches.forEach(match => {
-                        const p1 = data.players.find(p => p.id === match.p1);
-                        const p2 = data.players.find(p => p.id === match.p2);
+        if (!roundMatches.length) {
+            matchesDiv.innerHTML = `
+                <div class="empty">
+                    未开始
+                </div>
+            `;
+        } else {
+            roundMatches.forEach(match => {
+                const p1 = data.players.find(
+                    player => String(player.id) === String(match.p1)
+                );
 
-                        if (!p1 || !p2) return;
+                const p2 = data.players.find(
+                    player => String(player.id) === String(match.p2)
+                );
 
-                        const p1Status = getPlayerStatus(p1);
-                        const p2Status = getPlayerStatus(p2);
-
-                        const matchDiv = document.createElement('div');
-                        matchDiv.className = 'bracket-match';
-                        if (match.status === 'completed') matchDiv.classList.add('completed');
-
-                        matchDiv.innerHTML = `
-                            <div class="match-player ${match.winner === p1.id ? 'winner' : ''} ${p1Status}">
-                                <div class="player-avatar-small">
-                                    <img src="${getAvatarUrl(p1)}" alt="${p1.name}">
-                                </div>
-                                <div class="player-name-small">${p1.name}</div>
-                                <div class="player-record ${p1Status}">${p1.wins}-${p1.losses}</div>
-                            </div>
-                            <div class="vs-small">VS</div>
-                            <div class="match-player ${match.winner === p2.id ? 'winner' : ''} ${p2Status}">
-                                <div class="player-avatar-small">
-                                    <img src="${getAvatarUrl(p2)}" alt="${p2.name}">
-                                </div>
-                                <div class="player-name-small">${p2.name}</div>
-                                <div class="player-record ${p2Status}">${p2.wins}-${p2.losses}</div>
-                            </div>
-                        `;
-
-                        matchesDiv.appendChild(matchDiv);
-                    });
+                if (!p1 || !p2) {
+                    return;
                 }
 
-                roundDiv.appendChild(matchesDiv);
-                container.appendChild(roundDiv);
-            }
-        }
+                const p1Status = getPlayerStatus(p1);
+                const p2Status = getPlayerStatus(p2);
 
-        function renderResults(data) {
-            const qualifiedList = document.getElementById('qualified-list');
-            const eliminatedList = document.getElementById('eliminated-list');
+                const matchDiv = document.createElement("div");
+                matchDiv.className = "bracket-match";
 
-            const qualified = data.players.filter(p => p.wins >= 3).sort((a, b) => {
-                if (b.wins !== a.wins) return b.wins - a.wins;
-                return a.losses - b.losses;
+                if (match.status === "completed") {
+                    matchDiv.classList.add("completed");
+                }
+
+                matchDiv.innerHTML = `
+                    <div
+                        class="match-player
+                        ${String(match.winner) === String(p1.id)
+                            ? "winner"
+                            : ""}
+                        ${p1Status}"
+                    >
+                        ${playerLinkHtml(p1)}
+
+                        <div
+                            class="player-record ${p1Status}"
+                        >
+                            ${Number(p1.wins || 0)}-
+                            ${Number(p1.losses || 0)}
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div
+                        class="match-player
+                        ${String(match.winner) === String(p2.id)
+                            ? "winner"
+                            : ""}
+                        ${p2Status}"
+                    >
+                        ${playerLinkHtml(p2)}
+
+                        <div
+                            class="player-record ${p2Status}"
+                        >
+                            ${Number(p2.wins || 0)}-
+                            ${Number(p2.losses || 0)}
+                        </div>
+                    </div>
+                `;
+
+                matchesDiv.appendChild(matchDiv);
             });
-
-            const eliminated = data.players.filter(p => p.losses >= 3).sort((a, b) => {
-                if (a.losses !== b.losses) return a.losses - b.losses;
-                return b.wins - a.wins;
-            });
-
-            qualifiedList.innerHTML = '';
-            eliminatedList.innerHTML = '';
-
-            if (qualified.length === 0) {
-                qualifiedList.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:2rem;">暂无晋级选手</div>';
-            } else {
-                qualified.forEach(player => {
-                    const badge = getBadgeText(player.wins, player.losses);
-                    const div = document.createElement('div');
-                    div.className = 'result-player qualified';
-                    div.innerHTML = `
-                        <div class="result-avatar">
-                            <img src="${getAvatarUrl(player)}" alt="${player.name}">
-                        </div>
-                        <div class="result-info">
-                            <div class="result-name">${player.name}</div>
-                            <div class="result-record">战绩: ${player.wins}-${player.losses}</div>
-                        </div>
-                        ${badge ? `<div class="result-badge ${badge.class}">${badge.text}</div>` : ''}
-                    `;
-                    qualifiedList.appendChild(div);
-                });
-            }
-
-            if (eliminated.length === 0) {
-                eliminatedList.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:2rem;">暂无淘汰选手</div>';
-            } else {
-                eliminated.forEach(player => {
-                    const badge = getBadgeText(player.wins, player.losses);
-                    const div = document.createElement('div');
-                    div.className = 'result-player eliminated';
-                    div.innerHTML = `
-                        <div class="result-avatar">
-                            <img src="${getAvatarUrl(player)}" alt="${player.name}">
-                        </div>
-                        <div class="result-info">
-                            <div class="result-name">${player.name}</div>
-                            <div class="result-record">战绩: ${player.wins}-${player.losses}</div>
-                        </div>
-                        ${badge ? `<div class="result-badge ${badge.class}">${badge.text}</div>` : ''}
-                    `;
-                    eliminatedList.appendChild(div);
-                });
-            }
         }
 
-        async function loadData() {
-            try {
-                const resp = await fetch(`${API_BASE}/state/${TOURNAMENT_ID}`);
-                const data = await resp.json();
-                currentData = data;
+        roundDiv.appendChild(matchesDiv);
+        container.appendChild(roundDiv);
+    }
+}
 
-                renderSwissBracket(data);
-                renderResults(data);
-            } catch (e) {
-                console.error('加载数据失败:', e);
-            }
+function renderResults(data) {
+    const qualifiedList = document.getElementById(
+        "qualified-list"
+    );
+
+    const eliminatedList = document.getElementById(
+        "eliminated-list"
+    );
+
+    const qualified = data.players
+        .filter(player => Number(player.wins || 0) >= 3)
+        .sort((a, b) =>
+            Number(b.wins || 0) - Number(a.wins || 0)
+            || Number(a.losses || 0) - Number(b.losses || 0)
+        );
+
+    const eliminated = data.players
+        .filter(player => Number(player.losses || 0) >= 3)
+        .sort((a, b) =>
+            Number(a.losses || 0) - Number(b.losses || 0)
+            || Number(b.wins || 0) - Number(a.wins || 0)
+        );
+
+    qualifiedList.replaceChildren();
+    eliminatedList.replaceChildren();
+
+    if (!qualified.length) {
+        qualifiedList.innerHTML = `
+            <div class="empty">暂无晋级选手</div>
+        `;
+    } else {
+        qualified.forEach(player => {
+            const badge = getBadgeText(
+                player.wins,
+                player.losses
+            );
+
+            const div = document.createElement("div");
+            div.className = "result-player qualified";
+
+            div.innerHTML = `
+                ${playerLinkHtml(player, false)}
+
+                <div class="result-info">
+                    <div class="result-record">
+                        战绩：
+                        ${Number(player.wins || 0)}-
+                        ${Number(player.losses || 0)}
+                    </div>
+                </div>
+
+                ${badge
+                    ? `
+                        <div class="result-badge ${badge.className}">
+                            ${badge.text}
+                        </div>
+                    `
+                    : ""}
+            `;
+
+            qualifiedList.appendChild(div);
+        });
+    }
+
+    if (!eliminated.length) {
+        eliminatedList.innerHTML = `
+            <div class="empty">暂无淘汰选手</div>
+        `;
+    } else {
+        eliminated.forEach(player => {
+            const badge = getBadgeText(
+                player.wins,
+                player.losses
+            );
+
+            const div = document.createElement("div");
+            div.className = "result-player eliminated";
+
+            div.innerHTML = `
+                ${playerLinkHtml(player, false)}
+
+                <div class="result-info">
+                    <div class="result-record">
+                        战绩：
+                        ${Number(player.wins || 0)}-
+                        ${Number(player.losses || 0)}
+                    </div>
+                </div>
+
+                ${badge
+                    ? `
+                        <div class="result-badge ${badge.className}">
+                            ${badge.text}
+                        </div>
+                    `
+                    : ""}
+            `;
+
+            eliminatedList.appendChild(div);
+        });
+    }
+}
+
+function getVisitorId() {
+    const key = "vr-page-viewer-id";
+
+    try {
+        let value = localStorage.getItem(key);
+
+        if (!value) {
+            value = crypto.randomUUID();
+            localStorage.setItem(key, value);
         }
 
-        loadData();
-        setInterval(loadData, 30000);
-    </script>
+        return value;
+    } catch {
+        return "temporary-" + Math.random().toString(36);
+    }
+}
+
+function recordPageView() {
+    fetch("/api/analytics/visit", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            page: window.location.pathname,
+            visitor_id: getVisitorId()
+        }),
+        keepalive: true
+    }).catch(() => {
+        // 浏览量统计失败不影响页面。
+    });
+}
+
+async function loadData() {
+    try {
+        const response = await fetch(
+            `${API_BASE}/state/${TOURNAMENT_ID}`,
+            {
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `服务器返回 ${response.status}`
+            );
+        }
+
+        const data = await response.json();
+
+        if (
+            !data.tournament
+            || !Array.isArray(data.players)
+            || !Array.isArray(data.matches)
+        ) {
+            throw new Error(
+                "服务器返回的数据格式不正确"
+            );
+        }
+
+        currentData = data;
+
+        renderSwissBracket(data);
+        renderResults(data);
+    } catch (error) {
+        console.error("加载数据失败：", error);
+
+        document.getElementById(
+            "rounds-container"
+        ).innerHTML = `
+            <div class="empty">
+                读取数据失败：
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+    }
+}
+
+recordPageView();
+loadData();
+setInterval(loadData, 30000);
+</script>
 </body>
 </html>
