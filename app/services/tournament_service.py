@@ -34,12 +34,12 @@ HTTP_TIMEOUT_SECONDS = 20
 
 
 def _utc_now_naive():
-    """返回用于数据库的 UTC 无时区时间。"""
+    """返回数据库使用的 UTC 无时区时间。"""
     return datetime.now(UTC_TZ).replace(tzinfo=None)
 
 
 def _parse_db_time(value):
-    """数据库中的无时区时间按 UTC 解释。"""
+    """解析数据库时间；无时区值按 UTC 解释。"""
     if value is None:
         return None
 
@@ -58,11 +58,7 @@ def _parse_db_time(value):
 
 
 def _parse_api_time(value):
-    """
-    解析 VR/PSP API 时间。
-    API 时间无时区时按北京时间解释。
-    空值及 '-' 视为尚无结束时间。
-    """
+    """解析 API 时间；无时区值按北京时间解释。"""
     if value is None:
         return None
 
@@ -79,11 +75,13 @@ def _parse_api_time(value):
 
 
 def _month_strings(start_utc_naive, end_utc_naive):
-    """列出比赛时间窗口覆盖的月份，格式 YYYYMM。"""
-    start_utc = start_utc_naive.replace(tzinfo=UTC_TZ)
-    end_utc = end_utc_naive.replace(tzinfo=UTC_TZ)
-    start_bj = start_utc.astimezone(BEIJING_TZ)
-    end_bj = end_utc.astimezone(BEIJING_TZ)
+    """返回时间窗口覆盖月份，格式为 YYYYMM。"""
+    start_bj = start_utc_naive.replace(
+        tzinfo=UTC_TZ
+    ).astimezone(BEIJING_TZ)
+    end_bj = end_utc_naive.replace(
+        tzinfo=UTC_TZ
+    ).astimezone(BEIJING_TZ)
 
     months = []
     cursor = start_bj.replace(
@@ -106,13 +104,14 @@ def _month_strings(start_utc_naive, end_utc_naive):
 
 
 def _series_info(match_id):
-    """解析淘汰赛单局ID，例如 qf1g2 -> (qf1, 2)。"""
+    """解析淘汰赛单局 ID，例如 qf1g2 -> (qf1, 2)。"""
     import re
 
     found = re.match(
         r"^(qf[1-4]|sf[1-2]|final)g([1-3])$",
         str(match_id or ""),
     )
+
     if not found:
         return None, None
 
@@ -120,35 +119,59 @@ def _series_info(match_id):
 
 
 def _get_room_sessions(room_id, month):
-    """从 VR/PSP 数据接口获取指定直播间和月份的直播场次。"""
+    """
+    逐个检查 VR / PSP 数据源，按返回的 room_id 判断房间属于哪个源。
+    一个源返回空场次时继续尝试另一个源，避免把错误主机的空结果当作真实零营收。
+    """
+    room_id = str(room_id)
     errors = []
+    empty_responses = []
 
     for base_url in DATA_API_BASES:
         try:
             response = requests.get(
                 f"{base_url}/gift/live_sessions",
                 params={
-                    "room_id": str(room_id),
+                    "room_id": room_id,
                     "month": str(month),
                 },
                 timeout=HTTP_TIMEOUT_SECONDS,
             )
 
             if response.status_code in (400, 404):
-                errors.append(f"{base_url}: 房间或月份数据不存在")
+                errors.append(f"{base_url}: 房间或月份不存在")
                 continue
 
             response.raise_for_status()
             payload = response.json()
 
+            if not isinstance(payload, dict):
+                raise RuntimeError("接口响应不是 JSON 对象")
+
+            returned_room_id = payload.get("room_id")
             sessions = payload.get("sessions")
+
             if not isinstance(sessions, list):
                 raise RuntimeError("接口响应中没有 sessions 数组")
 
-            return sessions
+            if (
+                returned_room_id is not None
+                and str(returned_room_id) != room_id
+            ):
+                errors.append(f"{base_url}: 返回的房间号不匹配")
+                continue
+
+            if sessions:
+                return sessions
+
+            # 返回 room_id 匹配但场次为空，先继续试另一个数据源。
+            empty_responses.append((returned_room_id, sessions))
 
         except Exception as exc:
             errors.append(f"{base_url}: {exc}")
+
+    if empty_responses:
+        return []
 
     raise RuntimeError(
         f"查询直播间 {room_id} 的 {month} 数据失败；"
@@ -168,8 +191,8 @@ def _new_revenue_accumulator():
     }
 
 
-def _accumulate_bucket(result, bucket, window_start_utc, window_end_utc):
-    """按比赛窗口与15分钟桶的重叠时长比例累计。"""
+def _accumulate_bucket(result, bucket, window_start, window_end):
+    """按15分钟桶与比赛窗口的重叠时长比例累计。"""
     bucket_start = _parse_api_time(bucket.get("start_time"))
     bucket_end = _parse_api_time(bucket.get("end_time"))
 
@@ -182,8 +205,8 @@ def _accumulate_bucket(result, bucket, window_start_utc, window_end_utc):
     if bucket_end <= bucket_start:
         return
 
-    overlap_start = max(bucket_start, window_start_utc)
-    overlap_end = min(bucket_end, window_end_utc)
+    overlap_start = max(bucket_start, window_start)
+    overlap_end = min(bucket_end, window_end)
     overlap_seconds = (overlap_end - overlap_start).total_seconds()
 
     if overlap_seconds <= 0:
@@ -195,7 +218,9 @@ def _accumulate_bucket(result, bucket, window_start_utc, window_end_utc):
     result["gift"] += float(bucket.get("gift") or 0) * ratio
     result["guard"] += float(bucket.get("guard") or 0) * ratio
     result["sc"] += float(bucket.get("super_chat") or 0) * ratio
-    result["danmaku"] += float(bucket.get("danmaku_count") or 0) * ratio
+    result["danmaku"] += (
+        float(bucket.get("danmaku_count") or 0) * ratio
+    )
 
     result["peak_viewers"] = max(
         result["peak_viewers"],
@@ -206,13 +231,13 @@ def _accumulate_bucket(result, bucket, window_start_utc, window_end_utc):
     sample_count = float(bucket.get("sample_count") or 0)
 
     if average is not None and sample_count > 0:
-        weighted_count = sample_count * ratio
-        result["viewers_weighted"] += float(average) * weighted_count
-        result["viewers_weight"] += weighted_count
+        weighted = sample_count * ratio
+        result["viewers_weighted"] += float(average) * weighted
+        result["viewers_weight"] += weighted
 
 
-def _add_session_summary(result, live_session, ratio):
-    """按给定比例累加直播场次顶层汇总。"""
+def _accumulate_session_summary(result, live_session, ratio=1.0):
+    """累加场次汇总；部分重叠时按 ratio 估算。"""
     result["gift"] += float(live_session.get("gift") or 0) * ratio
     result["guard"] += float(live_session.get("guard") or 0) * ratio
     result["sc"] += float(live_session.get("super_chat") or 0) * ratio
@@ -226,22 +251,16 @@ def _add_session_summary(result, live_session, ratio):
     )
 
     average = live_session.get("avg_concurrency")
-    if average is not None:
-        start = _parse_api_time(live_session.get("start_time"))
-        end = _parse_api_time(live_session.get("end_time"))
+    session_start = _parse_api_time(live_session.get("start_time"))
+    session_end = _parse_api_time(live_session.get("end_time"))
 
-        if start and end and end > start:
-            duration = (end - start).total_seconds() * ratio
-        else:
-            duration = 1.0
-
+    if average is not None and session_start and session_end:
+        duration = max(
+            1.0,
+            (session_end - session_start).total_seconds() * ratio,
+        )
         result["viewers_weighted"] += float(average) * duration
         result["viewers_weight"] += duration
-
-
-def _json_filter_value(value):
-    """PostgREST 的等值过滤值。"""
-    return f"eq.{value}"
 
 
 class TournamentService:
@@ -254,7 +273,7 @@ class TournamentService:
     def _get_tournament(tournament_id):
         rows = TournamentService._db().select(
             TABLE_TOURNAMENTS,
-            filters={"id": _json_filter_value(int(tournament_id))},
+            filters={"id": f"eq.{int(tournament_id)}"},
             limit=1,
         )
         return rows[0] if rows else None
@@ -264,18 +283,18 @@ class TournamentService:
         return TournamentService._db().select(
             TABLE_PLAYERS,
             filters={
-                "tournament_id": _json_filter_value(int(tournament_id))
+                "tournament_id": f"eq.{int(tournament_id)}",
             },
         )
 
     @staticmethod
     def _get_matches(tournament_id, round_number=None):
         filters = {
-            "tournament_id": _json_filter_value(int(tournament_id))
+            "tournament_id": f"eq.{int(tournament_id)}",
         }
 
         if round_number is not None:
-            filters["round_number"] = _json_filter_value(int(round_number))
+            filters["round_number"] = f"eq.{int(round_number)}"
 
         rows = TournamentService._db().select(
             TABLE_MATCHES,
@@ -292,7 +311,6 @@ class TournamentService:
 
     @staticmethod
     def init_tournament(name, players):
-        """创建赛事及参赛选手。"""
         db = TournamentService._db()
 
         created = db.insert(
@@ -332,13 +350,13 @@ class TournamentService:
         except Exception:
             db.delete(
                 TABLE_TOURNAMENTS,
-                {"id": _json_filter_value(tournament_id)},
+                {"id": f"eq.{tournament_id}"},
             )
             raise
 
     @staticmethod
     def schedule_first_round(tournament_id, start_utc):
-        """创建第一轮固定对阵；start_utc 为 UTC naive datetime。"""
+        """创建固定第一轮；start_utc 是 UTC naive datetime。"""
         db = TournamentService._db()
         tournament = TournamentService._get_tournament(tournament_id)
 
@@ -347,7 +365,7 @@ class TournamentService:
 
         existing = TournamentService._get_matches(tournament_id, 1)
         if existing:
-            raise ValueError("第一轮已存在；为避免覆盖，本次没有创建")
+            raise ValueError("第一轮已存在，为避免覆盖未重复创建")
 
         pairings = [
             ("Ameki", "chu2u"),
@@ -372,6 +390,7 @@ class TournamentService:
             for name in pair
             if name.casefold() not in by_name
         ]
+
         if missing:
             raise ValueError("缺少选手：" + ", ".join(missing))
 
@@ -394,7 +413,7 @@ class TournamentService:
 
         db.update(
             TABLE_TOURNAMENTS,
-            {"id": _json_filter_value(tournament_id)},
+            {"id": f"eq.{int(tournament_id)}"},
             {
                 "start_time": start_utc.isoformat(sep=" "),
                 "current_round": 1,
@@ -412,24 +431,23 @@ class TournamentService:
 
     @staticmethod
     def _played_pairs(tournament_id):
-        matches = TournamentService._get_matches(tournament_id)
         played = set()
 
-        for match in matches:
+        for match in TournamentService._get_matches(tournament_id):
             if int(match.get("round_number") or 0) >= ROUND_QF:
                 continue
 
-            player1_id = match.get("player1_id")
-            player2_id = match.get("player2_id")
+            player1 = match.get("player1_id")
+            player2 = match.get("player2_id")
 
-            if player1_id and player2_id:
-                played.add(frozenset((str(player1_id), str(player2_id))))
+            if player1 and player2:
+                played.add(frozenset((str(player1), str(player2))))
 
         return played
 
     @staticmethod
     def _pair_swiss_players(players, played):
-        """同战绩组内随机配对，尝试避免重复对手。"""
+        """优先同战绩配对，并尝试避免重复对手。"""
         groups = defaultdict(list)
 
         for player in players:
@@ -448,6 +466,7 @@ class TournamentService:
 
             while len(group) >= 2:
                 player1 = group.pop()
+
                 partner_index = next(
                     (
                         index
@@ -473,6 +492,7 @@ class TournamentService:
 
         while len(floaters) >= 2:
             player1 = floaters.pop()
+
             partner_index = next(
                 (
                     index
@@ -495,7 +515,7 @@ class TournamentService:
 
         if floaters:
             raise RuntimeError(
-                "活动选手人数为奇数，当前系统没有设置轮空规则"
+                "活动选手人数为奇数，当前没有定义轮空规则"
             )
 
         return pairs
@@ -514,17 +534,17 @@ class TournamentService:
         if next_round > SWISS_MAX_ROUNDS:
             return {"success": False, "error": "已达到瑞士轮最大轮数"}
 
-        active = [
+        active_players = [
             player
             for player in TournamentService._get_players(tournament_id)
             if player.get("status") == "active"
         ]
 
-        if len(active) < 2:
+        if len(active_players) < 2:
             return {"success": False, "error": "活动选手不足"}
 
         pairs = TournamentService._pair_swiss_players(
-            active,
+            active_players,
             TournamentService._played_pairs(tournament_id),
         )
 
@@ -534,6 +554,7 @@ class TournamentService:
         )
 
         rows = []
+
         for index, (player1, player2) in enumerate(pairs, start=1):
             rows.append({
                 "tournament_id": int(tournament_id),
@@ -547,10 +568,14 @@ class TournamentService:
             })
 
         db.insert(TABLE_MATCHES, rows)
+
         db.update(
             TABLE_TOURNAMENTS,
-            {"id": _json_filter_value(tournament_id)},
-            {"current_round": next_round, "status": "running"},
+            {"id": f"eq.{int(tournament_id)}"},
+            {
+                "current_round": next_round,
+                "status": "running",
+            },
         )
 
         return {
@@ -589,22 +614,28 @@ class TournamentService:
 
         db.insert(
             TABLE_MATCHES,
-            [{
-                "tournament_id": int(tournament_id),
-                "match_id": f"qf{index + 1}g1",
-                "round_number": ROUND_QF,
-                "player1_id": qualified[index * 2]["player_id"],
-                "player2_id": qualified[index * 2 + 1]["player_id"],
-                "start_time": start.isoformat(sep=" "),
-                "end_time": end.isoformat(sep=" "),
-                "status": "running",
-            } for index in range(4)],
+            [
+                {
+                    "tournament_id": int(tournament_id),
+                    "match_id": f"qf{index + 1}g1",
+                    "round_number": ROUND_QF,
+                    "player1_id": qualified[index * 2]["player_id"],
+                    "player2_id": qualified[index * 2 + 1]["player_id"],
+                    "start_time": start.isoformat(sep=" "),
+                    "end_time": end.isoformat(sep=" "),
+                    "status": "running",
+                }
+                for index in range(4)
+            ],
         )
 
         db.update(
             TABLE_TOURNAMENTS,
-            {"id": _json_filter_value(tournament_id)},
-            {"current_round": ROUND_QF, "status": "running"},
+            {"id": f"eq.{int(tournament_id)}"},
+            {
+                "current_round": ROUND_QF,
+                "status": "running",
+            },
         )
 
         return {
@@ -628,6 +659,7 @@ class TournamentService:
         for match in matches:
             if int(match.get("round_number") or 0) >= ROUND_QF:
                 continue
+
             if match.get("status") != "completed":
                 continue
 
@@ -646,6 +678,7 @@ class TournamentService:
 
             if str(winner_id) in records:
                 records[str(winner_id)]["wins"] += 1
+
             if str(loser_id) in records:
                 records[str(loser_id)]["losses"] += 1
 
@@ -663,7 +696,7 @@ class TournamentService:
 
             db.update(
                 TABLE_PLAYERS,
-                {"player_id": _json_filter_value(player["player_id"])},
+                {"player_id": f"eq.{player['player_id']}"},
                 {
                     "wins": wins,
                     "losses": losses,
@@ -673,14 +706,12 @@ class TournamentService:
 
     @staticmethod
     def _series_games(tournament_id, series_id, round_number):
-        matches = TournamentService._get_matches(
-            tournament_id,
-            round_number,
-        )
-
         games = [
             match
-            for match in matches
+            for match in TournamentService._get_matches(
+                tournament_id,
+                round_number,
+            )
             if str(match.get("match_id", "")).startswith(series_id + "g")
         ]
 
@@ -705,17 +736,17 @@ class TournamentService:
             series_ids = ["qf1", "qf2", "qf3", "qf4"]
             next_round = ROUND_SF
             next_pairs = [("qf1", "qf2"), ("qf3", "qf4")]
-            next_series = ["sf1", "sf2"]
+            next_series_ids = ["sf1", "sf2"]
         elif current_round == ROUND_SF:
             series_ids = ["sf1", "sf2"]
             next_round = ROUND_FINAL
             next_pairs = [("sf1", "sf2")]
-            next_series = ["final"]
+            next_series_ids = ["final"]
         elif current_round == ROUND_FINAL:
             series_ids = ["final"]
             next_round = None
             next_pairs = []
-            next_series = []
+            next_series_ids = []
         else:
             return
 
@@ -731,11 +762,11 @@ class TournamentService:
             if not games:
                 return
 
-            # 有正在进行的局，等待其结束。
             if any(game.get("status") == "running" for game in games):
                 return
 
             wins = defaultdict(int)
+
             for game in games:
                 if game.get("status") == "completed" and game.get("winner_id"):
                     wins[str(game["winner_id"])] += 1
@@ -752,10 +783,12 @@ class TournamentService:
                 continue
 
             if len(games) >= 3:
-                print(f"淘汰赛数据异常：{series_id} 已打3局但无人达到2胜")
+                print(
+                    f"淘汰赛数据异常：{series_id} 已完成3局但无人达到2胜"
+                )
                 return
 
-            next_game = len(games) + 1
+            next_game_number = len(games) + 1
             start = _utc_now_naive()
             end = start + timedelta(hours=KNOCKOUT_GAME_HOURS)
 
@@ -763,7 +796,7 @@ class TournamentService:
                 TABLE_MATCHES,
                 {
                     "tournament_id": int(tournament_id),
-                    "match_id": f"{series_id}g{next_game}",
+                    "match_id": f"{series_id}g{next_game_number}",
                     "round_number": current_round,
                     "player1_id": games[0]["player1_id"],
                     "player2_id": games[0]["player2_id"],
@@ -780,19 +813,19 @@ class TournamentService:
         if current_round == ROUND_FINAL:
             db.update(
                 TABLE_TOURNAMENTS,
-                {"id": _json_filter_value(tournament_id)},
+                {"id": f"eq.{int(tournament_id)}"},
                 {"status": "finished"},
             )
             return
 
         start = _utc_now_naive()
         end = start + timedelta(hours=KNOCKOUT_GAME_HOURS)
-        new_matches = []
+        next_matches = []
 
         for index, (source1, source2) in enumerate(next_pairs):
-            new_matches.append({
+            next_matches.append({
                 "tournament_id": int(tournament_id),
-                "match_id": f"{next_series[index]}g1",
+                "match_id": f"{next_series_ids[index]}g1",
                 "round_number": next_round,
                 "player1_id": series_winners[source1],
                 "player2_id": series_winners[source2],
@@ -801,24 +834,26 @@ class TournamentService:
                 "status": "running",
             })
 
-        db.insert(TABLE_MATCHES, new_matches)
+        db.insert(TABLE_MATCHES, next_matches)
+
         db.update(
             TABLE_TOURNAMENTS,
-            {"id": _json_filter_value(tournament_id)},
-            {"current_round": next_round, "status": "running"},
+            {"id": f"eq.{int(tournament_id)}"},
+            {
+                "current_round": next_round,
+                "status": "running",
+            },
         )
 
     @staticmethod
     def get_player_revenue(room_id, start_time, end_time=None):
         """
-        汇总比赛时间窗口内的营收。
+        统计本场比赛时间窗口里的全部直播营收。
 
-        关键修正：
-        - 有15分钟桶时，通常按比赛窗口重叠部分累计；
-        - 正在直播且整场直播开始于比赛窗口内时，使用接口最新场次汇总，
-          避免未完成的最后一个统计桶导致明显少算；
-        - 正在直播但早于比赛窗口开始时，仍用15分钟桶截取窗口，
-          避免将开赛前营收计入。
+        - 完整落在比赛窗口内的直播，使用该场直播的汇总值；
+        - 跨过比赛开始或结束边界的直播，使用15分钟桶按重叠时间统计；
+        - 正在直播、end_time为空或为 '-'，按查询时刻作为临时结束时间；
+        - 营收总额 = 礼物 + 守护 + SC。
         """
         if not room_id or not start_time:
             raise ValueError("营收查询需要 room_id 和 start_time")
@@ -831,7 +866,7 @@ class TournamentService:
         )
 
         if window_start_naive is None or window_end_naive is None:
-            raise ValueError("比赛开始或结束时间无效")
+            raise ValueError("比赛时间格式无效")
 
         if window_end_naive <= window_start_naive:
             return {
@@ -847,8 +882,7 @@ class TournamentService:
         window_start = window_start_naive.replace(tzinfo=UTC_TZ)
         window_end = window_end_naive.replace(tzinfo=UTC_TZ)
         now_utc = datetime.now(UTC_TZ)
-
-        result = _new_revenue_accumulator()
+        totals = _new_revenue_accumulator()
 
         for month in _month_strings(
             window_start_naive,
@@ -868,16 +902,17 @@ class TournamentService:
                     live_session.get("end_time")
                 )
 
-                # API 空值或 "-" 代表直播仍进行中；
-                # 以现在作为临时结束点，但不超过比赛窗口结束时间。
                 is_active = session_end is None
-                effective_end = (
-                    min(now_utc, window_end)
-                    if is_active
-                    else session_end
-                )
 
-                if effective_end <= window_start or session_start >= window_end:
+                if is_active:
+                    effective_end = min(now_utc, window_end)
+                else:
+                    effective_end = session_end
+
+                if (
+                    effective_end <= window_start
+                    or session_start >= window_end
+                ):
                     continue
 
                 overlap_start = max(session_start, window_start)
@@ -889,42 +924,56 @@ class TournamentService:
                 if overlap_seconds <= 0:
                     continue
 
-                buckets = live_session.get("stats_15m") or []
+                # 直播完整处于比赛窗口内时，顶层场次汇总是该场直播当前总额。
+                # 这包括从比赛开始后开播、目前仍在直播的场次。
+                fully_inside_window = (
+                    session_start >= window_start
+                    and effective_end <= window_end
+                )
 
-                # 正在直播且在本场比赛窗口开始后开播：
-                # 接口顶层汇总通常比最后一个未完成的15分钟桶更新，
-                # 此时用整场当前汇总替代它的分桶，避免漏掉最新收入。
-                if is_active and session_start >= window_start:
-                    _add_session_summary(result, live_session, 1.0)
+                if fully_inside_window:
+                    _accumulate_session_summary(
+                        totals,
+                        live_session,
+                        1.0,
+                    )
                     continue
 
-                # 其他场次有桶时按桶截取，避免计入窗口外收入。
+                # 直播跨越比赛起止边界时，用分桶数据裁出窗口内部分。
+                buckets = live_session.get("stats_15m") or []
+
                 if buckets:
                     for bucket in buckets:
                         _accumulate_bucket(
-                            result,
+                            totals,
                             bucket,
                             window_start,
                             window_end,
                         )
                     continue
 
-                # 没有桶的已结束场次，按重叠时长比例估算。
-                session_seconds = max(
+                # 没有分桶时只能按直播时长占比估算边界直播。
+                session_duration = max(
                     1.0,
                     (effective_end - session_start).total_seconds(),
                 )
-                ratio = min(1.0, overlap_seconds / session_seconds)
-                _add_session_summary(result, live_session, ratio)
+                ratio = min(1.0, overlap_seconds / session_duration)
 
-        gift = round(result["gift"], 2)
-        guard = round(result["guard"], 2)
-        sc = round(result["sc"], 2)
+                _accumulate_session_summary(
+                    totals,
+                    live_session,
+                    ratio,
+                )
+
+        gift = round(totals["gift"], 2)
+        guard = round(totals["guard"], 2)
+        sc = round(totals["sc"], 2)
 
         avg_viewers = 0
-        if result["viewers_weight"] > 0:
+        if totals["viewers_weight"] > 0:
             avg_viewers = round(
-                result["viewers_weighted"] / result["viewers_weight"]
+                totals["viewers_weighted"]
+                / totals["viewers_weight"]
             )
 
         return {
@@ -932,14 +981,14 @@ class TournamentService:
             "gift_amount": gift,
             "guard_amount": guard,
             "total_revenue": round(gift + guard + sc, 2),
-            "danmaku_count": round(result["danmaku"]),
-            "peak_viewers": result["peak_viewers"],
+            "danmaku_count": round(totals["danmaku"]),
+            "peak_viewers": totals["peak_viewers"],
             "avg_viewers": avg_viewers,
         }
 
     @staticmethod
     def _save_snapshot(match, player_id, revenue, snapshot_time):
-        """保存快照；表没有 guard_amount 列，将 gift+guard 存在 gift_amount。"""
+        """保存快照；当前表没有 guard_amount 列，gift 列存 gift+guard。"""
         TournamentService._db().insert(
             TABLE_REVENUE,
             {
@@ -963,7 +1012,7 @@ class TournamentService:
 
         rows = db.select(
             TABLE_MATCHES,
-            filters={"match_id": _json_filter_value(match_id)},
+            filters={"match_id": f"eq.{match_id}"},
             limit=1,
         )
 
@@ -971,14 +1020,16 @@ class TournamentService:
             return None
 
         match = rows[0]
-        players = TournamentService._get_players(match["tournament_id"])
-        by_id = {
+        players = TournamentService._get_players(
+            match["tournament_id"]
+        )
+        player_map = {
             str(player["player_id"]): player
             for player in players
         }
 
-        player1 = by_id.get(str(match.get("player1_id")))
-        player2 = by_id.get(str(match.get("player2_id")))
+        player1 = player_map.get(str(match.get("player1_id")))
+        player2 = player_map.get(str(match.get("player2_id")))
 
         if not player1 or not player2:
             return None
@@ -1000,10 +1051,16 @@ class TournamentService:
         )
 
         TournamentService._save_snapshot(
-            match, player1["player_id"], revenue1, now
+            match,
+            player1["player_id"],
+            revenue1,
+            now,
         )
         TournamentService._save_snapshot(
-            match, player2["player_id"], revenue2, now
+            match,
+            player2["player_id"],
+            revenue2,
+            now,
         )
 
         return {
@@ -1014,6 +1071,7 @@ class TournamentService:
 
     @staticmethod
     def _latest_snapshots(match_ids):
+        """每场、每位选手取时间最新的快照；按 datetime 比较而非字符串比较。"""
         if not match_ids:
             return {}
 
@@ -1028,16 +1086,22 @@ class TournamentService:
 
         for row in rows:
             key = (
-                str(row["match_id"]),
-                str(row["player_id"]),
+                str(row.get("match_id")),
+                str(row.get("player_id")),
             )
-            old = latest.get(key)
+            current_time = _parse_db_time(row.get("snapshot_time"))
 
-            if (
-                old is None
-                or str(row.get("snapshot_time", ""))
-                > str(old.get("snapshot_time", ""))
-            ):
+            if current_time is None:
+                continue
+
+            previous = latest.get(key)
+            previous_time = (
+                _parse_db_time(previous.get("snapshot_time"))
+                if previous
+                else None
+            )
+
+            if previous_time is None or current_time > previous_time:
                 latest[key] = row
 
         return latest
@@ -1052,14 +1116,14 @@ class TournamentService:
 
         joined = ",".join(str(match_id) for match_id in match_ids)
 
-        votes = TournamentService._db().select(
+        rows = TournamentService._db().select(
             TABLE_VOTES,
             filters={"match_id": f"in.({joined})"},
         )
 
         counts = defaultdict(lambda: defaultdict(int))
 
-        for vote in votes:
+        for vote in rows:
             counts[str(vote["match_id"])][str(vote["player_id"])] += 1
 
         return {
@@ -1070,27 +1134,36 @@ class TournamentService:
     @staticmethod
     def vote(match_id, player_id, voter_fingerprint, voter_ip):
         if not voter_fingerprint:
-            return {"success": False, "error": "missing_fingerprint"}
+            return {
+                "success": False,
+                "error": "missing_fingerprint",
+            }
 
         db = TournamentService._db()
 
         matches = db.select(
             TABLE_MATCHES,
-            filters={"match_id": _json_filter_value(match_id)},
+            filters={"match_id": f"eq.{match_id}"},
             limit=1,
         )
 
         if not matches:
-            return {"success": False, "error": "match_not_found"}
+            return {
+                "success": False,
+                "error": "match_not_found",
+            }
 
         match = matches[0]
-        valid_players = {
+        eligible = {
             str(match.get("player1_id")),
             str(match.get("player2_id")),
         }
 
-        if str(player_id) not in valid_players:
-            return {"success": False, "error": "player_not_in_match"}
+        if str(player_id) not in eligible:
+            return {
+                "success": False,
+                "error": "player_not_in_match",
+            }
 
         try:
             db.insert(
@@ -1105,10 +1178,11 @@ class TournamentService:
             return {"success": True}
 
         except MemFireError as exc:
-            # 表上有 unique(match_id, voter_fingerprint) 时，
-            # 重复投票通常返回 409。
             if exc.status_code == 409:
-                return {"success": False, "error": "already_voted"}
+                return {
+                    "success": False,
+                    "error": "already_voted",
+                }
             raise
 
     @staticmethod
@@ -1154,7 +1228,7 @@ class TournamentService:
 
         TournamentService._db().update(
             TABLE_MATCHES,
-            {"match_id": _json_filter_value(match["match_id"])},
+            {"match_id": f"eq.{match['match_id']}"},
             {
                 "winner_id": str(winner_id),
                 "player1_revenue": revenue1["total_revenue"],
@@ -1186,7 +1260,6 @@ class TournamentService:
                     continue
 
                 end_time = _parse_db_time(match.get("end_time"))
-
                 if end_time is None or end_time > now:
                     continue
 
@@ -1224,18 +1297,18 @@ class TournamentService:
                         tournament_id
                     )
 
-                    advanced_count = sum(
+                    advanced = sum(
                         1
                         for player in refreshed_players
                         if player.get("status") == "advanced"
                     )
-                    eliminated_count = sum(
+                    eliminated = sum(
                         1
                         for player in refreshed_players
                         if player.get("status") == "eliminated"
                     )
 
-                    if advanced_count == 8 and eliminated_count == 8:
+                    if advanced == 8 and eliminated == 8:
                         TournamentService.start_knockout_stage(
                             tournament_id
                         )
@@ -1255,7 +1328,7 @@ class TournamentService:
             filters={"status": "eq.running"},
         )
 
-        updated_count = 0
+        updated = 0
 
         for match in matches:
             try:
@@ -1263,13 +1336,13 @@ class TournamentService:
                     match["match_id"]
                 )
                 if result:
-                    updated_count += 1
+                    updated += 1
             except Exception as exc:
                 print(
                     f"更新比赛 {match.get('match_id')} 营收失败: {exc}"
                 )
 
-        return updated_count
+        return updated
 
     @staticmethod
     def run_scheduler_cycle(update_revenue=True):
@@ -1288,14 +1361,8 @@ class TournamentService:
         players = TournamentService._get_players(tournament_id)
         matches = TournamentService._get_matches(tournament_id)
         match_ids = [match["match_id"] for match in matches]
-
         snapshots = TournamentService._latest_snapshots(match_ids)
-        vote_counts = TournamentService.get_vote_counts(match_ids)
-
-        players_by_id = {
-            str(player["player_id"]): player
-            for player in players
-        }
+        votes = TournamentService.get_vote_counts(match_ids)
 
         series_map = {}
 
@@ -1344,21 +1411,21 @@ class TournamentService:
                 if player_id is None:
                     continue
 
-                latest = snapshots.get(
+                snapshot = snapshots.get(
                     (
                         str(match["match_id"]),
                         str(player_id),
                     )
                 )
 
-                if latest:
+                if snapshot:
                     revenue[str(player_id)] = {
-                        "sc": latest.get("sc_amount") or 0,
-                        "gift": latest.get("gift_amount") or 0,
-                        "total": latest.get("total_revenue") or 0,
-                        "danmaku": latest.get("danmaku_count") or 0,
-                        "peak_viewers": latest.get("peak_viewers") or 0,
-                        "avg_viewers": latest.get("avg_viewers") or 0,
+                        "sc": snapshot.get("sc_amount") or 0,
+                        "gift": snapshot.get("gift_amount") or 0,
+                        "total": snapshot.get("total_revenue") or 0,
+                        "danmaku": snapshot.get("danmaku_count") or 0,
+                        "peak_viewers": snapshot.get("peak_viewers") or 0,
+                        "avg_viewers": snapshot.get("avg_viewers") or 0,
                     }
                 else:
                     revenue[str(player_id)] = {
@@ -1382,7 +1449,7 @@ class TournamentService:
                 "start_time": match.get("start_time"),
                 "end_time": match.get("end_time"),
                 "revenue": revenue,
-                "votes": vote_counts.get(str(match["match_id"]), {}),
+                "votes": votes.get(str(match["match_id"]), {}),
             }
 
             if series_id:
