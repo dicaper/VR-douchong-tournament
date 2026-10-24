@@ -1,16 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>VR鏂楄櫕澶ц禌 2026 路 姣旇禌璇︽儏</title>
-
+    <title>VR斗虫大赛 2026 · 比赛详情</title>
     <style>
         :root {
             --bg: #080b12;
             --panel: #111824;
             --card: #182231;
-            --inner: #101722;
+            --card-inner: #101722;
             --text: #eef4fb;
             --muted: #9aaabd;
             --border: #33445a;
@@ -20,9 +19,7 @@
             --red: #fb7185;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -41,53 +38,11 @@
 
         h1 {
             margin: 0;
-            color: var(--blue);
             font-size: clamp(28px, 5vw, 48px);
-        }
-
-        h2 {
-            margin: 0 0 16px;
             color: var(--blue);
-            font-size: 21px;
         }
 
-        .subtitle {
-            margin-top: 8px;
-            color: var(--muted);
-        }
-
-        .data-license-top {
-            width: min(1100px, 94%);
-            margin: 22px auto 0;
-            padding: 14px 20px;
-            color: var(--muted);
-            background: #101722;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 13px;
-            line-height: 1.8;
-            text-align: center;
-        }
-
-        .data-license-top strong {
-            color: var(--text);
-        }
-
-        .data-license-top a {
-            color: var(--blue);
-            text-decoration: none;
-        }
-
-        .data-license-top a:hover {
-            text-decoration: underline;
-        }
-
-        .data-license-top code {
-            color: #d7e3f1;
-            background: var(--card);
-            padding: 2px 5px;
-            border-radius: 4px;
-        }
+        .subtitle { color: var(--muted); margin-top: 8px; }
 
         .container {
             width: min(1500px, 96%);
@@ -112,8 +67,7 @@
             text-decoration: none;
         }
 
-        nav a.active,
-        nav a:hover {
+        nav a.active, nav a:hover {
             color: #06111b;
             background: var(--blue);
         }
@@ -122,28 +76,16 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
             gap: 12px;
-            padding: 18px;
-            margin-bottom: 20px;
             background: var(--panel);
             border: 1px solid var(--border);
             border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
         }
 
-        .status-item {
-            text-align: center;
-        }
-
-        .status-label {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .status-value {
-            margin-top: 5px;
-            color: var(--blue);
-            font-size: 19px;
-            font-weight: 800;
-        }
+        .status-item { text-align: center; }
+        .status-label { color: var(--muted); font-size: 13px; }
+        .status-value { color: var(--blue); font-size: 19px; font-weight: 800; margin-top: 5px; }
 
         .layout {
             display: grid;
@@ -160,20 +102,26 @@
             border-radius: 14px;
         }
 
+        h2 {
+            color: var(--blue);
+            font-size: 21px;
+            margin: 0 0 16px;
+        }
+
         .round-heading {
-            padding-bottom: 8px;
-            margin: 22px 0 12px;
             color: var(--muted);
             border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin: 22px 0 12px;
             font-weight: 700;
         }
 
         .match-card {
-            padding: 14px;
-            margin-bottom: 14px;
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
         }
 
         .match-top {
@@ -183,27 +131,22 @@
             gap: 8px;
             padding-bottom: 10px;
             margin-bottom: 10px;
-            color: var(--muted);
             border-bottom: 1px solid var(--border);
+            color: var(--muted);
             font-size: 13px;
         }
 
         .badge {
-            padding: 4px 10px;
-            color: #08111b;
-            background: var(--gold);
             border-radius: 20px;
+            padding: 4px 10px;
             font-size: 12px;
             font-weight: 800;
+            color: #08111b;
+            background: var(--gold);
         }
 
-        .badge.running {
-            background: var(--green);
-        }
-
-        .badge.completed {
-            background: #a6b3c5;
-        }
+        .badge.running { background: var(--green); }
+        .badge.completed { background: #a6b3c5; }
 
         .player {
             display: grid;
@@ -211,154 +154,58 @@
             gap: 12px;
             align-items: center;
             padding: 11px;
-            background: var(--inner);
             border: 2px solid transparent;
             border-radius: 9px;
+            background: var(--card-inner);
         }
 
         .player.winner {
-            background: rgba(110, 231, 183, .08);
             border-color: var(--green);
-        }
-
-        .player-link {
-            display: contents;
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .avatar-wrap {
-            position: relative;
-            width: 48px;
-            height: 48px;
+            background: rgba(110, 231, 183, .08);
         }
 
         .avatar {
             width: 46px;
             height: 46px;
+            border-radius: 50%;
             object-fit: cover;
-            background: #263348;
             border: 2px solid var(--blue);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform .2s ease, border-color .2s ease;
+            background: #263348;
         }
 
-        .avatar:hover {
-            border-color: var(--green);
-            transform: scale(1.08);
-        }
-
-        .live-dot {
-            position: absolute;
-            right: -2px;
-            bottom: 0;
-            width: 12px;
-            height: 12px;
-            background: #ef4444;
-            border: 2px solid var(--inner);
-            border-radius: 50%;
-        }
-
-        .player-name {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 7px;
-            font-size: 17px;
-            font-weight: 800;
-        }
-
-        .live-label {
-            display: inline-flex;
-            align-items: center;
-            padding: 2px 7px;
-            color: #06111b;
-            background: var(--green);
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 800;
-            line-height: 1.4;
-        }
-
-        .live-label::before {
-            width: 6px;
-            height: 6px;
-            margin-right: 4px;
-            content: "";
-            background: #ef4444;
-            border-radius: 50%;
-        }
-
-        .record {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .concurrency {
-            color: var(--green);
-            font-size: 12px;
-        }
-
-        .revenue {
-            text-align: right;
-        }
-
-        .revenue-label {
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .revenue-value {
-            color: var(--blue);
-            font-size: 18px;
-            font-weight: 800;
-        }
-
-        .vs {
-            padding: 8px;
-            color: var(--muted);
-            text-align: center;
-            font-weight: 800;
-        }
+        .player-name { font-weight: 800; font-size: 17px; }
+        .record { color: var(--muted); font-size: 13px; }
+        .revenue { text-align: right; }
+        .revenue-label { color: var(--muted); font-size: 12px; }
+        .revenue-value { color: var(--blue); font-size: 18px; font-weight: 800; }
+        .vs { text-align: center; color: var(--muted); font-weight: 800; padding: 8px; }
 
         .match-time {
-            margin-top: 11px;
             color: var(--muted);
-            text-align: center;
             font-size: 13px;
+            text-align: center;
+            margin-top: 11px;
         }
 
         .vote {
-            padding-top: 12px;
-            margin-top: 13px;
             border-top: 1px solid var(--border);
+            margin-top: 13px;
+            padding-top: 12px;
         }
 
-        .vote-title {
-            color: var(--muted);
-            text-align: center;
-            font-size: 13px;
-        }
+        .vote-title { text-align: center; color: var(--muted); font-size: 13px; }
 
         .vote-bar {
             display: flex;
             height: 10px;
             overflow: hidden;
-            margin: 10px 0 7px;
             background: #263348;
             border-radius: 20px;
+            margin: 10px 0 7px;
         }
 
-        .vote-bar-left {
-            background: var(--blue);
-            transition: width .25s ease;
-        }
-
-        .vote-bar-right {
-            background: var(--gold);
-            transition: width .25s ease;
-        }
+        .vote-bar-left { background: var(--blue); transition: width .25s ease; }
+        .vote-bar-right { background: var(--gold); transition: width .25s ease; }
 
         .vote-totals {
             display: flex;
@@ -368,9 +215,7 @@
             font-size: 12px;
         }
 
-        .vote-totals strong {
-            color: var(--text);
-        }
+        .vote-totals strong { color: var(--text); }
 
         .vote-buttons {
             display: grid;
@@ -380,36 +225,33 @@
         }
 
         .vote-button {
-            padding: 10px 8px;
             color: var(--text);
-            background: var(--inner);
+            background: var(--card-inner);
             border: 1px solid var(--border);
             border-radius: 8px;
+            padding: 10px 8px;
             font-weight: 700;
             cursor: pointer;
         }
 
         .vote-button:hover:not(:disabled) {
-            color: var(--blue);
             border-color: var(--blue);
+            color: var(--blue);
         }
 
         .vote-button.voted-left {
+            border-color: var(--blue);
             color: var(--blue);
             background: rgba(56, 189, 248, .12);
-            border-color: var(--blue);
         }
 
         .vote-button.voted-right {
+            border-color: var(--gold);
             color: var(--gold);
             background: rgba(251, 191, 36, .12);
-            border-color: var(--gold);
         }
 
-        .vote-button:disabled {
-            opacity: .65;
-            cursor: default;
-        }
+        .vote-button:disabled { opacity: .65; cursor: default; }
 
         .standings {
             max-height: 820px;
@@ -421,77 +263,44 @@
             grid-template-columns: 30px 42px minmax(0, 1fr) auto;
             gap: 8px;
             align-items: center;
-            padding: 8px;
-            margin-bottom: 7px;
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 7px;
         }
 
-        .standing-row.qualified {
-            border-color: var(--green);
-        }
+        .standing-row.qualified { border-color: var(--green); }
+        .standing-row.eliminated { opacity: .55; }
+        .rank { color: var(--muted); font-weight: 800; }
+        .standing-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .standing-name { font-weight: 700; }
+        .standing-record { font-weight: 800; white-space: nowrap; }
+        .standing-row.qualified .standing-record { color: var(--green); }
+        .standing-row.eliminated .standing-record { color: var(--red); }
 
-        .standing-row.eliminated {
-            opacity: .55;
-        }
-
-        .rank {
-            color: var(--muted);
-            font-weight: 800;
-        }
-
-        .standing-avatar {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .standing-name {
-            font-weight: 700;
-        }
-
-        .standing-record {
-            white-space: nowrap;
-            font-weight: 800;
-        }
-
-        .standing-row.qualified .standing-record {
-            color: var(--green);
-        }
-
-        .standing-row.eliminated .standing-record {
-            color: var(--red);
-        }
-
-        .notice,
-        .error {
+        .notice, .error {
             padding: 18px;
-            color: var(--muted);
-            background: var(--card);
             border-radius: 10px;
             text-align: center;
+            color: var(--muted);
+            background: var(--card);
         }
 
-        .error {
-            color: var(--red);
-        }
+        .error { color: var(--red); }
 
         .modal {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 10;
+            padding: 16px;
             align-items: center;
             justify-content: center;
-            padding: 16px;
             background: rgba(0, 0, 0, .78);
         }
 
-        .modal.open {
-            display: flex;
-        }
+        .modal.open { display: flex; }
 
         .modal-content {
             width: min(760px, 100%);
@@ -505,8 +314,8 @@
 
         .modal-head {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             gap: 12px;
         }
 
@@ -526,292 +335,170 @@
         }
 
         .detail-player {
-            padding: 13px;
             background: var(--card);
             border-radius: 10px;
+            padding: 13px;
         }
 
-        .detail-player h3 {
-            color: var(--blue);
-            text-align: center;
-        }
-
-        .detail-stat {
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            padding: 7px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .detail-stat:last-child {
-            border-bottom: 0;
-        }
-
-        .detail-stat span:first-child {
-            color: var(--muted);
-        }
+        .detail-player h3 { color: var(--blue); text-align: center; }
+        .detail-stat { display: flex; justify-content: space-between; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+        .detail-stat:last-child { border-bottom: 0; }
+        .detail-stat span:first-child { color: var(--muted); }
 
         footer {
-            padding: 22px;
-            margin-top: 30px;
+            text-align: center;
             color: var(--muted);
             border-top: 1px solid var(--border);
-            text-align: center;
+            padding: 22px;
+            margin-top: 30px;
         }
 
         @media (max-width: 900px) {
-            .layout {
-                grid-template-columns: 1fr;
-            }
-
-            .standings {
-                max-height: 500px;
-            }
+            .layout { grid-template-columns: 1fr; }
+            .standings { max-height: 500px; }
         }
 
         @media (max-width: 520px) {
-            .panel {
-                padding: 13px;
-            }
-
-            .player {
-                grid-template-columns: 40px minmax(0, 1fr) auto;
-                gap: 8px;
-                padding: 8px;
-            }
-
-            .avatar-wrap {
-                width: 40px;
-                height: 40px;
-            }
-
-            .avatar {
-                width: 38px;
-                height: 38px;
-            }
-
-            .player-name {
-                font-size: 15px;
-            }
-
-            .revenue-value {
-                font-size: 15px;
-            }
-
-            .vote-buttons,
-            .detail-columns {
-                grid-template-columns: 1fr;
-            }
-
-            .vote-totals {
-                font-size: 11px;
-            }
+            .panel { padding: 13px; }
+            .player { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 8px; padding: 8px; }
+            .avatar { width: 38px; height: 38px; }
+            .player-name { font-size: 15px; }
+            .revenue-value { font-size: 15px; }
+            .vote-buttons { grid-template-columns: 1fr; }
+            .vote-totals { font-size: 11px; }
+            .detail-columns { grid-template-columns: 1fr; }
         }
     </style>
 </head>
-
 <body>
 <header>
-    <h1>VR鏂楄櫕澶ц禌 2026</h1>
-    <div class="subtitle">姣旇禌璇︽儏 路 褰撳墠杞 路 瀹炴椂鏀寔鐜?/div>
-
-    <div class="data-license-top">
-        <strong>鏁版嵁鏉ユ簮涓庤鍙０鏄?/strong><br>
-        鏈綉绔欓儴鍒嗙洿鎾暟鎹潵鑷?
-        <a
-            href="https://github.com/qianqiuzy/VR_douchong"
-            target="_blank"
-            rel="noopener noreferrer"
-        >VR_douchong</a>
-        椤圭洰鍙婂叾鐩稿叧鏁版嵁鎺ュ彛
-        <code>vr.qianqiuzy.cn</code> /
-        <code>psp.qianqiuzy.cn</code>銆?br>
-        鏁版嵁璁稿彲璇存槑璇峰弬闃?
-        <a
-            href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
-            target="_blank"
-            rel="noopener noreferrer"
-        >LICENSE-DATA.md</a>銆?br>
-        鏈綉绔欎粎鐢ㄤ簬闈炲晢涓氬叴瓒ｅ睍绀哄拰璧涗簨濞变箰鐢ㄩ€斻€?
-    </div>
+    <h1>VR斗虫大赛 2026</h1>
+    <div class="subtitle">比赛详情 · 当前轮次 · 实时支持率</div>
 </header>
 
 <main class="container">
     <nav>
-        <a href="swiss.html" class="active">姣旇禌璇︽儏</a>
-        <a href="swiss_bracket.html">鐟炲＋杞檵绾у浘</a>
-        <a href="playoffs.html">娣樻卑璧?/a>
+        <a href="swiss.html" class="active">比赛详情</a>
+        <a href="swiss_bracket.html">瑞士轮晋级图</a>
+        <a href="playoffs.html">淘汰赛</a>
     </nav>
 
     <section class="status-bar">
         <div class="status-item">
-            <div class="status-label">璧涗簨鐘舵€?/div>
-            <div class="status-value" id="event-status">鍔犺浇涓?/div>
+            <div class="status-label">赛事状态</div>
+            <div class="status-value" id="event-status">加载中</div>
         </div>
-
         <div class="status-item">
-            <div class="status-label">褰撳墠闃舵</div>
+            <div class="status-label">当前阶段</div>
             <div class="status-value" id="stage-label">--</div>
         </div>
-
         <div class="status-item">
-            <div class="status-label">宸叉檵绾?/div>
+            <div class="status-label">已晋级</div>
             <div class="status-value" id="qualified-count">0</div>
         </div>
-
         <div class="status-item">
-            <div class="status-label">宸叉窐姹?/div>
+            <div class="status-label">已淘汰</div>
             <div class="status-value" id="eliminated-count">0</div>
         </div>
-
         <div class="status-item">
-            <div class="status-label">椤甸潰鏇存柊鏃堕棿</div>
+            <div class="status-label">页面更新时间</div>
             <div class="status-value" id="updated-time">--:--</div>
         </div>
     </section>
 
     <div class="layout">
         <section class="panel">
-            <h2>姣旇禌瀵归樀</h2>
-            <div id="matches-container">
-                <div class="notice">姝ｅ湪璇诲彇姣旇禌鏁版嵁鈥?/div>
-            </div>
+            <h2>比赛对阵</h2>
+            <div id="matches-container"><div class="notice">正在读取比赛数据…</div></div>
         </section>
 
         <aside class="panel">
-            <h2>閫夋墜鎴樼哗</h2>
+            <h2>选手战绩</h2>
             <div id="standings-container" class="standings"></div>
         </aside>
     </div>
 </main>
 
-<footer>
-    <p>VR鏂楄櫕澶ц禌 2026 路 闈炲晢涓氬叴瓒ｉ」鐩?/p>
+<footer>VR斗虫大赛 2026 · 比赛状态和投票由赛事服务器提供
+<div class="data-license">
+    <strong>数据来源与许可声明</strong><br>
+    本网站部分直播数据来自
+    <a href="https://github.com/qianqiuzy/VR_douchong"
+       target="_blank"
+       rel="noopener noreferrer">
+        VR_douchong
+    </a>
+    项目及其相关数据接口
+    <code>vr.qianqiuzy.cn</code> /
+    <code>psp.qianqiuzy.cn</code>。<br>
+    数据许可说明请参阅
+    <a href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
+       target="_blank"
+       rel="noopener noreferrer">
+        LICENSE-DATA.md
+    </a>。<br>
+    本网站仅用于非商业兴趣展示和赛事娱乐用途。
+    如需商业使用，请先取得数据权利人授权。
+</div>
+
 </footer>
 
-<div
-    class="modal"
-    id="detail-modal"
-    role="dialog"
-    aria-modal="true"
->
+<div class="modal" id="detail-modal" role="dialog" aria-modal="true">
     <div class="modal-content">
         <div class="modal-head">
-            <h2 id="modal-title">瀵瑰眬鏁版嵁</h2>
-            <button
-                class="close"
-                type="button"
-                aria-label="鍏抽棴"
-                onclick="closeDetail()"
-            >脳</button>
+            <h2 id="modal-title">对局数据</h2>
+            <button class="close" type="button" aria-label="关闭" onclick="closeDetail()">×</button>
         </div>
-
         <div id="modal-body"></div>
     </div>
 </div>
 
 <script>
-"use strict";
+'use strict';
 
 const API_BASE = "https://nameless-grass-c2e3.1791870448.workers.dev/api/tournament";
 const TOURNAMENT_ID = 1;
-const JPG_PLAYERS = new Set(["Rhea", "Melody"]);
-const STAGE_NAMES = {
-    100: "鍏己璧?,
-    101: "鍗婂喅璧?,
-    102: "鍐宠禌"
-};
-
+const JPG_PLAYERS = new Set(['Rhea', 'Melody']);
+const STAGE_NAMES = {100: '八强赛', 101: '半决赛', 102: '决赛'};
 let currentData = null;
 
 function esc(value) {
-    return String(value ?? "").replace(
-        /[&<>"']/g,
-        char => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-        })[char]
-    );
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[ch]);
 }
 
 function avatarUrl(player) {
-    if (!player) {
-        return "";
-    }
-
-    const extension = JPG_PLAYERS.has(player.name)
-        ? "jpg"
-        : "webp";
-
-    return `/static/avatars/${encodeURIComponent(
-        player.name
-    )}.${extension}`;
-}
-
-function liveUrl(player) {
-    if (!player) {
-        return "#";
-    }
-
-    if (player.live_url) {
-        return player.live_url;
-    }
-
-    if (player.room_id) {
-        return `https://live.bilibili.com/${encodeURIComponent(
-            player.room_id
-        )}`;
-    }
-
-    return "#";
+    if (!player) return '';
+    const ext = JPG_PLAYERS.has(player.name) ? 'jpg' : 'webp';
+    return `/avatars/${encodeURIComponent(player.name)}.${ext}`;
 }
 
 function money(value) {
-    const number = Number(value || 0);
-
-    return "楼" + Math.round(number).toLocaleString("zh-CN");
-}
-
-function formatNumber(value) {
-    return Number(value || 0).toLocaleString("zh-CN");
+    const n = Number(value || 0);
+    return '¥' + Math.round(n).toLocaleString('zh-CN');
 }
 
 function beijingTime(value) {
-    if (!value) {
-        return "";
-    }
-
-    const text = String(value).trim();
-
-    // ???/API ??????????????? UTC?
-    // ?? Z ?????????????????
-    const hasTimezone = /(?:Z|[+-]\d{2}:\d{2})$/i.test(text);
-    const normalized = hasTimezone ? text : `${text}Z`;
+    if (!value) return '';
+    // 后端存储的是无时区 UTC 字符串；显式按 UTC 解析，再显示北京时间。
+    const normalized = value.endsWith('Z') ? value : value + 'Z';
     const date = new Date(normalized);
-
-    if (Number.isNaN(date.getTime())) {
-        return "";
-    }
-
-    return new Intl.DateTimeFormat("zh-CN", {
-        timeZone: "Asia/Shanghai",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('zh-CN', {
+        timeZone: 'Asia/Shanghai',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
         hour12: false
-    }).format(date).replaceAll("-", "/");
+    }).format(date).replaceAll('-', '/');
 }
+
 function playerById(id) {
-    return currentData?.players?.find(
-        player => String(player.id) === String(id)
-    );
+    return currentData?.players?.find(p => p.id === id);
 }
 
 function matchRevenue(match, playerId) {
@@ -820,7 +507,6 @@ function matchRevenue(match, playerId) {
 
 function getVoteCounts(match) {
     const votes = match.votes || {};
-
     return {
         left: Number(votes[match.p1] || 0),
         right: Number(votes[match.p2] || 0)
@@ -835,208 +521,92 @@ function savedVote(matchId) {
     }
 }
 
-function liveLabel(player) {
-    if (!player?.is_live) {
-        return "";
-    }
-
-    return '<span class="live-label">鐩存挱涓?/span>';
-}
-
-function concurrencyText(player) {
-    if (
-        !player?.is_live
-        || player.current_concurrency === null
-        || player.current_concurrency === undefined
-    ) {
-        return "";
-    }
-
-    return `
-        <div class="concurrency">
-            褰撳墠鍚屾帴 ${formatNumber(player.current_concurrency)}
-        </div>
-    `;
-}
-
-function playerHtml(player, revenue, winner) {
-    const url = liveUrl(player);
-    const canOpen = url !== "#";
-
-    return `
-        <div class="player ${winner ? "winner" : ""}">
-            <a
-                class="player-link"
-                href="${esc(url)}"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="鎵撳紑 ${esc(player.name)} 鐨凚ilibili鐩存挱闂?
-                ${canOpen ? "" : "aria-disabled=\"true\""}
-            >
-                <div class="avatar-wrap">
-                    <img
-                        class="avatar"
-                        src="${avatarUrl(player)}"
-                        alt="${esc(player.name)}"
-                    >
-                    ${player.is_live
-                        ? '<span class="live-dot"></span>'
-                        : ""}
-                </div>
-
-                <div>
-                    <div class="player-name">
-                        ${esc(player.name)}
-                        ${liveLabel(player)}
-                    </div>
-
-                    <div class="record">
-                        鐟炲＋杞垬缁?
-                        ${Number(player.wins || 0)}-
-                        ${Number(player.losses || 0)}
-                    </div>
-
-                    ${concurrencyText(player)}
-                </div>
-            </a>
-
-            <div class="revenue">
-                <div class="revenue-label">鏈満钀ユ敹</div>
-                <div class="revenue-value">
-                    ${money(revenue.total)}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
 function renderMatch(match, label) {
     const p1 = playerById(match.p1);
     const p2 = playerById(match.p2);
 
-    if (!p1 || !p2) {
-        return null;
-    }
+    if (!p1 || !p2) return '';
 
     const r1 = matchRevenue(match, match.p1);
     const r2 = matchRevenue(match, match.p2);
     const votes = getVoteCounts(match);
     const totalVotes = votes.left + votes.right;
-    const leftPercent = totalVotes
-        ? Math.round(votes.left * 100 / totalVotes)
-        : 50;
+    const leftPercent = totalVotes ? Math.round(votes.left * 100 / totalVotes) : 50;
     const rightPercent = 100 - leftPercent;
     const myVote = savedVote(match.id);
-
-    const statusText = match.status === "running"
-        ? "杩涜涓?
-        : match.status === "completed"
-            ? "宸茬粨鏉?
-            : "鏈紑濮?;
-
+    const statusText = match.status === 'running'
+        ? '进行中'
+        : match.status === 'completed' ? '已结束' : '未开始';
     const timeText = match.start_time
-        ? `姣旇禌鏃堕棿锛?{beijingTime(match.start_time)} - ${beijingTime(match.end_time)}`
-        : "姣旇禌鏃堕棿寰呭畾";
+        ? `比赛时间：${beijingTime(match.start_time)} - ${beijingTime(match.end_time)}`
+        : '比赛时间待定';
 
-    const card = document.createElement("article");
-    card.className = "match-card";
+    const card = document.createElement('article');
+    card.className = 'match-card';
 
     card.innerHTML = `
         <div class="match-top">
             <span>${esc(label || match.id)}</span>
-            <span class="badge ${esc(match.status || "")}">
-                ${statusText}
-            </span>
+            <span class="badge ${esc(match.status)}">${statusText}</span>
         </div>
 
-        ${playerHtml(
-            p1,
-            r1,
-            String(match.winner) === String(p1.id)
-        )}
+        <div class="player ${match.winner === p1.id ? 'winner' : ''}">
+            <img class="avatar" src="${avatarUrl(p1)}" alt="${esc(p1.name)}">
+            <div>
+                <div class="player-name">${esc(p1.name)}</div>
+                <div class="record">瑞士轮战绩 ${p1.wins}-${p1.losses}</div>
+            </div>
+            <div class="revenue">
+                <div class="revenue-label">本场营收</div>
+                <div class="revenue-value">${money(r1.total)}</div>
+            </div>
+        </div>
 
         <div class="vs">VS</div>
 
-        ${playerHtml(
-            p2,
-            r2,
-            String(match.winner) === String(p2.id)
-        )}
+        <div class="player ${match.winner === p2.id ? 'winner' : ''}">
+            <img class="avatar" src="${avatarUrl(p2)}" alt="${esc(p2.name)}">
+            <div>
+                <div class="player-name">${esc(p2.name)}</div>
+                <div class="record">瑞士轮战绩 ${p2.wins}-${p2.losses}</div>
+            </div>
+            <div class="revenue">
+                <div class="revenue-label">本场营收</div>
+                <div class="revenue-value">${money(r2.total)}</div>
+            </div>
+        </div>
 
-        <div class="match-time">${esc(timeText)}</div>
+        <div class="match-time">${timeText}</div>
 
         <div class="vote">
-            <div class="vote-title">
-                涓轰綘鏀寔鐨勯€夋墜鎶曠エ
+            <div class="vote-title">为你支持的选手投票</div>
+            <div class="vote-bar" aria-label="双方支持率">
+                <div class="vote-bar-left" style="width:${leftPercent}%"></div>
+                <div class="vote-bar-right" style="width:${rightPercent}%"></div>
             </div>
-
-            <div class="vote-bar" aria-label="鍙屾柟鏀寔鐜?>
-                <div
-                    class="vote-bar-left"
-                    style="width:${leftPercent}%"
-                ></div>
-                <div
-                    class="vote-bar-right"
-                    style="width:${rightPercent}%"
-                ></div>
-            </div>
-
             <div class="vote-totals">
-                <span>
-                    ${esc(p1.name)}锛?
-                    <strong>${votes.left}</strong> 绁?路
-                    ${leftPercent}%
-                </span>
-
-                <span>
-                    ${esc(p2.name)}锛?
-                    <strong>${votes.right}</strong> 绁?路
-                    ${rightPercent}%
-                </span>
+                <span>${esc(p1.name)}：<strong>${votes.left}</strong> 票 · ${leftPercent}%</span>
+                <span>${esc(p2.name)}：<strong>${votes.right}</strong> 票 · ${rightPercent}%</span>
             </div>
-
             <div class="vote-buttons">
-                <button
-                    class="vote-button ${
-                        myVote === p1.id
-                            ? "voted-left"
-                            : ""
-                    }"
+                <button class="vote-button ${myVote === p1.id ? 'voted-left' : ''}"
                     type="button"
-                    onclick="castVote(
-                        '${esc(match.id)}',
-                        '${esc(p1.id)}'
-                    )"
-                    ${myVote ? "disabled" : ""}
-                >
-                    鏀寔 ${esc(p1.name)}
+                    onclick="castVote('${esc(match.id)}','${esc(p1.id)}')"
+                    ${myVote ? 'disabled' : ''}>
+                    支持 ${esc(p1.name)}
                 </button>
-
-                <button
-                    class="vote-button ${
-                        myVote === p2.id
-                            ? "voted-right"
-                            : ""
-                    }"
+                <button class="vote-button ${myVote === p2.id ? 'voted-right' : ''}"
                     type="button"
-                    onclick="castVote(
-                        '${esc(match.id)}',
-                        '${esc(p2.id)}'
-                    )"
-                    ${myVote ? "disabled" : ""}
-                >
-                    鏀寔 ${esc(p2.name)}
+                    onclick="castVote('${esc(match.id)}','${esc(p2.id)}')"
+                    ${myVote ? 'disabled' : ''}>
+                    支持 ${esc(p2.name)}
                 </button>
             </div>
         </div>
 
-        <button
-            type="button"
-            class="vote-button"
-            style="width:100%;margin-top:10px"
-            onclick="showMatchDetail('${esc(match.id)}')"
-        >
-            鏌ョ湅鏈満璇︾粏鏁版嵁
+        <button type="button" class="vote-button" style="width:100%;margin-top:10px"
+            onclick="showMatchDetail('${esc(match.id)}')">
+            查看本场详细数据
         </button>
     `;
 
@@ -1044,460 +614,225 @@ function renderMatch(match, label) {
 }
 
 function renderMatches(data) {
-    const container = document.getElementById(
-        "matches-container"
-    );
-
+    const container = document.getElementById('matches-container');
     container.replaceChildren();
 
-    const round = Number(
-        data.tournament.current_round
-    );
-
-    const matches = data.matches.filter(
-        match => Number(match.round) === round
-    );
+    const round = Number(data.tournament.current_round);
+    const matches = data.matches.filter(m => Number(m.round) === round);
 
     if (!matches.length) {
-        const empty = document.createElement("div");
-        empty.className = "notice";
-        empty.textContent =
-            data.tournament.status === "pending"
-                ? "姣旇禌灏氭湭寮€濮嬶紝瀵归樀浼氬湪璁惧畾鏃堕棿寮€鏀俱€?
-                : "褰撳墠闃舵鏆傛棤姣旇禌銆?;
-
+        const empty = document.createElement('div');
+        empty.className = 'notice';
+        empty.textContent = data.tournament.status === 'pending'
+            ? '比赛尚未开始，对阵会在设定时间开放。'
+            : '当前阶段暂无比赛。';
         container.appendChild(empty);
         return;
     }
 
-    const heading = document.createElement("div");
-    heading.className = "round-heading";
+    const heading = document.createElement('div');
+    heading.className = 'round-heading';
     heading.textContent = round < 100
-        ? `鐟炲＋杞?路 绗?${round} 杞甡
-        : STAGE_NAMES[round] || "娣樻卑璧?;
-
+        ? `瑞士轮 · 第 ${round} 轮`
+        : (STAGE_NAMES[round] || '淘汰赛');
     container.appendChild(heading);
 
     matches.forEach((match, index) => {
-        const label = round < 100
-            ? match.id
-            : `${STAGE_NAMES[round] || "娣樻卑璧?} ${index + 1}`;
-
+        const label = round < 100 ? match.id : `${STAGE_NAMES[round] || '淘汰赛'} ${index + 1}`;
         const card = renderMatch(match, label);
-
-        if (card) {
-            container.appendChild(card);
-        }
+        if (card) container.appendChild(card);
     });
 
     if (round >= 100) {
-        const link = document.createElement("p");
-        link.className = "notice";
-        link.innerHTML = `
-            <a
-                href="playoffs.html"
-                style="color:var(--blue)"
-            >
-                鏌ョ湅瀹屾暣娣樻卑璧涙檵绾у浘 鈫?
-            </a>
-        `;
-
+        const link = document.createElement('p');
+        link.className = 'notice';
+        link.innerHTML = '<a href="playoffs.html" style="color:var(--blue)">查看完整淘汰赛晋级图 →</a>';
         container.appendChild(link);
     }
 }
 
 function renderStandings(data) {
-    const container = document.getElementById(
-        "standings-container"
-    );
-
+    const container = document.getElementById('standings-container');
     container.replaceChildren();
 
-    const ordered = [...data.players].sort(
-        (a, b) =>
-            Number(b.wins || 0) - Number(a.wins || 0)
-            || Number(a.losses || 0) - Number(b.losses || 0)
-            || String(a.name).localeCompare(
-                String(b.name)
-            )
+    const ordered = [...data.players].sort((a, b) =>
+        b.wins - a.wins || a.losses - b.losses || a.name.localeCompare(b.name)
     );
 
-    ordered.forEach((player, index) => {
-        const row = document.createElement("div");
-        row.className = "standing-row";
-
-        if (
-            player.status === "advanced"
-            || Number(player.wins || 0) >= 3
-        ) {
-            row.classList.add("qualified");
-        }
-
-        if (
-            player.status === "eliminated"
-            || Number(player.losses || 0) >= 3
-        ) {
-            row.classList.add("eliminated");
-        }
+    ordered.forEach((p, index) => {
+        const row = document.createElement('div');
+        row.className = 'standing-row';
+        if (p.status === 'advanced' || p.wins >= 3) row.classList.add('qualified');
+        if (p.status === 'eliminated' || p.losses >= 3) row.classList.add('eliminated');
 
         row.innerHTML = `
             <span class="rank">#${index + 1}</span>
-            <img
-                class="standing-avatar"
-                src="${avatarUrl(player)}"
-                alt="${esc(player.name)}"
-            >
-            <span class="standing-name">
-                ${esc(player.name)}
-                ${player.is_live
-                    ? '<span class="live-label">鐩存挱涓?/span>'
-                    : ""}
-            </span>
-            <span class="standing-record">
-                ${Number(player.wins || 0)}-
-                ${Number(player.losses || 0)}
-            </span>
+            <img class="standing-avatar" src="${avatarUrl(p)}" alt="${esc(p.name)}">
+            <span class="standing-name">${esc(p.name)}</span>
+            <span class="standing-record">${p.wins}-${p.losses}</span>
         `;
-
         container.appendChild(row);
     });
 }
 
 function detailStat(label, value) {
-    return `
-        <div class="detail-stat">
-            <span>${esc(label)}</span>
-            <strong>${value}</strong>
-        </div>
-    `;
+    return `<div class="detail-stat"><span>${label}</span><strong>${value}</strong></div>`;
 }
 
 function showMatchDetail(matchId) {
-    if (!currentData) {
-        return;
-    }
-
-    const match = currentData.matches.find(
-        item => item.id === matchId
-    );
-
-    if (!match) {
-        return;
-    }
+    if (!currentData) return;
+    const match = currentData.matches.find(m => m.id === matchId);
+    if (!match) return;
 
     const p1 = playerById(match.p1);
     const p2 = playerById(match.p2);
-
-    if (!p1 || !p2) {
-        return;
-    }
+    if (!p1 || !p2) return;
 
     const r1 = matchRevenue(match, match.p1);
     const r2 = matchRevenue(match, match.p2);
 
-    document.getElementById("modal-title").textContent =
-        `${p1.name} vs ${p2.name}`;
+    document.getElementById('modal-title').textContent = `${p1.name} vs ${p2.name}`;
 
-    document.getElementById("modal-body").innerHTML = `
+    document.getElementById('modal-body').innerHTML = `
         <div class="detail-columns">
             <div class="detail-player">
                 <h3>${esc(p1.name)}</h3>
-                ${detailStat(
-                    "鏈満钀ユ敹",
-                    money(r1.total)
-                )}
-                ${detailStat(
-                    "SC",
-                    money(r1.sc)
-                )}
-                ${detailStat(
-                    "绀肩墿",
-                    money(r1.gift)
-                )}
-                ${detailStat(
-                    "寮瑰箷鏁?,
-                    formatNumber(r1.danmaku)
-                )}
-                ${detailStat(
-                    "宄板€煎悓鎺?,
-                    formatNumber(r1.peak_viewers)
-                )}
-                ${detailStat(
-                    "骞冲潎鍚屾帴",
-                    formatNumber(r1.avg_viewers)
-                )}
+                ${detailStat('本场营收', money(r1.total))}
+                ${detailStat('SC', money(r1.sc))}
+                ${detailStat('礼物', money(r1.gift))}
+                ${detailStat('弹幕数', Number(r1.danmaku || 0).toLocaleString('zh-CN'))}
+                ${detailStat('峰值人气', Number(r1.peak_viewers || 0).toLocaleString('zh-CN'))}
+                ${detailStat('平均人气', Number(r1.avg_viewers || 0).toLocaleString('zh-CN'))}
             </div>
-
             <div class="detail-player">
                 <h3>${esc(p2.name)}</h3>
-                ${detailStat(
-                    "鏈満钀ユ敹",
-                    money(r2.total)
-                )}
-                ${detailStat(
-                    "SC",
-                    money(r2.sc)
-                )}
-                ${detailStat(
-                    "绀肩墿",
-                    money(r2.gift)
-                )}
-                ${detailStat(
-                    "寮瑰箷鏁?,
-                    formatNumber(r2.danmaku)
-                )}
-                ${detailStat(
-                    "宄板€煎悓鎺?,
-                    formatNumber(r2.peak_viewers)
-                )}
-                ${detailStat(
-                    "骞冲潎鍚屾帴",
-                    formatNumber(r2.avg_viewers)
-                )}
+                ${detailStat('本场营收', money(r2.total))}
+                ${detailStat('SC', money(r2.sc))}
+                ${detailStat('礼物', money(r2.gift))}
+                ${detailStat('弹幕数', Number(r2.danmaku || 0).toLocaleString('zh-CN'))}
+                ${detailStat('峰值人气', Number(r2.peak_viewers || 0).toLocaleString('zh-CN'))}
+                ${detailStat('平均人气', Number(r2.avg_viewers || 0).toLocaleString('zh-CN'))}
             </div>
         </div>
-
         <p class="match-time">
-            姣旇禌鏃堕棿锛?
-            ${beijingTime(match.start_time)}
-            -
-            ${beijingTime(match.end_time)}
+            比赛时间：${beijingTime(match.start_time)} - ${beijingTime(match.end_time)}
         </p>
     `;
 
-    document.getElementById(
-        "detail-modal"
-    ).classList.add("open");
+    document.getElementById('detail-modal').classList.add('open');
 }
 
 function closeDetail() {
-    document.getElementById(
-        "detail-modal"
-    ).classList.remove("open");
+    document.getElementById('detail-modal').classList.remove('open');
 }
 
 function makeFingerprint() {
-    const key = "vr-voter-fingerprint";
-    let value = null;
-
-    try {
-        value = localStorage.getItem(key);
-
-        if (!value) {
-            value = "v_" + crypto.randomUUID();
-            localStorage.setItem(key, value);
-        }
-    } catch {
-        value = "v_" + Math.random().toString(36);
+    const key = 'vr-voter-fingerprint';
+    let value = localStorage.getItem(key);
+    if (!value) {
+        value = 'v_' + crypto.randomUUID();
+        localStorage.setItem(key, value);
     }
-
     return value;
 }
 
 async function castVote(matchId, playerId) {
     const key = `vr-vote-${matchId}`;
-
-    try {
-        if (localStorage.getItem(key)) {
-            alert("浣犲凡缁忎负杩欏満姣旇禌鎶曡繃绁ㄤ簡銆?);
-            return;
-        }
-    } catch {
-        // localStorage 涓嶅彲鐢ㄦ椂缁х画璇锋眰鍚庣銆?
+    if (localStorage.getItem(key)) {
+        alert('你已经为这场比赛投过票了。');
+        return;
     }
 
     try {
-        const response = await fetch(
-            `${API_BASE}/vote`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    match_id: matchId,
-                    player_id: playerId,
-                    fingerprint: makeFingerprint()
-                })
-            }
-        );
+        const response = await fetch(`${API_BASE}/vote`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                match_id: matchId,
+                player_id: playerId,
+                fingerprint: makeFingerprint()
+            })
+        });
 
         const result = await response.json();
 
         if (!response.ok) {
-            alert(result.error || "鎶曠エ澶辫触锛岃绋嶅悗鍐嶈瘯銆?);
+            alert(result.error || '投票失败，请稍后再试。');
             return;
         }
 
         if (result.success) {
-            try {
-                localStorage.setItem(key, playerId);
-            } catch {
-                // 蹇界暐鏈湴瀛樺偍澶辫触銆?
-            }
-
+            localStorage.setItem(key, playerId);
             await loadData();
-            alert("鎶曠エ鎴愬姛锛?);
-        } else if (result.error === "already_voted") {
-            try {
-                localStorage.setItem(key, playerId);
-            } catch {
-                // 蹇界暐鏈湴瀛樺偍澶辫触銆?
-            }
-
+            alert('投票成功！');
+        } else if (result.error === 'already_voted') {
+            localStorage.setItem(key, playerId);
             await loadData();
-            alert("浣犲凡缁忎负杩欏満姣旇禌鎶曡繃绁ㄤ簡銆?);
+            alert('你已经为这场比赛投过票了。');
         } else {
-            alert(result.error || "鎶曠エ澶辫触銆?);
+            alert(result.error || '投票失败。');
         }
     } catch (error) {
-        console.error("鎶曠エ澶辫触锛?, error);
-        alert("鏃犳硶杩炴帴鎶曠エ鏈嶅姟锛岃绋嶅悗閲嶈瘯銆?);
+        console.error('投票失败:', error);
+        alert('无法连接投票服务，请稍后重试。');
     }
-}
-
-function getVisitorId() {
-    const key = "vr-page-viewer-id";
-
-    try {
-        let value = localStorage.getItem(key);
-
-        if (!value) {
-            value = crypto.randomUUID();
-            localStorage.setItem(key, value);
-        }
-
-        return value;
-    } catch {
-        return "temporary-" + Math.random().toString(36);
-    }
-}
-
-function recordPageView() {
-    fetch("/api/analytics/visit", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            page: window.location.pathname,
-            visitor_id: getVisitorId()
-        }),
-        keepalive: true
-    }).catch(() => {
-        // 缁熻澶辫触涓嶅奖鍝嶉〉闈€?
-    });
 }
 
 async function loadData() {
     try {
-        const response = await fetch(
-            `${API_BASE}/state/${TOURNAMENT_ID}`,
-            {
-                cache: "no-store"
-            }
-        );
+        const response = await fetch(`${API_BASE}/state/${TOURNAMENT_ID}`, {
+            cache: 'no-store'
+        });
 
         if (!response.ok) {
-            throw new Error(
-                `鏈嶅姟鍣ㄨ繑鍥?${response.status}`
-            );
+            throw new Error(`服务器返回 ${response.status}`);
         }
 
         const data = await response.json();
-
-        if (
-            !data.tournament
-            || !Array.isArray(data.players)
-            || !Array.isArray(data.matches)
-        ) {
-            throw new Error(
-                "鏈嶅姟鍣ㄨ繑鍥炵殑鏁版嵁鏍煎紡涓嶆纭?
-            );
+        if (!data.tournament || !Array.isArray(data.players) || !Array.isArray(data.matches)) {
+            throw new Error('服务器返回的数据格式不正确');
         }
 
         currentData = data;
+        const round = Number(data.tournament.current_round);
 
-        const round = Number(
-            data.tournament.current_round
-        );
+        document.getElementById('event-status').textContent =
+            data.tournament.status === 'running' ? '进行中' :
+            data.tournament.status === 'pending' ? '未开始' :
+            data.tournament.status === 'finished' ? '已结束' : data.tournament.status;
 
-        const eventStatus =
-            data.tournament.status === "running"
-                ? "杩涜涓?
-                : data.tournament.status === "pending"
-                    ? "鏈紑濮?
-                    : data.tournament.status === "finished"
-                        ? "宸茬粨鏉?
-                        : data.tournament.status;
+        document.getElementById('stage-label').textContent =
+            round < 100 ? `瑞士轮 R${round}` : (STAGE_NAMES[round] || '淘汰赛');
 
-        document.getElementById(
-            "event-status"
-        ).textContent = eventStatus;
+        document.getElementById('qualified-count').textContent =
+            data.players.filter(p => p.status === 'advanced' || p.wins >= 3).length;
 
-        document.getElementById(
-            "stage-label"
-        ).textContent = round < 100
-            ? `鐟炲＋杞?R${round}`
-            : STAGE_NAMES[round] || "娣樻卑璧?;
+        document.getElementById('eliminated-count').textContent =
+            data.players.filter(p => p.status === 'eliminated' || p.losses >= 3).length;
 
-        document.getElementById(
-            "qualified-count"
-        ).textContent = data.players.filter(
-            player =>
-                player.status === "advanced"
-                || Number(player.wins || 0) >= 3
-        ).length;
-
-        document.getElementById(
-            "eliminated-count"
-        ).textContent = data.players.filter(
-            player =>
-                player.status === "eliminated"
-                || Number(player.losses || 0) >= 3
-        ).length;
-
-        document.getElementById(
-            "updated-time"
-        ).textContent = new Intl.DateTimeFormat(
-            "zh-CN",
-            {
-                timeZone: "Asia/Shanghai",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
+        document.getElementById('updated-time').textContent =
+            new Intl.DateTimeFormat('zh-CN', {
+                timeZone: 'Asia/Shanghai',
+                hour: '2-digit',
+                minute: '2-digit',
                 hour12: false
-            }
-        ).format(new Date());
+            }).format(new Date());
 
         renderMatches(data);
         renderStandings(data);
     } catch (error) {
-        console.error("鍔犺浇姣旇禌鏁版嵁澶辫触锛?, error);
-
-        document.getElementById(
-            "matches-container"
-        ).innerHTML = `
-            <div class="error">
-                璇诲彇姣旇禌鏁版嵁澶辫触锛?
-                ${esc(error.message)}
-            </div>
-        `;
+        console.error('加载比赛数据失败:', error);
+        document.getElementById('matches-container').innerHTML =
+            `<div class="error">读取比赛数据失败：${esc(error.message)}</div>`;
     }
 }
 
-document.getElementById(
-    "detail-modal"
-).addEventListener("click", event => {
-    if (event.target.id === "detail-modal") {
-        closeDetail();
-    }
+document.getElementById('detail-modal').addEventListener('click', event => {
+    if (event.target.id === 'detail-modal') closeDetail();
 });
 
-recordPageView();
 loadData();
 setInterval(loadData, 30000);
 </script>
 </body>
 </html>
-
