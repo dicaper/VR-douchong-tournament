@@ -1,170 +1,231 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0080)https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/swiss_bracket.html -->
+<html lang="zh-CN"><script id="allow-copy_script">(function agent() {
+    let unlock = false
+    document.addEventListener('allow_copy', (event) => {
+      unlock = event.detail.unlock
+    })
+
+    const copyEvents = [
+      'copy',
+      'cut',
+      'contextmenu',
+      'selectstart',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'keydown',
+      'keypress',
+      'keyup',
+    ]
+    const rejectOtherHandlers = (e) => {
+      if (unlock) {
+        e.stopPropagation()
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation()
+      }
+    }
+    copyEvents.forEach((evt) => {
+      document.documentElement.addEventListener(evt, rejectOtherHandlers, {
+        capture: true,
+      })
+    })
+  })()</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>瑞士轮晋级图 - VR斗虫大赛 2026</title>
+
     <style>
         :root {
-            --bg-deepest: #05070C;
-            --bg-deep: #0A0D12;
-            --bg-mid: #0F131C;
-            --bg-elevated: #161D2B;
-            --bg-highest: #1E2636;
-            --accent: #38BDF8;
-            --accent-dim: #0EA5E9;
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
+            --bg-deepest: #05070c;
+            --bg-deep: #0a0d12;
+            --bg-mid: #0f131c;
+            --bg-elevated: #161d2b;
+            --accent: #38bdf8;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
             --border: #334155;
-            --success: #6EE7B7;
-            --warning: #FBBF24;
-            --danger: #F87171;
+            --success: #6ee7b7;
+            --danger: #f87171;
             --eliminated: #475569;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-deepest);
-            color: var(--text-primary);
-            line-height: 1.6;
+            min-width: 1100px;
             overflow-x: auto;
+            color: var(--text-primary);
+            background: var(--bg-deepest);
+            font-family: system-ui, "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
         }
 
         .container {
             max-width: 2000px;
             margin: 0 auto;
-            padding: clamp(1rem, 3vw, 2rem);
+            padding: 24px;
         }
 
         header {
-            text-align: center;
-            padding: clamp(2rem, 5vw, 3rem) 0;
-            background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deepest) 100%);
+            padding: 42px 20px 30px;
+            background: linear-gradient(
+                180deg,
+                var(--bg-deep) 0%,
+                var(--bg-deepest) 100%
+            );
             border-bottom: 2px solid var(--accent);
-            margin-bottom: 2rem;
+            text-align: center;
         }
 
         h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--text-primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            color: var(--accent);
+            font-size: clamp(30px, 5vw, 48px);
         }
 
         .stage-title {
-            font-size: clamp(1rem, 2vw, 1.25rem);
             color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            font-size: 18px;
+            letter-spacing: .08em;
+        }
+
+        .data-license-top {
+            width: min(1100px, 94%);
+            margin: 22px auto 0;
+            padding: 14px 20px;
+            color: var(--text-secondary);
+            background: #101722;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .data-license-top strong {
+            color: var(--text-primary);
+        }
+
+        .data-license-top a {
+            color: var(--accent);
+        }
+
+        .data-license-top code {
+            padding: 2px 5px;
+            color: #d7e3f1;
+            background: #182231;
+            border-radius: 4px;
         }
 
         nav {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin: 1rem 0 2rem;
             flex-wrap: wrap;
+            gap: 12px;
+            margin: 0 0 24px;
         }
 
         nav a {
-            padding: 0.75rem 1.5rem;
+            padding: 10px 18px;
+            color: var(--text-secondary);
             background: var(--bg-elevated);
             border: 1px solid var(--border);
             border-radius: 999px;
-            color: var(--text-secondary);
-            text-decoration: none;
             font-weight: 600;
-            transition: all 0.2s ease;
+            text-decoration: none;
         }
 
-        nav a:hover, nav a.active {
-            background: var(--accent);
+        nav a:hover,
+        nav a.active {
             color: var(--bg-deepest);
+            background: var(--accent);
             border-color: var(--accent);
         }
 
         .legend {
             display: flex;
             justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            padding: 1rem;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 24px;
+            padding: 16px;
             background: var(--bg-mid);
             border-radius: 12px;
-            flex-wrap: wrap;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
         }
 
         .legend-box {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 4px;
         }
 
-        .legend-box.qualified { background: var(--success); }
-        .legend-box.eliminated { background: var(--eliminated); }
-        .legend-box.active { background: var(--accent); }
-        .legend-box.pending { background: var(--bg-elevated); border: 2px solid var(--border); }
+        .legend-box.qualified {
+            background: var(--success);
+        }
 
-        /* 瑞士轮流程图 */
+        .legend-box.eliminated {
+            background: var(--eliminated);
+        }
+
+        .legend-box.active {
+            background: var(--accent);
+        }
+
+        .legend-box.pending {
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+        }
+
         .swiss-flow {
-            position: relative;
             min-width: 1800px;
-            padding: 2rem;
-            background: var(--bg-mid);
-            border-radius: 16px;
-            border: 1px solid var(--border);
+            padding: 30px;
             overflow-x: auto;
+            background: var(--bg-mid);
+            border: 1px solid var(--border);
+            border-radius: 16px;
         }
 
         .rounds-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 3rem;
-            margin-bottom: 3rem;
+            gap: 34px;
+            margin-bottom: 48px;
         }
 
         .round-column {
-            position: relative;
+            min-width: 0;
         }
 
         .round-header {
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 700;
+            margin-bottom: 20px;
             color: var(--accent);
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
         }
 
         .round-matches {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 16px;
         }
 
         .bracket-match {
-            background: var(--bg-elevated);
-            border-radius: 8px;
-            border: 2px solid var(--border);
-            padding: 0.75rem;
             min-height: 120px;
-            transition: all 0.2s ease;
+            padding: 12px;
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            transition: .2s ease;
         }
 
         .bracket-match:hover {
@@ -173,61 +234,101 @@
         }
 
         .bracket-match.completed {
-            opacity: 0.9;
+            opacity: .9;
         }
 
         .match-player {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem;
-            margin: 0.25rem 0;
+            gap: 10px;
+            padding: 8px;
+            margin: 4px 0;
             background: var(--bg-mid);
-            border-radius: 6px;
             border: 2px solid transparent;
+            border-radius: 6px;
         }
 
         .match-player.winner {
+            background: rgba(110, 231, 183, .1);
             border-color: var(--success);
-            background: linear-gradient(90deg, var(--bg-mid) 0%, rgba(110, 231, 183, 0.1) 100%);
         }
 
         .match-player.qualified {
             border-color: var(--success);
-            background: linear-gradient(90deg, rgba(110, 231, 183, 0.2) 0%, rgba(110, 231, 183, 0.05) 100%);
         }
 
         .match-player.eliminated {
+            opacity: .6;
             border-color: var(--eliminated);
-            opacity: 0.6;
-            background: var(--bg-deepest);
+        }
+
+        .player-link {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+            flex: 1;
+            gap: 10px;
+            color: inherit;
+            text-decoration: none;
         }
 
         .player-avatar-small {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            position: relative;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
             border: 2px solid var(--accent);
-            overflow: hidden;
-            flex-shrink: 0;
+            border-radius: 50%;
         }
 
         .player-avatar-small img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .player-avatar-small:hover {
+            border-color: var(--success);
+        }
+
+        .live-dot {
+            position: absolute;
+            right: -3px;
+            bottom: -2px;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border: 2px solid var(--bg-mid);
+            border-radius: 50%;
         }
 
         .player-name-small {
-            font-size: 0.875rem;
+            min-width: 0;
+            overflow: hidden;
+            font-size: 14px;
             font-weight: 600;
-            flex: 1;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .live-label {
+            display: inline-block;
+            padding: 1px 5px;
+            margin-left: 5px;
+            color: #06111b;
+            background: var(--success);
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            vertical-align: middle;
         }
 
         .player-record {
-            font-size: 0.75rem;
             color: var(--text-secondary);
+            font-size: 12px;
             font-weight: 700;
+            white-space: nowrap;
         }
 
         .player-record.qualified {
@@ -239,25 +340,23 @@
         }
 
         .vs-small {
-            text-align: center;
-            font-size: 0.625rem;
+            margin: 2px 0;
             color: var(--text-secondary);
-            margin: 0.125rem 0;
+            font-size: 10px;
+            text-align: center;
         }
 
-        /* 晋级/淘汰区域 */
         .results-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
+            gap: 28px;
         }
 
         .result-section {
+            padding: 22px;
             background: var(--bg-elevated);
-            border-radius: 12px;
-            padding: 1.5rem;
             border: 2px solid var(--border);
+            border-radius: 12px;
         }
 
         .result-section.qualified {
@@ -269,54 +368,59 @@
         }
 
         .result-title {
-            font-size: 1.5rem;
+            margin-bottom: 18px;
+            font-size: 22px;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
         }
 
-        .result-title.qualified { color: var(--success); }
-        .result-title.eliminated { color: var(--eliminated); }
+        .result-title.qualified {
+            color: var(--success);
+        }
+
+        .result-title.eliminated {
+            color: var(--eliminated);
+        }
 
         .result-list {
             display: grid;
-            gap: 0.75rem;
+            gap: 12px;
         }
 
         .result-player {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
+            gap: 14px;
+            padding: 12px;
             background: var(--bg-mid);
-            border-radius: 8px;
             border: 2px solid var(--border);
+            border-radius: 8px;
         }
 
         .result-player.qualified {
+            background: rgba(110, 231, 183, .08);
             border-color: var(--success);
-            background: linear-gradient(90deg, var(--bg-mid) 0%, rgba(110, 231, 183, 0.1) 100%);
         }
 
         .result-player.eliminated {
+            opacity: .7;
             border-color: var(--eliminated);
-            opacity: 0.7;
         }
 
         .result-avatar {
+            position: relative;
             width: 48px;
             height: 48px;
-            border-radius: 50%;
+            flex: 0 0 48px;
             border: 2px solid var(--accent);
-            overflow: hidden;
+            border-radius: 50%;
         }
 
         .result-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 50%;
         }
 
         .result-info {
@@ -324,292 +428,3348 @@
         }
 
         .result-name {
-            font-size: 1.125rem;
+            font-size: 18px;
             font-weight: 700;
         }
 
         .result-record {
-            font-size: 0.875rem;
             color: var(--text-secondary);
+            font-size: 14px;
         }
 
         .result-badge {
-            padding: 0.25rem 0.75rem;
+            padding: 4px 12px;
             border-radius: 999px;
-            font-size: 0.75rem;
+            font-size: 12px;
             font-weight: 700;
-            text-transform: uppercase;
         }
 
-        .result-badge.q30 { background: #10B981; color: white; }
-        .result-badge.q31 { background: #6EE7B7; color: var(--bg-deepest); }
-        .result-badge.q32 { background: #A7F3D0; color: var(--bg-deepest); }
-        .result-badge.e03 { background: var(--danger); color: white; }
-        .result-badge.e13 { background: var(--eliminated); color: white; }
-        .result-badge.e23 { background: #64748B; color: white; }
+        .result-badge.q30 {
+            color: white;
+            background: #10b981;
+        }
+
+        .result-badge.q31 {
+            color: #06111b;
+            background: #6ee7b7;
+        }
+
+        .result-badge.q32 {
+            color: #06111b;
+            background: #a7f3d0;
+        }
+
+        .result-badge.e03 {
+            color: white;
+            background: var(--danger);
+        }
+
+        .result-badge.e13 {
+            color: white;
+            background: var(--eliminated);
+        }
+
+        .result-badge.e23 {
+            color: white;
+            background: #64748b;
+        }
+
+        .empty {
+            padding: 30px 12px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
 
         footer {
-            text-align: center;
-            padding: 2rem;
+            padding: 28px;
+            margin-top: 36px;
             color: var(--text-secondary);
             border-top: 1px solid var(--border);
-            margin-top: 3rem;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .results-area {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
-</head>
+<style>@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdh18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdo18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdg18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdv18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdj18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdi18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSds18S0xR41.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidh18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkido18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidg18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidv18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidj18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidi18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkids18S0xR41.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7qsDJB9cme_xc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7jsDJB9cme_xc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7rsDJB9cme_xc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7ksDJB9cme_xc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7osDJB9cme_xc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7psDJB9cme_xc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7nsDJB9cme.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdh18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdo18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdg18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdv18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdj18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdi18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCds18S0xR41.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdh18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdo18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdg18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdv18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdj18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdi18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSds18S0xR41.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydh18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydo18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydg18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydv18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydj18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydi18S0xR41YDw.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklyds18S0xR41.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmhdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wkxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wlBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmRdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wlxdu3cOWxw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmhdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwkxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwlBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmRdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwlxdu3cOWxw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNa7lujVj9_mf.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qPK7lujVj9_mf.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNK7lujVj9_mf.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qO67lujVj9_mf.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qN67lujVj9_mf.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNq7lujVj9_mf.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7lujVj9w.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmhdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwkxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwlBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmRdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwlxdu3cOWxw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmhdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwkxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwlBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmRdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwlxdu3cOWxw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmhdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwkxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmxdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwlBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmBdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmRdu3cOWxy40.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwlxdu3cOWxw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+.ZD1LzV_5hhnbdBzBCTeC {
+z-index: 65536;
+}
+
+.BBAoAg1q8YTH2NGsa7Ui {
+font-family: 'Source Sans Pro'
+}
+
+@keyframes aqjkdtZawN5lryW5flKx {
+  from {
+    transform:rotate(0deg)
+  }
+  to {
+    transform:rotate(360deg)
+  }
+}
+
+.qEYyC4J5veWyiLaz9gNP {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+  position: relative;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+  vertical-align: baseline;
+  margin-bottom: 5.58px;
+  padding: 3px 18px;
+  font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  background-image: none;
+  border-radius: 4px;
+  border: 1px solid #646363;
+  background-color: #fff;
+  box-shadow: 0 0 0 1px transparent;
+  color: #000;
+  transition: box-shadow ease-in-out .1s,background-color ease-in-out .1s;
+}
+
+.qEYyC4J5veWyiLaz9gNP svg {
+  width:1em;
+  height:1em;
+  vertical-align:middle
+}
+
+.qEYyC4J5veWyiLaz9gNP svg path:not(.ntvBF21SnsKwNa29Rg8A) {
+  transition:fill .2s ease-out;
+  fill:#666
+}
+
+
+.qEYyC4J5veWyiLaz9gNP svg circle.iy0BC5jhx6jMyzcvrLwf,
+.qEYyC4J5veWyiLaz9gNP svg path.iy0BC5jhx6jMyzcvrLwf{
+  fill:transparent;
+  stroke:#666
+}
+
+.qEYyC4J5veWyiLaz9gNP:last-child {
+  margin-right:0
+}
+
+.qEYyC4J5veWyiLaz9gNP svg {
+  min-width:1em;
+  margin-left:.2rem;
+  margin-right:.2rem
+}
+
+.qEYyC4J5veWyiLaz9gNP:hover,
+.qEYyC4J5veWyiLaz9gNP:focus,
+.qEYyC4J5veWyiLaz9gNP:focus-within,
+.qEYyC4J5veWyiLaz9gNP:active {
+  outline:none;
+  text-decoration:none;
+  color:#000;
+  background-color:#f7f7f7;
+  box-shadow:0 0 0 1px #5e34be;
+  text-decoration:none
+}
+
+.qEYyC4J5veWyiLaz9gNP:hover svg,
+.qEYyC4J5veWyiLaz9gNP:focus svg,
+.qEYyC4J5veWyiLaz9gNP:focus-within svg,
+.qEYyC4J5veWyiLaz9gNP:active svg {
+  width:1em;
+  height:1em;
+  vertical-align:middle
+}
+
+.qEYyC4J5veWyiLaz9gNP:hover svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.qEYyC4J5veWyiLaz9gNP:focus svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.qEYyC4J5veWyiLaz9gNP:focus-within svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.qEYyC4J5veWyiLaz9gNP:active svg path:not(.ntvBF21SnsKwNa29Rg8A) {
+  transition:fill .2s ease-out;
+  fill:#000
+}
+
+.qEYyC4J5veWyiLaz9gNP:hover svg circle.iy0BC5jhx6jMyzcvrLwf,
+.qEYyC4J5veWyiLaz9gNP:hover svg path.iy0BC5jhx6jMyzcvrLwf,
+.qEYyC4J5veWyiLaz9gNP:focus svg circle.iy0BC5jhx6jMyzcvrLwf,
+.qEYyC4J5veWyiLaz9gNP:focus svg path.iy0BC5jhx6jMyzcvrLwf,
+.qEYyC4J5veWyiLaz9gNP:focus-within svg circle.iy0BC5jhx6jMyzcvrLwf,
+.qEYyC4J5veWyiLaz9gNP:focus-within svg path.iy0BC5jhx6jMyzcvrLwf,
+.qEYyC4J5veWyiLaz9gNP:active svg circle.iy0BC5jhx6jMyzcvrLwf,
+.qEYyC4J5veWyiLaz9gNP:active svg path.iy0BC5jhx6jMyzcvrLwf {
+  fill:transparent;
+  stroke:#000
+}
+
+.qEYyC4J5veWyiLaz9gNP:disabled {
+  cursor:not-allowed;
+  opacity:.8;
+  background-color:#fff;
+  box-shadow:0 0 0 1px transparent
+}
+
+.qEYyC4J5veWyiLaz9gNP+button,
+.qEYyC4J5veWyiLaz9gNP+.qEYyC4J5veWyiLaz9gNP {
+  margin-left:5.58px
+}
+.htXPkXdMWWcmr0_dul7A {
+  padding:0;
+  background-color:transparent;
+  border:0;
+  box-shadow:none;
+  color:#000
+}
+.htXPkXdMWWcmr0_dul7A:hover,
+.htXPkXdMWWcmr0_dul7A:focus,
+.htXPkXdMWWcmr0_dul7A:focus-within,
+.htXPkXdMWWcmr0_dul7A:active {
+  background-color:transparent;
+  border:0;
+  box-shadow:none;
+  color:#000;
+  text-decoration:underline
+}
+.htXPkXdMWWcmr0_dul7A:disabled {
+  text-decoration:none
+}
+.MvZ5MuRzqsBeDt5z0X1e svg {
+  margin-top: -5px;
+  margin-right:.75rem;
+  animation-name:aqjkdtZawN5lryW5flKx;
+  animation-duration:3s;
+  animation-iteration-count:infinite;
+  animation-timing-function:linear;
+  transform-origin:50% 50%
+}
+.MvZ5MuRzqsBeDt5z0X1e.Tz2rVjh6IjVdduJP08Qm svg use {
+  stroke:#fff
+}
+.ZChY5ShGlfvLluUVYdtA {
+  padding:9px 36px;
+  font-size:21.6px;
+  font-size:1.2rem
+}
+.L7kF1ZLpIeOYvvHdD7Dg {
+  padding:3.5px 7px;
+  font-size:14.4px;
+  font-size:.8rem
+}
+.c8FhE1WPTbl4j6Blh_Cw {
+  width:100%;
+  margin-left:0 !important
+}
+.Tz2rVjh6IjVdduJP08Qm {
+  border:0;
+  font-weight:300;
+  background-color:#5E33BF;
+  border:1px solid #5e34be;
+  box-shadow:0 0 0 1px transparent;
+  color:#fff
+}
+.Tz2rVjh6IjVdduJP08Qm svg {
+  width:1em;
+  height:1em;
+  vertical-align:middle
+}
+.Tz2rVjh6IjVdduJP08Qm svg path:not(.ntvBF21SnsKwNa29Rg8A) {
+  transition:fill .2s ease-out;
+  fill:#fff
+}
+.Tz2rVjh6IjVdduJP08Qm svg circle.iy0BC5jhx6jMyzcvrLwf,
+.Tz2rVjh6IjVdduJP08Qm svg path.iy0BC5jhx6jMyzcvrLwf {
+  fill:transparent;
+  stroke:#fff
+}
+.Tz2rVjh6IjVdduJP08Qm:hover,
+.Tz2rVjh6IjVdduJP08Qm:focus,
+.Tz2rVjh6IjVdduJP08Qm:focus-within,
+.Tz2rVjh6IjVdduJP08Qm:active {
+  color:#fff;
+  background-color:#6b40cc;
+  box-shadow:0 0 0 1px #5e34be
+}
+.Tz2rVjh6IjVdduJP08Qm:hover svg,
+.Tz2rVjh6IjVdduJP08Qm:focus svg,
+.Tz2rVjh6IjVdduJP08Qm:focus-within svg,
+.Tz2rVjh6IjVdduJP08Qm:active svg {
+  width:1em;
+  height:1em;
+  vertical-align:middle
+}
+.Tz2rVjh6IjVdduJP08Qm:hover svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.Tz2rVjh6IjVdduJP08Qm:focus svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.Tz2rVjh6IjVdduJP08Qm:focus-within svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.Tz2rVjh6IjVdduJP08Qm:active svg path:not(.ntvBF21SnsKwNa29Rg8A) {
+  transition:fill .2s ease-out;
+  fill:#fff
+}
+.Tz2rVjh6IjVdduJP08Qm:hover svg circle.iy0BC5jhx6jMyzcvrLwf,
+.Tz2rVjh6IjVdduJP08Qm:hover svg path.iy0BC5jhx6jMyzcvrLwf,
+.Tz2rVjh6IjVdduJP08Qm:focus svg circle.iy0BC5jhx6jMyzcvrLwf,
+.Tz2rVjh6IjVdduJP08Qm:focus svg path.iy0BC5jhx6jMyzcvrLwf,
+.Tz2rVjh6IjVdduJP08Qm:focus-within svg circle.iy0BC5jhx6jMyzcvrLwf,
+.Tz2rVjh6IjVdduJP08Qm:focus-within svg path.iy0BC5jhx6jMyzcvrLwf,
+.Tz2rVjh6IjVdduJP08Qm:active svg circle.iy0BC5jhx6jMyzcvrLwf,
+.Tz2rVjh6IjVdduJP08Qm:active svg path.iy0BC5jhx6jMyzcvrLwf {
+  fill:transparent;
+  stroke:#fff
+}
+.Tz2rVjh6IjVdduJP08Qm:disabled {
+  background-color:#5E33BF;
+  box-shadow:0 0 0 1px transparent;
+  color:#fff
+}
+.K29Do4qZAslPSEk0asSZ {
+  min-height:auto;
+  width:1.75em;
+  height:1.75em;
+  margin:0 .5rem 0 0;
+  padding:0;
+  border:1px solid transparent;
+  border-radius:50%;
+  background-color:transparent;
+  box-shadow:none
+}
+.K29Do4qZAslPSEk0asSZ svg {
+  width:1em;
+  height:1em;
+  vertical-align:middle
+}
+.K29Do4qZAslPSEk0asSZ svg path:not(.ntvBF21SnsKwNa29Rg8A) {
+  transition:fill .2s ease-out;
+  fill:#666
+}
+.K29Do4qZAslPSEk0asSZ svg circle.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ svg path.iy0BC5jhx6jMyzcvrLwf {
+  fill:transparent;
+  stroke:#666
+}
+.K29Do4qZAslPSEk0asSZ:hover svg,
+.K29Do4qZAslPSEk0asSZ:focus svg,
+.K29Do4qZAslPSEk0asSZ:focus-within svg,
+.K29Do4qZAslPSEk0asSZ:active svg {
+  width:1em;
+  height:1em;
+  vertical-align:middle
+}
+.K29Do4qZAslPSEk0asSZ:hover svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.K29Do4qZAslPSEk0asSZ:focus svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.K29Do4qZAslPSEk0asSZ:focus-within svg path:not(.ntvBF21SnsKwNa29Rg8A),
+.K29Do4qZAslPSEk0asSZ:active svg path:not(.ntvBF21SnsKwNa29Rg8A) {
+  transition:fill .2s ease-out;
+  fill:#5e34be
+}
+.K29Do4qZAslPSEk0asSZ:hover svg circle.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ:hover svg path.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ:focus svg circle.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ:focus svg path.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ:focus-within svg circle.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ:focus-within svg path.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ:active svg circle.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ:active svg path.iy0BC5jhx6jMyzcvrLwf {
+  fill:transparent;
+  stroke:#5e34be
+}
+.K29Do4qZAslPSEk0asSZ:disabled {
+  opacity:1;
+  background-color:#fff;
+  box-shadow:none
+}
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm {
+  background-color:#5E33BF;
+  border:1px solid #e9eaed;
+  box-shadow:0 0 0 1px transparent;
+  color:#fff
+}
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm svg {
+  width:1em;
+  height:1em;
+  vertical-align:middle
+}
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm svg path:not(.ntvBF21SnsKwNa29Rg8A) {
+  transition:fill .2s ease-out;
+  fill:#fff
+}
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm svg circle.iy0BC5jhx6jMyzcvrLwf,
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm svg path.iy0BC5jhx6jMyzcvrLwf {
+  fill:transparent;
+  stroke:#fff
+}
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm:hover,
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm:focus,
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm:focus-within,
+.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm:active {
+  background-color:#6b40cc;
+  box-shadow:0 0 0 1px #e9eaed
+}
+
+@keyframes KG9mWh693CBdLSEsKEEw {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
+@keyframes aqjkdtZawN5lryW5flKx {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ZD1LzV_5hhnbdBzBCTeC {
+  z-index: 65536;
+}</style><style>.Yhs0neJe89LIyfkAJoxK {
+  overflow: visible;
+}
+
+.Yhs0neJe89LIyfkAJoxK:hover .ZhAn9j0umnIEipjxXmaw {
+  display: block;
+}
+
+.Ivj7JdNm5WGw6xA2l9yt {
+}
+
+.RA6W6tHqfGIgyq6FvHto {
+  background-color: #5e33bf !important;
+  color: #fff !important;
+  transform: translate3d(0, 0, 0) !important;
+  transition: background-color 0.2s ease-in !important;
+  cursor: pointer;
+}
+
+.RA6W6tHqfGIgyq6FvHto .df8AcRGrLBTeGlrI8Kpt svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.RA6W6tHqfGIgyq6FvHto .df8AcRGrLBTeGlrI8Kpt svg path:not(.MW1rWF7KNYwKqk4M7BZX) {
+  transition: fill 0.2s ease-out;
+  fill: #fff;
+}
+
+.RA6W6tHqfGIgyq6FvHto .df8AcRGrLBTeGlrI8Kpt svg circle.zgYLZOdQFmvl1k7yJoFd,
+.RA6W6tHqfGIgyq6FvHto .df8AcRGrLBTeGlrI8Kpt svg path.zgYLZOdQFmvl1k7yJoFd {
+  fill: transparent;
+  stroke: #fff;
+}
+
+.RA6W6tHqfGIgyq6FvHto:hover,
+.RA6W6tHqfGIgyq6FvHto:focus,
+.RA6W6tHqfGIgyq6FvHto:focus-within,
+.RA6W6tHqfGIgyq6FvHto:active {
+  background-color: #fff !important;
+  color: #5e33bf !important;
+  border: 1px solid #5e33bf !important;
+}
+
+.RA6W6tHqfGIgyq6FvHto:hover .df8AcRGrLBTeGlrI8Kpt svg,
+.RA6W6tHqfGIgyq6FvHto:focus .df8AcRGrLBTeGlrI8Kpt svg,
+.RA6W6tHqfGIgyq6FvHto:focus-within .df8AcRGrLBTeGlrI8Kpt svg,
+.RA6W6tHqfGIgyq6FvHto:active .df8AcRGrLBTeGlrI8Kpt svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.RA6W6tHqfGIgyq6FvHto:hover .df8AcRGrLBTeGlrI8Kpt svg path:not(.MW1rWF7KNYwKqk4M7BZX),
+.RA6W6tHqfGIgyq6FvHto:focus .df8AcRGrLBTeGlrI8Kpt svg path:not(.MW1rWF7KNYwKqk4M7BZX),
+.RA6W6tHqfGIgyq6FvHto:focus-within .df8AcRGrLBTeGlrI8Kpt svg path:not(.MW1rWF7KNYwKqk4M7BZX),
+.RA6W6tHqfGIgyq6FvHto:active .df8AcRGrLBTeGlrI8Kpt svg path:not(.MW1rWF7KNYwKqk4M7BZX) {
+  transition: fill 0.2s ease-out;
+  fill: #fff;
+}
+
+.RA6W6tHqfGIgyq6FvHto:hover .df8AcRGrLBTeGlrI8Kpt svg circle.zgYLZOdQFmvl1k7yJoFd,
+.RA6W6tHqfGIgyq6FvHto:hover .df8AcRGrLBTeGlrI8Kpt svg path.zgYLZOdQFmvl1k7yJoFd,
+.RA6W6tHqfGIgyq6FvHto:focus .df8AcRGrLBTeGlrI8Kpt svg circle.zgYLZOdQFmvl1k7yJoFd,
+.RA6W6tHqfGIgyq6FvHto:focus .df8AcRGrLBTeGlrI8Kpt svg path.zgYLZOdQFmvl1k7yJoFd,
+.RA6W6tHqfGIgyq6FvHto:focus-within .df8AcRGrLBTeGlrI8Kpt svg circle.zgYLZOdQFmvl1k7yJoFd,
+.RA6W6tHqfGIgyq6FvHto:focus-within .df8AcRGrLBTeGlrI8Kpt svg path.zgYLZOdQFmvl1k7yJoFd,
+.RA6W6tHqfGIgyq6FvHto:active .df8AcRGrLBTeGlrI8Kpt svg circle.zgYLZOdQFmvl1k7yJoFd,
+.RA6W6tHqfGIgyq6FvHto:active .df8AcRGrLBTeGlrI8Kpt svg path.zgYLZOdQFmvl1k7yJoFd {
+  fill: transparent;
+  stroke: #fff;
+}
+
+.c8ymIgiX1_X1KsA3H1tV {
+  background-color: #646363 !important;
+  color: #fff !important;
+  transform: translate3d(0, 0, 0) !important;
+  transition: background-color 0.2s ease-in !important;
+  cursor: pointer;
+}
+
+.c8ymIgiX1_X1KsA3H1tV .QzECqWHsQ0RPsvPBQcPg {
+  background-color: #9d9d9c !important;
+}
+
+.c8ymIgiX1_X1KsA3H1tV .QzECqWHsQ0RPsvPBQcPg svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.c8ymIgiX1_X1KsA3H1tV .QzECqWHsQ0RPsvPBQcPg svg path:not(.MW1rWF7KNYwKqk4M7BZX) {
+  transition: fill 0.2s ease-out;
+  fill: #fff;
+}
+
+.c8ymIgiX1_X1KsA3H1tV .QzECqWHsQ0RPsvPBQcPg svg circle.zgYLZOdQFmvl1k7yJoFd,
+.c8ymIgiX1_X1KsA3H1tV .QzECqWHsQ0RPsvPBQcPg svg path.zgYLZOdQFmvl1k7yJoFd {
+  fill: transparent;
+  stroke: #fff;
+}
+
+.c8ymIgiX1_X1KsA3H1tV:hover,
+.c8ymIgiX1_X1KsA3H1tV:focus,
+.c8ymIgiX1_X1KsA3H1tV:focus-within,
+.c8ymIgiX1_X1KsA3H1tV:active {
+  background-color: #9d9d9c !important;
+  color: #000 !important;
+}
+
+.c8ymIgiX1_X1KsA3H1tV:hover .QzECqWHsQ0RPsvPBQcPg svg,
+.c8ymIgiX1_X1KsA3H1tV:focus .QzECqWHsQ0RPsvPBQcPg svg,
+.c8ymIgiX1_X1KsA3H1tV:focus-within .QzECqWHsQ0RPsvPBQcPg svg,
+.c8ymIgiX1_X1KsA3H1tV:active .QzECqWHsQ0RPsvPBQcPg svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.c8ymIgiX1_X1KsA3H1tV:hover .QzECqWHsQ0RPsvPBQcPg svg path:not(.MW1rWF7KNYwKqk4M7BZX),
+.c8ymIgiX1_X1KsA3H1tV:focus .QzECqWHsQ0RPsvPBQcPg svg path:not(.MW1rWF7KNYwKqk4M7BZX),
+.c8ymIgiX1_X1KsA3H1tV:focus-within .QzECqWHsQ0RPsvPBQcPg svg path:not(.MW1rWF7KNYwKqk4M7BZX),
+.c8ymIgiX1_X1KsA3H1tV:active .QzECqWHsQ0RPsvPBQcPg svg path:not(.MW1rWF7KNYwKqk4M7BZX) {
+  transition: fill 0.2s ease-out;
+  fill: #fff;
+}
+
+.c8ymIgiX1_X1KsA3H1tV:hover .QzECqWHsQ0RPsvPBQcPg svg circle.zgYLZOdQFmvl1k7yJoFd,
+.c8ymIgiX1_X1KsA3H1tV:hover .QzECqWHsQ0RPsvPBQcPg svg path.zgYLZOdQFmvl1k7yJoFd,
+.c8ymIgiX1_X1KsA3H1tV:focus .QzECqWHsQ0RPsvPBQcPg svg circle.zgYLZOdQFmvl1k7yJoFd,
+.c8ymIgiX1_X1KsA3H1tV:focus .QzECqWHsQ0RPsvPBQcPg svg path.zgYLZOdQFmvl1k7yJoFd,
+.c8ymIgiX1_X1KsA3H1tV:focus-within .QzECqWHsQ0RPsvPBQcPg svg circle.zgYLZOdQFmvl1k7yJoFd,
+.c8ymIgiX1_X1KsA3H1tV:focus-within .QzECqWHsQ0RPsvPBQcPg svg path.zgYLZOdQFmvl1k7yJoFd,
+.c8ymIgiX1_X1KsA3H1tV:active .QzECqWHsQ0RPsvPBQcPg svg circle.zgYLZOdQFmvl1k7yJoFd,
+.c8ymIgiX1_X1KsA3H1tV:active .QzECqWHsQ0RPsvPBQcPg svg path.zgYLZOdQFmvl1k7yJoFd {
+  fill: transparent;
+  stroke: #fff;
+}</style><style>.zQ2oI6HGyJr41sAaSN6A {  
+  width: 195px !important;  
+}
+
+.CBjZQOrWgjhwajg6cNdt {
+  width: 210px !important;
+  margin-left:10px !important;
+}
+
+.yN40z2aRoGZzOKE8ARN3 {
+  position: absolute !important;
+  z-index: 9999999 !important;
+  height: 126px;
+  padding: 10px !important;
+  color: #111 !important;
+  background-color: #f0f0eb !important;
+  border-radius: 4px !important;  
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  -webkit-font-smoothing: antialiased;
+}
+.yN40z2aRoGZzOKE8ARN3 * {
+  font-family: inherit;
+}
+
+.zQ2oI6HGyJr41sAaSN6A:after {
+  content: "";
+  display: block !important;
+  position: absolute !important;
+  bottom: -5px !important;
+  left: 25% !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin-left: -3px !important;
+  border-top: 6px solid #f0f0eb !important;
+  border-left: 6px solid transparent !important;
+  border-right: 6px solid transparent !important;
+}
+
+.CBjZQOrWgjhwajg6cNdt:after {
+  content: "";
+  display: block !important;
+  position: absolute !important;
+  bottom: -10px !important;
+  left: 50% !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin-left: -3px !important;
+  border-top: 10px solid #f0f0eb !important;
+  border-left: 10px solid transparent !important;
+  border-right: 10px solid transparent !important;
+}
+
+.c22rusyRofQicH3i73oO {
+  margin: 0 0 5px;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+  color: #111;
+}
+
+.MAtUQwoIbEYN6I2IW3iU {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #111;
+}
+.Dzpte9yA2frq_VJhi6CC {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.vCn6PTxk9sBIkF37FZ4Q {
+  display: flex !important;
+  align-items: center !important;
+  color: #111 !important;
+  margin-bottom: 0 !important;
+  line-height: 1.6 !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+.qHjXL9KCgUmignnlCgjt {
+  margin-right: 0.5rem !important;
+  margin-top: -3px !important;
+}
+
+.qHjXL9KCgUmignnlCgjt svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+
+.qHjXL9KCgUmignnlCgjt svg path:not(.zFF4AleNIF_4DQ6TA9Ze) {
+  transition: fill 0.2s ease-out;
+  fill: #646363;
+}
+
+.qHjXL9KCgUmignnlCgjt svg circle.Dh3ou9W2aVNVDeowSDkG,
+.qHjXL9KCgUmignnlCgjt svg path.Dh3ou9W2aVNVDeowSDkG {
+  fill: transparent;
+  stroke: #646363;
+}
+
+.c5TyDaoqniVfBZ_t4fl6 {
+  color: #111 !important;
+  font-weight: 700 !important;
+}
+
+.vD1sKbEy4K_sdAhPfoZX {
+  font-weight: 700 !important;
+}
+
+.c5TyDaoqniVfBZ_t4fl6 .qHjXL9KCgUmignnlCgjt svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+
+.c5TyDaoqniVfBZ_t4fl6
+  .qHjXL9KCgUmignnlCgjt
+  svg
+  path:not(.zFF4AleNIF_4DQ6TA9Ze) {
+  transition: fill 0.2s ease-out;
+  fill: #111;
+}
+
+.vD1sKbEy4K_sdAhPfoZX
+  .qHjXL9KCgUmignnlCgjt
+  svg
+  path:not(.zFF4AleNIF_4DQ6TA9Ze) {
+  transition: fill 0.2s ease-out;
+  fill: #fff;
+}
+
+.c5TyDaoqniVfBZ_t4fl6 .qHjXL9KCgUmignnlCgjt svg circle.Dh3ou9W2aVNVDeowSDkG,
+.c5TyDaoqniVfBZ_t4fl6 .qHjXL9KCgUmignnlCgjt svg path.Dh3ou9W2aVNVDeowSDkG {
+  fill: transparent;
+  stroke: #fff;
+}
+
+.kW147OB4sedNGu2d6rGT {
+}
+
+.kW147OB4sedNGu2d6rGT .qHjXL9KCgUmignnlCgjt circle {
+  animation: 1.4s ease-in-out infinite both Buowibv1_rtZ58hAVORO;
+  display: block;
+  fill: transparent;
+  stroke: #111;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 280;
+  stroke-width: 10px;
+  transform-origin: 50% 50%;
+}
+
+
+</style><style>@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdh18S0xR41YDw.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdo18S0xR41YDw.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdg18S0xR41YDw.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdv18S0xR41YDw.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdj18S0xR41YDw.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdi18S0xR41YDw.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSds18S0xR41.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidh18S0xR41YDw.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkido18S0xR41YDw.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidg18S0xR41YDw.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidv18S0xR41YDw.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidj18S0xR41YDw.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidi18S0xR41YDw.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkids18S0xR41.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7qsDJB9cme_xc.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7jsDJB9cme_xc.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7rsDJB9cme_xc.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7ksDJB9cme_xc.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7osDJB9cme_xc.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7psDJB9cme_xc.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7nsDJB9cme.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdh18S0xR41YDw.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdo18S0xR41YDw.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdg18S0xR41YDw.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdv18S0xR41YDw.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdj18S0xR41YDw.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdi18S0xR41YDw.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCds18S0xR41.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdh18S0xR41YDw.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdo18S0xR41YDw.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdg18S0xR41YDw.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdv18S0xR41YDw.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdj18S0xR41YDw.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdi18S0xR41YDw.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSds18S0xR41.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydh18S0xR41YDw.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydo18S0xR41YDw.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydg18S0xR41YDw.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydv18S0xR41YDw.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydj18S0xR41YDw.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydi18S0xR41YDw.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:italic;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklyds18S0xR41.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmhdu3cOWxy40.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wkxdu3cOWxy40.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmxdu3cOWxy40.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wlBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmRdu3cOWxy40.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:200;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wlxdu3cOWxw.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmhdu3cOWxy40.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwkxdu3cOWxy40.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmxdu3cOWxy40.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwlBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmRdu3cOWxy40.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwlxdu3cOWxw.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNa7lujVj9_mf.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qPK7lujVj9_mf.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNK7lujVj9_mf.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qO67lujVj9_mf.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qN67lujVj9_mf.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNq7lujVj9_mf.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7lujVj9w.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmhdu3cOWxy40.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwkxdu3cOWxy40.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmxdu3cOWxy40.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwlBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmRdu3cOWxy40.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwlxdu3cOWxw.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmhdu3cOWxy40.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwkxdu3cOWxy40.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmxdu3cOWxy40.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwlBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmRdu3cOWxy40.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwlxdu3cOWxw.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmhdu3cOWxy40.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwkxdu3cOWxy40.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmxdu3cOWxy40.woff2) format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwlBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmBdu3cOWxy40.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmRdu3cOWxy40.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Source Sans Pro";font-style:normal;font-weight:900;font-display:swap;src:url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwlxdu3cOWxw.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}.ZD1LzV_5hhnbdBzBCTeC{z-index:65536}.BBAoAg1q8YTH2NGsa7Ui{font-family:"Source Sans Pro"}@keyframes aqjkdtZawN5lryW5flKx{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.qEYyC4J5veWyiLaz9gNP{display:inline-flex;flex-wrap:nowrap;align-items:center;justify-content:center;transition:none;position:relative;overflow:hidden;transform:translate3d(0, 0, 0);vertical-align:baseline;margin-bottom:5.58px;padding:3px 18px;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;line-height:1.5;text-align:center;cursor:pointer;letter-spacing:.01em;text-decoration:none;background-image:none;border-radius:4px;border:1px solid #646363;background-color:#fff;box-shadow:0 0 0 1px rgba(0,0,0,0);color:#000;transition:box-shadow ease-in-out .1s,background-color ease-in-out .1s}.qEYyC4J5veWyiLaz9gNP svg{width:1em;height:1em;vertical-align:middle}.qEYyC4J5veWyiLaz9gNP svg path:not(.ntvBF21SnsKwNa29Rg8A){transition:fill .2s ease-out;fill:#666}.qEYyC4J5veWyiLaz9gNP svg circle.iy0BC5jhx6jMyzcvrLwf,.qEYyC4J5veWyiLaz9gNP svg path.iy0BC5jhx6jMyzcvrLwf{fill:rgba(0,0,0,0);stroke:#666}.qEYyC4J5veWyiLaz9gNP:last-child{margin-right:0}.qEYyC4J5veWyiLaz9gNP svg{min-width:1em;margin-left:.2rem;margin-right:.2rem}.qEYyC4J5veWyiLaz9gNP:hover,.qEYyC4J5veWyiLaz9gNP:focus,.qEYyC4J5veWyiLaz9gNP:focus-within,.qEYyC4J5veWyiLaz9gNP:active{outline:none;text-decoration:none;color:#000;background-color:#f7f7f7;box-shadow:0 0 0 1px #5e34be;text-decoration:none}.qEYyC4J5veWyiLaz9gNP:hover svg,.qEYyC4J5veWyiLaz9gNP:focus svg,.qEYyC4J5veWyiLaz9gNP:focus-within svg,.qEYyC4J5veWyiLaz9gNP:active svg{width:1em;height:1em;vertical-align:middle}.qEYyC4J5veWyiLaz9gNP:hover svg path:not(.ntvBF21SnsKwNa29Rg8A),.qEYyC4J5veWyiLaz9gNP:focus svg path:not(.ntvBF21SnsKwNa29Rg8A),.qEYyC4J5veWyiLaz9gNP:focus-within svg path:not(.ntvBF21SnsKwNa29Rg8A),.qEYyC4J5veWyiLaz9gNP:active svg path:not(.ntvBF21SnsKwNa29Rg8A){transition:fill .2s ease-out;fill:#000}.qEYyC4J5veWyiLaz9gNP:hover svg circle.iy0BC5jhx6jMyzcvrLwf,.qEYyC4J5veWyiLaz9gNP:hover svg path.iy0BC5jhx6jMyzcvrLwf,.qEYyC4J5veWyiLaz9gNP:focus svg circle.iy0BC5jhx6jMyzcvrLwf,.qEYyC4J5veWyiLaz9gNP:focus svg path.iy0BC5jhx6jMyzcvrLwf,.qEYyC4J5veWyiLaz9gNP:focus-within svg circle.iy0BC5jhx6jMyzcvrLwf,.qEYyC4J5veWyiLaz9gNP:focus-within svg path.iy0BC5jhx6jMyzcvrLwf,.qEYyC4J5veWyiLaz9gNP:active svg circle.iy0BC5jhx6jMyzcvrLwf,.qEYyC4J5veWyiLaz9gNP:active svg path.iy0BC5jhx6jMyzcvrLwf{fill:rgba(0,0,0,0);stroke:#000}.qEYyC4J5veWyiLaz9gNP:disabled{cursor:not-allowed;opacity:.8;background-color:#fff;box-shadow:0 0 0 1px rgba(0,0,0,0)}.qEYyC4J5veWyiLaz9gNP+button,.qEYyC4J5veWyiLaz9gNP+.qEYyC4J5veWyiLaz9gNP{margin-left:5.58px}.htXPkXdMWWcmr0_dul7A{padding:0;background-color:rgba(0,0,0,0);border:0;box-shadow:none;color:#000}.htXPkXdMWWcmr0_dul7A:hover,.htXPkXdMWWcmr0_dul7A:focus,.htXPkXdMWWcmr0_dul7A:focus-within,.htXPkXdMWWcmr0_dul7A:active{background-color:rgba(0,0,0,0);border:0;box-shadow:none;color:#000;text-decoration:underline}.htXPkXdMWWcmr0_dul7A:disabled{text-decoration:none}.MvZ5MuRzqsBeDt5z0X1e svg{margin-top:-5px;margin-right:.75rem;animation-name:aqjkdtZawN5lryW5flKx;animation-duration:3s;animation-iteration-count:infinite;animation-timing-function:linear;transform-origin:50% 50%}.MvZ5MuRzqsBeDt5z0X1e.Tz2rVjh6IjVdduJP08Qm svg use{stroke:#fff}.ZChY5ShGlfvLluUVYdtA{padding:9px 36px;font-size:21.6px;font-size:1.2rem}.L7kF1ZLpIeOYvvHdD7Dg{padding:3.5px 7px;font-size:14.4px;font-size:.8rem}.c8FhE1WPTbl4j6Blh_Cw{width:100%;margin-left:0 !important}.Tz2rVjh6IjVdduJP08Qm{border:0;font-weight:300;background-color:#5e33bf;border:1px solid #5e34be;box-shadow:0 0 0 1px rgba(0,0,0,0);color:#fff}.Tz2rVjh6IjVdduJP08Qm svg{width:1em;height:1em;vertical-align:middle}.Tz2rVjh6IjVdduJP08Qm svg path:not(.ntvBF21SnsKwNa29Rg8A){transition:fill .2s ease-out;fill:#fff}.Tz2rVjh6IjVdduJP08Qm svg circle.iy0BC5jhx6jMyzcvrLwf,.Tz2rVjh6IjVdduJP08Qm svg path.iy0BC5jhx6jMyzcvrLwf{fill:rgba(0,0,0,0);stroke:#fff}.Tz2rVjh6IjVdduJP08Qm:hover,.Tz2rVjh6IjVdduJP08Qm:focus,.Tz2rVjh6IjVdduJP08Qm:focus-within,.Tz2rVjh6IjVdduJP08Qm:active{color:#fff;background-color:#6b40cc;box-shadow:0 0 0 1px #5e34be}.Tz2rVjh6IjVdduJP08Qm:hover svg,.Tz2rVjh6IjVdduJP08Qm:focus svg,.Tz2rVjh6IjVdduJP08Qm:focus-within svg,.Tz2rVjh6IjVdduJP08Qm:active svg{width:1em;height:1em;vertical-align:middle}.Tz2rVjh6IjVdduJP08Qm:hover svg path:not(.ntvBF21SnsKwNa29Rg8A),.Tz2rVjh6IjVdduJP08Qm:focus svg path:not(.ntvBF21SnsKwNa29Rg8A),.Tz2rVjh6IjVdduJP08Qm:focus-within svg path:not(.ntvBF21SnsKwNa29Rg8A),.Tz2rVjh6IjVdduJP08Qm:active svg path:not(.ntvBF21SnsKwNa29Rg8A){transition:fill .2s ease-out;fill:#fff}.Tz2rVjh6IjVdduJP08Qm:hover svg circle.iy0BC5jhx6jMyzcvrLwf,.Tz2rVjh6IjVdduJP08Qm:hover svg path.iy0BC5jhx6jMyzcvrLwf,.Tz2rVjh6IjVdduJP08Qm:focus svg circle.iy0BC5jhx6jMyzcvrLwf,.Tz2rVjh6IjVdduJP08Qm:focus svg path.iy0BC5jhx6jMyzcvrLwf,.Tz2rVjh6IjVdduJP08Qm:focus-within svg circle.iy0BC5jhx6jMyzcvrLwf,.Tz2rVjh6IjVdduJP08Qm:focus-within svg path.iy0BC5jhx6jMyzcvrLwf,.Tz2rVjh6IjVdduJP08Qm:active svg circle.iy0BC5jhx6jMyzcvrLwf,.Tz2rVjh6IjVdduJP08Qm:active svg path.iy0BC5jhx6jMyzcvrLwf{fill:rgba(0,0,0,0);stroke:#fff}.Tz2rVjh6IjVdduJP08Qm:disabled{background-color:#5e33bf;box-shadow:0 0 0 1px rgba(0,0,0,0);color:#fff}.K29Do4qZAslPSEk0asSZ{min-height:auto;width:1.75em;height:1.75em;margin:0 .5rem 0 0;padding:0;border:1px solid rgba(0,0,0,0);border-radius:50%;background-color:rgba(0,0,0,0);box-shadow:none}.K29Do4qZAslPSEk0asSZ svg{width:1em;height:1em;vertical-align:middle}.K29Do4qZAslPSEk0asSZ svg path:not(.ntvBF21SnsKwNa29Rg8A){transition:fill .2s ease-out;fill:#666}.K29Do4qZAslPSEk0asSZ svg circle.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ svg path.iy0BC5jhx6jMyzcvrLwf{fill:rgba(0,0,0,0);stroke:#666}.K29Do4qZAslPSEk0asSZ:hover svg,.K29Do4qZAslPSEk0asSZ:focus svg,.K29Do4qZAslPSEk0asSZ:focus-within svg,.K29Do4qZAslPSEk0asSZ:active svg{width:1em;height:1em;vertical-align:middle}.K29Do4qZAslPSEk0asSZ:hover svg path:not(.ntvBF21SnsKwNa29Rg8A),.K29Do4qZAslPSEk0asSZ:focus svg path:not(.ntvBF21SnsKwNa29Rg8A),.K29Do4qZAslPSEk0asSZ:focus-within svg path:not(.ntvBF21SnsKwNa29Rg8A),.K29Do4qZAslPSEk0asSZ:active svg path:not(.ntvBF21SnsKwNa29Rg8A){transition:fill .2s ease-out;fill:#5e34be}.K29Do4qZAslPSEk0asSZ:hover svg circle.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ:hover svg path.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ:focus svg circle.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ:focus svg path.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ:focus-within svg circle.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ:focus-within svg path.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ:active svg circle.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ:active svg path.iy0BC5jhx6jMyzcvrLwf{fill:rgba(0,0,0,0);stroke:#5e34be}.K29Do4qZAslPSEk0asSZ:disabled{opacity:1;background-color:#fff;box-shadow:none}.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm{background-color:#5e33bf;border:1px solid #e9eaed;box-shadow:0 0 0 1px rgba(0,0,0,0);color:#fff}.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm svg{width:1em;height:1em;vertical-align:middle}.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm svg path:not(.ntvBF21SnsKwNa29Rg8A){transition:fill .2s ease-out;fill:#fff}.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm svg circle.iy0BC5jhx6jMyzcvrLwf,.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm svg path.iy0BC5jhx6jMyzcvrLwf{fill:rgba(0,0,0,0);stroke:#fff}.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm:hover,.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm:focus,.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm:focus-within,.K29Do4qZAslPSEk0asSZ.Tz2rVjh6IjVdduJP08Qm:active{background-color:#6b40cc;box-shadow:0 0 0 1px #e9eaed}@keyframes KG9mWh693CBdLSEsKEEw{0%{transform:rotateZ(0deg)}100%{transform:rotateZ(360deg)}}@keyframes aqjkdtZawN5lryW5flKx{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.ZD1LzV_5hhnbdBzBCTeC{z-index:65536}</style><style>.O2kKYom4PJdnrcnGyfli{z-index:65536}.vqLLjXCvIZqFf6By7FsC{margin:0px !important;padding:0px !important}.D14sb1esRO00iZ1nebmr{position:fixed;padding:0px;margin:0px;width:250px;height:100px;box-shadow:none;margin:0;padding:0;display:flex;flex-direction:column;bottom:30px;left:0;z-index:9999999999999}.D14sb1esRO00iZ1nebmr.jmxllJPgW9QEseF_vRoS{bottom:90px}.ussejiMsgWzhgro3ajrg{bottom:80px !important;left:20px !important}.LiGTdyntXC8pa1XtEx0l{border-top-left-radius:30px !important;border-bottom-left-radius:30px !important}.SNO5yrb7NobAstipiMDb{height:100px;width:250px;left:0px;bottom:0px;box-shadow:none;margin:0px;border:0px;background-color:rgba(0,0,0,0) !important;overflow:hidden}.aDFGVZWO3T4Y2VPKu1IJ{display:block;margin-left:-8px}.hCym1FzCCgnchmEHLh2m{bottom:0px;left:0px;width:245px;height:80px;z-index:2000;margin:0;background-color:rgba(0,0,0,0);box-shadow:none;transform:translateX(-155px)}.YyRq9ewDY2IoRu54yZUi{display:flex;align-items:center;justify-content:flex-end;position:fixed;left:0px;width:220px;height:60px;padding-left:15px;background-color:#646363;color:#fff;border-top-right-radius:30px;border-bottom-right-radius:30px;transition:all .2s ease-in;cursor:pointer}.suMsnHlxitgjuMG9mk9c{}.RF3Ft4wMCSGJSNMh4BQf{flex-grow:1;padding-right:20px;line-height:1.1;text-align:center;transition:opacity .2s ease-in;color:#fff;opacity:1}.TRRuEGZkYLlovFGRV4Bg{height:60px;margin-right:5px;margin-top:7px;border-radius:50%}.nmH3eZaEDNZYzltAf3I9{height:60px;margin-right:5px;margin-top:7px;border-radius:50%}.WLHFcMAIg7lJLH6HZFnr{width:60px;height:60px;margin-right:5px;margin-top:15px;border-radius:50%}._9rvR6bGxpo9OdTnXTR1{transition:transform .2s ease-in;transform:translateX(-155px)}._rPZrbFgvMZOpS5lclxw{transition:transform .2s ease-in;transform:translateX(0)}.L75gelpYh4_q7uSDTb2x{transition:transform .5s ease-out;transform:translateX(-260px)}.mlJ8rgJkvB_9abQfz6BZ{border:2px solid rgba(0,0,0,0);border-left:0;background-color:#5e33bf;border-left:0;font-size:22px}.mlJ8rgJkvB_9abQfz6BZ:hover{background-color:#5e33bf}.mlJ8rgJkvB_9abQfz6BZ .RF3Ft4wMCSGJSNMh4BQf{opacity:1}.lWkUu_3zoMartWQEOtNJ .RF3Ft4wMCSGJSNMh4BQf{opacity:0}.TLjRZPoo5DaC8kofv5i8 .RF3Ft4wMCSGJSNMh4BQf{opacity:1}.ZbdpEJU6Zi9G8AWLuw2d{transition:transform .2s ease-in;transform:translateX(-162.5px)}.B48hMquTcZ958Ijv64UB{opacity:.8;box-shadow:none;font-size:18px}.TLjRZPoo5DaC8kofv5i8{opacity:1;box-shadow:0 2px 4px 0 rgba(0,0,0,.5);background:#646363;font-size:18px}.PutPRtxMCwBXTIlJ1ERX{transition:transform .2s ease-in;transform:translateX(0)}.MZZI6CipqCZYqNKOU41z{display:none;position:absolute;width:20px;height:20px !important;color:#111;background-color:#f0f0eb;border:1px solid #111;border-radius:20px;line-height:20px;font-size:16px;top:0;right:0;z-index:4000;cursor:pointer}.MZZI6CipqCZYqNKOU41z:hover{display:block}.BYG4Q2WQqiz9_B9pi8bI{position:relative;left:-1px;top:-2px}</style><style>.g2yPL5PuP5YcxDAm6OHT {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 19999;
+}
+.TKXFYjyTT7BRVXk2l6uF a {
+    color: #5e33bf;
+    font-weight: 700;
+    text-decoration: underline;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #5e33bf;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a svg circle.gZCekxKuewhQhlBZDuJQ,
+  .TKXFYjyTT7BRVXk2l6uF a svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #5e33bf;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a:hover,
+  .TKXFYjyTT7BRVXk2l6uF a:focus,
+  .TKXFYjyTT7BRVXk2l6uF a:focus-within,
+  .TKXFYjyTT7BRVXk2l6uF a:active {
+    color: #5e33bf;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a:hover svg,
+  .TKXFYjyTT7BRVXk2l6uF a:focus svg,
+  .TKXFYjyTT7BRVXk2l6uF a:focus-within svg,
+  .TKXFYjyTT7BRVXk2l6uF a:active svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a:hover svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .TKXFYjyTT7BRVXk2l6uF a:focus svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .TKXFYjyTT7BRVXk2l6uF a:focus-within svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .TKXFYjyTT7BRVXk2l6uF a:active svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #06512c;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a:hover svg circle.gZCekxKuewhQhlBZDuJQ,
+  .TKXFYjyTT7BRVXk2l6uF a:hover svg path.gZCekxKuewhQhlBZDuJQ,
+  .TKXFYjyTT7BRVXk2l6uF a:focus svg circle.gZCekxKuewhQhlBZDuJQ,
+  .TKXFYjyTT7BRVXk2l6uF a:focus svg path.gZCekxKuewhQhlBZDuJQ,
+  .TKXFYjyTT7BRVXk2l6uF a:focus-within svg circle.gZCekxKuewhQhlBZDuJQ,
+  .TKXFYjyTT7BRVXk2l6uF a:focus-within svg path.gZCekxKuewhQhlBZDuJQ,
+  .TKXFYjyTT7BRVXk2l6uF a:active svg circle.gZCekxKuewhQhlBZDuJQ,
+  .TKXFYjyTT7BRVXk2l6uF a:active svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #fff;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a:not([href]) {
+    opacity: 0.8;
+    cursor: not-allowed;
+    color: #fff !important;
+  }
+  .TKXFYjyTT7BRVXk2l6uF a.o53g2xMKPHItiQ_Pa50z {
+    color: #fff !important;
+  }
+  
+  .TKXFYjyTT7BRVXk2l6uF > :first-child {
+    margin-top: 0;
+  }
+  .TKXFYjyTT7BRVXk2l6uF > :last-child {
+    margin-bottom: 0;
+  }
+  
+  .N8JKKJ9GMp6XB25A3VK8 {
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-mask-image: radial-gradient(150px at bottom 60px left 290px, transparent 99%, black 100%);
+    mask-image: radial-gradient(150px at bottom 60px left 290px, transparent 99%, black 100%);
+  }
+  
+  .WKlsVvzGQcaszJKQigkg {
+    background-color: rgba(255, 255, 255, 0.8);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  
+  .NFIyN4kDgBJX4_hCTjAo {
+    -webkit-mask-image: radial-gradient(350px at bottom 60px left 40px, transparent 99%, black 100%);
+    mask-image: radial-gradient(350px at bottom 60px left 40px, transparent 99%, black 100%);
+  }
+  
+  .xsQ_pBk79MDxlAtWKQ1i {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    min-height: 2.5em;
+    -webkit-transition: none;
+    transition: none;
+    position: relative;
+    overflow: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    vertical-align: middle;
+    padding: 6px 18px;
+    font-family: "Clarivate", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.5;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    background-image: none;
+    border-radius: 4px;
+    border: 1px solid #f3f9f6;
+    background-color: #f3f9f6;
+    color: #4a494a;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V svg,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #b0afb0;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #b0afb0;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:hover,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus-within,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:active,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:hover,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus-within,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:active {
+    outline: none;
+    text-decoration: none;
+    color: #4a494a;
+    background-color: #e9f4ee;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:hover svg,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus svg,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus-within svg,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:active svg,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:hover svg,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus svg,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus-within svg,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:active svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:hover svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus-within svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:active svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:hover svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus-within svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:active svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #4a494a;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:hover svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:hover svg path.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus svg path.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus-within svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:focus-within svg path.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:active svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:active svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:hover svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:hover svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus-within svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:focus-within svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:active svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:active svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #5e33bf;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V:disabled,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V svg,
+  .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V svg {
+    margin-right: 0.75rem;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .ZFFejwogdbRltBtqgc3n svg,
+  .YqtWBHxfSeuDDI4tBtJq .ZFFejwogdbRltBtqgc3n svg {
+    margin-right: 0;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb {
+    min-height: auto;
+    width: 1.75em;
+    height: 1.75em;
+    margin: 0 0.5rem 0 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background-color: transparent;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:hover,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus-within,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:active,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:hover,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus-within,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:active {
+    border: 1px solid #f3f9f6;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .SlU_AzpYh4lpS86_AlqH,
+  .YqtWBHxfSeuDDI4tBtJq .SlU_AzpYh4lpS86_AlqH {
+    width: 100%;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z {
+    border: 0;
+    background-color: #f3f9f6;
+    color: #fff;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z svg,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #fff;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #fff;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:hover,
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:focus,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:hover,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:focus {
+    color: #fff;
+    background-color: #5e33bf;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:hover svg,
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:focus svg,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:hover svg,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:focus svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:hover svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:focus svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:hover svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:focus svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #fff;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:hover svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:hover svg path.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:focus svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .o53g2xMKPHItiQ_Pa50z:focus svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:hover svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:hover svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:focus svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .o53g2xMKPHItiQ_Pa50z:focus svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #fff;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .jrqth2DBy5Tfn6bolRG3,
+  .YqtWBHxfSeuDDI4tBtJq .jrqth2DBy5Tfn6bolRG3 {
+    padding: 9px 36px;
+    font-size: 21.6px;
+    font-size: 1.2rem;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb {
+    min-height: auto;
+    width: 2.5em;
+    height: 2.5em;
+    margin: 0 0.5rem 0 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background-color: transparent;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb svg,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb svg {
+    width: 1.25em;
+    height: 1.25em;
+    vertical-align: middle;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #5e33bf;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #5e33bf;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:hover,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus-within,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:active,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:hover,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus-within,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:active {
+    border: 1px solid #5e33bf;
+    background-color: #e9f4ee;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:hover svg,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus svg,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus-within svg,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:active svg,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:hover svg,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus svg,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus-within svg,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:active svg {
+    width: 1.25em;
+    height: 1.25em;
+    vertical-align: middle;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:hover svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus-within svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:active svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:hover svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus-within svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:active svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #5e33bf;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:hover svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:hover svg path.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus svg path.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus-within svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:focus-within svg path.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:active svg circle.gZCekxKuewhQhlBZDuJQ,
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:active svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:hover svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:hover svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus-within svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:focus-within svg path.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:active svg circle.gZCekxKuewhQhlBZDuJQ,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:active svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #5e33bf;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb:last-child,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb:last-child {
+    margin-right: 0;
+  }
+  #fj4Y2VBM_jUdoqg8vxxE .x_CwlUpfr3F8cJGqU9wb svg,
+  .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb svg {
+    margin-right: 0;
+  }
+  
+  .WKlsVvzGQcaszJKQigkg {
+    background-color: rgba(255, 255, 255, 0.8);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .YqtWBHxfSeuDDI4tBtJq,
+  .y2eGkYbULQmLiDmmsaE_,
+  .G7McxXXrgjal0gygY7go,
+  .cA8Idbs6OA0BSmKw9Tam {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-family: "Clarivate", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  .YqtWBHxfSeuDDI4tBtJq *:before,
+  .y2eGkYbULQmLiDmmsaE_ *:before,
+  .G7McxXXrgjal0gygY7go *:before,
+  .cA8Idbs6OA0BSmKw9Tam *:before,
+  .YqtWBHxfSeuDDI4tBtJq *:after,
+  .y2eGkYbULQmLiDmmsaE_ *:after,
+  .G7McxXXrgjal0gygY7go *:after,
+  .cA8Idbs6OA0BSmKw9Tam *:after {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  
+  .eHXvC2pkWtoHh3fOdygK {
+    overflow: hidden !important;
+  }
+  
+  .N7GBO0t9WTd0OozV15Vh {
+    z-index: 70000000 !important;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    height: 100vh;
+    width: 100vw;
+    background-color: #dadada;
+    opacity: 0.8;
+  }
+  
+  .xNhUX6MpP3eU4apTCdOF {
+    position: relative;
+    z-index: 80000000 !important;
+  }
+  
+  .YqtWBHxfSeuDDI4tBtJq {
+    position: fixed;
+    bottom: 30px;
+    left: 320px;
+    width: 350px;
+    z-index: 80000000;
+    padding: 15px;
+    background-color: #5e33bf;
+    border: 3px solid #5e33bf;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.3);
+  }
+  .YqtWBHxfSeuDDI4tBtJq:before,
+  .YqtWBHxfSeuDDI4tBtJq:after {
+    content: "";
+    position: absolute;
+  }
+  
+  .wP_d6sVNjv41TuoIOqgu {
+    top: 20vh;
+    left: 50vw;
+    margin-left: -175px;
+  }
+  
+  .y2eGkYbULQmLiDmmsaE_ {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    position: fixed;
+    min-width: 350px;
+    min-height: 350px;
+    z-index: 80000000;
+    padding: 15px;
+    background-color: #fff;
+    border: 10px dashed #696969;
+    border-radius: 4px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    text-align: center;
+  }
+  .y2eGkYbULQmLiDmmsaE_ .MU1OWZXYSl7cGLHsourz {
+    padding-right: 0;
+  }
+  
+  .P8xmsluQbsK9kCB8J4TB:before {
+    top: 50%;
+    right: -50px;
+    width: 50px;
+    margin-top: -5px;
+    border-top: 5px solid #5e33bf;
+    border-bottom: 5px solid #5e33bf;
+  }
+  .P8xmsluQbsK9kCB8J4TB:after {
+    top: 50%;
+    right: -80px;
+    height: 0;
+    width: 0;
+    margin-top: -20px;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 30px solid #5e33bf;
+  }
+  
+  .G6JUSg1GIC3pcwn4LtwJ:before {
+    top: 25px;
+    right: -50px;
+    width: 50px;
+    border-top: 5px solid #5e33bf;
+    border-bottom: 5px solid #5e33bf;
+  }
+  .G6JUSg1GIC3pcwn4LtwJ:after {
+    top: 10px;
+    right: -80px;
+    height: 0;
+    width: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 30px solid #5e33bf;
+  }
+  
+  .TSVTVmbeKDsx1uaA3jwg:before {
+    bottom: 25px;
+    right: -50px;
+    width: 50px;
+    border-top: 5px solid #5e33bf;
+    border-bottom: 5px solid #5e33bf;
+  }
+  .TSVTVmbeKDsx1uaA3jwg:after {
+    bottom: 10px;
+    right: -80px;
+    height: 0;
+    width: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 30px solid #5e33bf;
+  }
+  
+  .lXK6keKCXOgkCYRWTuuw:before {
+    top: 50%;
+    left: -50px;
+    width: 50px;
+    margin-top: -5px;
+    border-top: 5px solid #5e33bf;
+    border-bottom: 5px solid #5e33bf;
+  }
+  .lXK6keKCXOgkCYRWTuuw:after {
+    top: 50%;
+    left: -80px;
+    height: 0;
+    width: 0;
+    margin-top: -20px;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 30px solid #5e33bf;
+  }
+  
+  .ziKSzAZaZuS7hitu2X8Z:before {
+    top: 25px;
+    left: -50px;
+    width: 50px;
+    border-top: 5px solid #5e33bf;
+    border-bottom: 5px solid #5e33bf;
+  }
+  .ziKSzAZaZuS7hitu2X8Z:after {
+    top: 10px;
+    left: -80px;
+    height: 0;
+    width: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 30px solid #5e33bf;
+  }
+  
+  .quK2DZCe63wsbgp9iUm4:before {
+    bottom: 25px;
+    left: -50px;
+    width: 50px;
+    border-top: 5px solid #5e33bf;
+    border-bottom: 5px solid #5e33bf;
+  }
+  .quK2DZCe63wsbgp9iUm4:after {
+    bottom: 10px;
+    left: -80px;
+    height: 0;
+    width: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 30px solid #5e33bf;
+  }
+  
+  .GrMWkdgGakDmpReMdXtx:before {
+    top: -50px;
+    left: 50%;
+    height: 50px;
+    margin-left: -5px;
+    border-left: 5px solid #5e33bf;
+    border-right: 5px solid #5e33bf;
+  }
+  .GrMWkdgGakDmpReMdXtx:after {
+    left: 50%;
+    top: -80px;
+    height: 0;
+    width: 0;
+    margin-left: -20px;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 30px solid #5e33bf;
+  }
+  
+  .YksVyuEMbXSg025JadDh:before {
+    left: 25px;
+    top: -50px;
+    height: 50px;
+    border-left: 5px solid #5e33bf;
+    border-right: 5px solid #5e33bf;
+  }
+  .YksVyuEMbXSg025JadDh:after {
+    left: 10px;
+    top: -80px;
+    height: 0;
+    width: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 30px solid #5e33bf;
+  }
+  
+  .CTXY9eKXSOcPsREchYI2:before {
+    right: 25px;
+    top: -50px;
+    height: 50px;
+    border-left: 5px solid #5e33bf;
+    border-right: 5px solid #5e33bf;
+  }
+  .CTXY9eKXSOcPsREchYI2:after {
+    right: 10px;
+    top: -80px;
+    height: 0;
+    width: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 30px solid #5e33bf;
+  }
+  
+  .mV5XjFYui13hlKYiF9fz:before {
+    bottom: -50px;
+    left: 50%;
+    height: 50px;
+    margin-left: -5px;
+    border-left: 5px solid #5e33bf;
+    border-right: 5px solid #5e33bf;
+  }
+  .mV5XjFYui13hlKYiF9fz:after {
+    left: 50%;
+    bottom: -80px;
+    height: 0;
+    width: 0;
+    margin-left: -20px;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 30px solid #5e33bf;
+  }
+  
+  .jlXUNrOMfrz8QPtWwi9D:before {
+    bottom: -50px;
+    left: 25px;
+    height: 50px;
+    border-left: 5px solid #5e33bf;
+    border-right: 5px solid #5e33bf;
+  }
+  .jlXUNrOMfrz8QPtWwi9D:after {
+    left: 10px;
+    bottom: -80px;
+    height: 0;
+    width: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 30px solid #5e33bf;
+  }
+  
+  .JeoJI1NdjwsQC_qBgQws:before {
+    bottom: -50px;
+    right: 25px;
+    height: 50px;
+    border-left: 5px solid #5e33bf;
+    border-right: 5px solid #5e33bf;
+  }
+  .JeoJI1NdjwsQC_qBgQws:after {
+    right: 10px;
+    bottom: -80px;
+    height: 0;
+    width: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 30px solid #5e33bf;
+  }
+  
+  .MU1OWZXYSl7cGLHsourz {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-right: 85px;
+    font-size: 26px;
+    line-height: 1.25;
+  }
+  
+  .G7McxXXrgjal0gygY7go {
+    min-width: 30px;
+    height: 40px;
+    margin-right: 0.75rem;
+  }
+  .G7McxXXrgjal0gygY7go svg {
+    max-height: 40px;
+    height: auto;
+    width: auto;
+  }
+  
+  .mRKSYTEhLTxmKLYCNnX9 {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    min-height: 40px;
+  }
+  
+  .cA8Idbs6OA0BSmKw9Tam {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    margin: 0;
+    padding: 1rem;
+    outline: none;
+    background-color: transparent;
+    color: #fff;
+    font-weight: 400;
+    text-decoration: none;
+    border: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .cA8Idbs6OA0BSmKw9Tam svg {
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+  .cA8Idbs6OA0BSmKw9Tam svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #fff;
+  }
+  .cA8Idbs6OA0BSmKw9Tam svg circle.gZCekxKuewhQhlBZDuJQ,
+  .cA8Idbs6OA0BSmKw9Tam svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #696969;
+  }
+  .cA8Idbs6OA0BSmKw9Tam:hover,
+  .cA8Idbs6OA0BSmKw9Tam:focus,
+  .cA8Idbs6OA0BSmKw9Tam:focus-within,
+  .cA8Idbs6OA0BSmKw9Tam:active {
+    color: #dadada;
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+  .cA8Idbs6OA0BSmKw9Tam:hover svg,
+  .cA8Idbs6OA0BSmKw9Tam:focus svg,
+  .cA8Idbs6OA0BSmKw9Tam:focus-within svg,
+  .cA8Idbs6OA0BSmKw9Tam:active svg {
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+  .cA8Idbs6OA0BSmKw9Tam:hover svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .cA8Idbs6OA0BSmKw9Tam:focus svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .cA8Idbs6OA0BSmKw9Tam:focus-within svg path:not(.UEpjZcO6H4w0RvC9Kcye),
+  .cA8Idbs6OA0BSmKw9Tam:active svg path:not(.UEpjZcO6H4w0RvC9Kcye) {
+    -webkit-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+    fill: #dadada;
+  }
+  .cA8Idbs6OA0BSmKw9Tam:hover svg circle.gZCekxKuewhQhlBZDuJQ,
+  .cA8Idbs6OA0BSmKw9Tam:hover svg path.gZCekxKuewhQhlBZDuJQ,
+  .cA8Idbs6OA0BSmKw9Tam:focus svg circle.gZCekxKuewhQhlBZDuJQ,
+  .cA8Idbs6OA0BSmKw9Tam:focus svg path.gZCekxKuewhQhlBZDuJQ,
+  .cA8Idbs6OA0BSmKw9Tam:focus-within svg circle.gZCekxKuewhQhlBZDuJQ,
+  .cA8Idbs6OA0BSmKw9Tam:focus-within svg path.gZCekxKuewhQhlBZDuJQ,
+  .cA8Idbs6OA0BSmKw9Tam:active svg circle.gZCekxKuewhQhlBZDuJQ,
+  .cA8Idbs6OA0BSmKw9Tam:active svg path.gZCekxKuewhQhlBZDuJQ {
+    fill: transparent;
+    stroke: #5e33bf;
+  }
+  
+  .TKXFYjyTT7BRVXk2l6uF {
+    margin: 15px 0;
+    line-height: 1.25;
+    background: #5e33bf;
+    color: #fff;
+  }
+  .TKXFYjyTT7BRVXk2l6uF:first-of-type,
+  .TKXFYjyTT7BRVXk2l6uF:first-child {
+    margin-top: 0;
+  }
+  .TKXFYjyTT7BRVXk2l6uF:last-child {
+    margin-bottom: 0;
+  }
+  
+  .NnI3UXnyndFcINeMIp0o {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  
+  .FV8g2jL10G1UB_eAf9BA {
+    text-align: right;
+  }
+  .FV8g2jL10G1UB_eAf9BA a{
+   color: white;
+   text-decoration: underline;
+  }
+  .FV8g2jL10G1UB_eAf9BA a:hover{
+    color: white;
+    text-decoration: none;
+   }
+  
+  .wwyWCr_3HEEc_JqAydbV {
+    text-align: center;
+  }
+  .z4zawF9GdEBCaptUBX5p {
+    cursor: pointer;
+  }
+  .JcejyBv9JYPL8TJLsJFI {
+    cursor: pointer;
+  }
+  .Mo7gxI5NC9YwGrb2VuBI {
+    position: absolute;
+    width: 273px;
+    bottom: 120px;
+    left: 155px;
+    padding: 15px;
+    border-radius: 2px;
+    background-color: rgba(48, 55, 61, 1);
+    z-index: 500000000;
+  }
+  
+  .h5vXAMG8g9yvOW1B6wro {
+    left: 15px;
+    bottom: 100px;
+  }
+  
+  .h5vXAMG8g9yvOW1B6wro::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: -15px;
+    left: 15px;
+    height: 0;
+    border-top: 15px solid #30373d;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+  }
+  
+  .IAiRh1I0k5egyOBwu5xu {
+    bottom: 111px;
+    left: 283px;
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    background-color: rgba(48, 55, 61, 1);
+  }
+  
+  .SH95mwXWE4rR88NI9kdw {
+    font-family: "Clarivate";
+    text-align: left;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  
+  /* Content visibility */
+  .JDTc_LYE4hywcP2UrMj1 {
+    display: none;
+    height: 100%;
+    -webkit-animation-duration: 500ms;
+    animation-duration: 500ms;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }
+  
+  .JDTc_LYE4hywcP2UrMj1.xt3prUvhYpXaDTATSaqi {
+    display: block;
+    -webkit-animation-name: cyDGHsYvrKbP8e_GTG2d;
+    animation-name: cyDGHsYvrKbP8e_GTG2d;
+  }
+  
+  @keyframes cyDGHsYvrKbP8e_GTG2d {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  #p23dTdp5Vjnb1kKXw0Pm {
+    color: #fff;
+  }
+  
+  #p23dTdp5Vjnb1kKXw0Pm:hover {
+    color: #dadada;
+    text-decoration: none;
+  }
+  </style></head>
+
 <body>
-    <header>
-        <h1>VR斗虫大赛 2026</h1>
-        <p class="stage-title">瑞士轮晋级路线图</p>
-    </header>
+<header>
+    <h1>VR斗虫大赛 2026</h1>
+    <p class="stage-title">瑞士轮晋级路线图</p>
 
-    <div class="container">
-        <nav>
-            <a href="swiss.html">比赛详情</a>
-            <a href="swiss_bracket.html" class="active">晋级路线图</a>
-            <a href="playoffs.html">淘汰赛</a>
-        </nav>
+    <div class="data-license-top">
+        <strong>数据来源与许可声明</strong><br>
+        本网站部分直播数据来自
+        <a href="https://github.com/qianqiuzy/VR_douchong" target="_blank" rel="noopener noreferrer">VR_douchong</a>
+        项目及其相关数据接口
+        <code>vr.qianqiuzy.cn</code> /
+        <code>psp.qianqiuzy.cn</code>。<br>
+        本网站仅用于非商业兴趣展示和赛事娱乐用途。
+    </div>
+</header>
 
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-box qualified"></div>
-                <span>已晋级</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box eliminated"></div>
-                <span>已淘汰</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box active"></div>
-                <span>进行中</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box pending"></div>
-                <span>未开始</span>
-            </div>
+<div class="container">
+    <nav>
+        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/swiss.html">比赛详情</a>
+        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/swiss_bracket.html" class="active">晋级路线图</a>
+        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/playoffs.html">淘汰赛</a>
+    </nav>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-box qualified"></div>
+            <span>已晋级</span>
         </div>
 
-        <div class="swiss-flow">
-            <div class="rounds-container" id="rounds-container">
-                <!-- 动态生成5轮比赛 -->
-            </div>
+        <div class="legend-item">
+            <div class="legend-box eliminated"></div>
+            <span>已淘汰</span>
+        </div>
 
-            <div class="results-area">
-                <div class="result-section qualified">
-                    <div class="result-title qualified">✅ 晋级八强 (8人)</div>
-                    <div class="result-list" id="qualified-list"></div>
-                </div>
-                <div class="result-section eliminated">
-                    <div class="result-title eliminated">❌ 淘汰 (8人)</div>
-                    <div class="result-list" id="eliminated-list"></div>
-                </div>
-            </div>
+        <div class="legend-item">
+            <div class="legend-box active"></div>
+            <span>进行中</span>
+        </div>
+
+        <div class="legend-item">
+            <div class="legend-box pending"></div>
+            <span>未开始</span>
         </div>
     </div>
 
-    <footer>
-        <p>VR斗虫大赛 2026 © Powered by VirtuaReal Community</p>
+    <div class="swiss-flow">
+        <div class="rounds-container" id="rounds-container"><div class="round-column"><div class="round-header">第 1 轮</div><div class="round-matches"><div class="bracket-match">
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/27628019" target="_blank" rel="noopener noreferrer" title="打开 Ameki 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Ameki.webp" alt="Ameki">
+                
+            </div>
+
+            <div class="player-name-small">
+                Ameki
+                
+            </div>
+        </a>
     
-<div class="data-license">
-    <strong>数据来源与许可声明</strong><br>
-    本网站部分直播数据来自
-    <a href="https://github.com/qianqiuzy/VR_douchong"
-       target="_blank"
-       rel="noopener noreferrer">
-        VR_douchong
-    </a>
-    项目及其相关数据接口
-    <code>vr.qianqiuzy.cn</code> /
-    <code>psp.qianqiuzy.cn</code>。<br>
-    数据许可说明请参阅
-    <a href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
-       target="_blank"
-       rel="noopener noreferrer">
-        LICENSE-DATA.md
-    </a>。<br>
-    本网站仅用于非商业兴趣展示和赛事娱乐用途。
-    如需商业使用，请先取得数据权利人授权。
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1727074031" target="_blank" rel="noopener noreferrer" title="打开 chu2u 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/chu2u.webp" alt="chu2u">
+                
+            </div>
+
+            <div class="player-name-small">
+                chu2u
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+                </div><div class="bracket-match">
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/31368705" target="_blank" rel="noopener noreferrer" title="打开 Nagisa 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Nagisa.webp" alt="Nagisa">
+                <span class="live-dot"></span>
+            </div>
+
+            <div class="player-name-small">
+                Nagisa
+                <span class="live-label">直播中</span>
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/23260993" target="_blank" rel="noopener noreferrer" title="打开 Rhea 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Rhea.jpg" alt="Rhea">
+                <span class="live-dot"></span>
+            </div>
+
+            <div class="player-name-small">
+                Rhea
+                <span class="live-label">直播中</span>
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+                </div><div class="bracket-match">
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/30655190" target="_blank" rel="noopener noreferrer" title="打开 Mizuki 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Mizuki.webp" alt="Mizuki">
+                <span class="live-dot"></span>
+            </div>
+
+            <div class="player-name-small">
+                Mizuki
+                <span class="live-label">直播中</span>
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1713546334" target="_blank" rel="noopener noreferrer" title="打开 Hazel 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Hazel.webp" alt="Hazel">
+                
+            </div>
+
+            <div class="player-name-small">
+                Hazel
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+                </div><div class="bracket-match">
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1713548468" target="_blank" rel="noopener noreferrer" title="打开 Liko 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Liko.webp" alt="Liko">
+                <span class="live-dot"></span>
+            </div>
+
+            <div class="player-name-small">
+                Liko
+                <span class="live-label">直播中</span>
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1741667419" target="_blank" rel="noopener noreferrer" title="打开 Izayoi 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Izayoi.webp" alt="Izayoi">
+                
+            </div>
+
+            <div class="player-name-small">
+                Izayoi
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+                </div><div class="bracket-match">
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/25788785" target="_blank" rel="noopener noreferrer" title="打开 SUI 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/SUI.webp" alt="SUI">
+                
+            </div>
+
+            <div class="player-name-small">
+                SUI
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1820703922" target="_blank" rel="noopener noreferrer" title="打开 Harei 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Harei.webp" alt="Harei">
+                
+            </div>
+
+            <div class="player-name-small">
+                Harei
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+                </div><div class="bracket-match">
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1727071052" target="_blank" rel="noopener noreferrer" title="打开 Viridis 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Viridis.webp" alt="Viridis">
+                
+            </div>
+
+            <div class="player-name-small">
+                Viridis
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1727076670" target="_blank" rel="noopener noreferrer" title="打开 Sumire 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Sumire.webp" alt="Sumire">
+                
+            </div>
+
+            <div class="player-name-small">
+                Sumire
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+                </div><div class="bracket-match">
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1986461465" target="_blank" rel="noopener noreferrer" title="打开 Kloa 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Kloa.webp" alt="Kloa">
+                
+            </div>
+
+            <div class="player-name-small">
+                Kloa
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1947277414" target="_blank" rel="noopener noreferrer" title="打开 Melody 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Melody.jpg" alt="Melody">
+                
+            </div>
+
+            <div class="player-name-small">
+                Melody
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+                </div><div class="bracket-match">
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/1967216004" target="_blank" rel="noopener noreferrer" title="打开 Mit3uri 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Mit3uri.webp" alt="Mit3uri">
+                
+            </div>
+
+            <div class="player-name-small">
+                Mit3uri
+                
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div class="match-player
+                        
+                        active">
+                        
+        <a class="player-link" href="https://live.bilibili.com/26966466" target="_blank" rel="noopener noreferrer" title="打开 Shiori 的Bilibili直播间">
+            <div class="player-avatar-small">
+                <img src="./swiss_bracket_files/Shiori.webp" alt="Shiori">
+                <span class="live-dot"></span>
+            </div>
+
+            <div class="player-name-small">
+                Shiori
+                <span class="live-label">直播中</span>
+            </div>
+        </a>
+    
+
+                        <div class="player-record active">
+                            0-
+                            0
+                        </div>
+                    </div>
+                </div></div></div><div class="round-column"><div class="round-header">第 2 轮</div><div class="round-matches">
+                <div class="empty">
+                    未开始
+                </div>
+            </div></div><div class="round-column"><div class="round-header">第 3 轮</div><div class="round-matches">
+                <div class="empty">
+                    未开始
+                </div>
+            </div></div><div class="round-column"><div class="round-header">第 4 轮</div><div class="round-matches">
+                <div class="empty">
+                    未开始
+                </div>
+            </div></div><div class="round-column"><div class="round-header">第 5 轮</div><div class="round-matches">
+                <div class="empty">
+                    未开始
+                </div>
+            </div></div></div>
+
+        <div class="results-area">
+            <div class="result-section qualified">
+                <div class="result-title qualified">
+                    ✅ 晋级八强（8人）
+                </div>
+                <div class="result-list" id="qualified-list">
+            <div class="empty">暂无晋级选手</div>
+        </div>
+            </div>
+
+            <div class="result-section eliminated">
+                <div class="result-title eliminated">
+                    ❌ 淘汰（8人）
+                </div>
+                <div class="result-list" id="eliminated-list">
+            <div class="empty">暂无淘汰选手</div>
+        </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<footer>
+    <p>VR斗虫大赛 2026 · 非商业兴趣项目</p>
 </footer>
 
-    <script>
-        const API_BASE = "https://nameless-grass-c2e3.1791870448.workers.dev/api/tournament";
-        const TOURNAMENT_ID = 1;
+<script>
+"use strict";
 
-        let currentData = null;
+const API_BASE = "https://nameless-grass-c2e3.1791870448.workers.dev/api/tournament";
+const TOURNAMENT_ID = 1;
+const JPG_PLAYERS = new Set(["Rhea", "Melody"]);
 
-        function getAvatarUrl(player) {
-            if (!player) return '';
-            const jpgPlayers = ['Rhea', 'Melody'];
-            const ext = jpgPlayers.includes(player.name) ? 'jpg' : 'webp';
-            return `/avatars/${player.name}.${ext}`;
+let currentData = null;
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(
+        /[&<>"']/g,
+        char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[char]
+    );
+}
+
+function getAvatarUrl(player) {
+    if (!player) {
+        return "";
+    }
+
+    const extension = JPG_PLAYERS.has(player.name)
+        ? "jpg"
+        : "webp";
+
+    return `/avatars/${encodeURIComponent(
+        player.name
+    )}.${extension}`;
+}
+
+function getLiveUrl(player) {
+    if (!player) {
+        return "#";
+    }
+
+    if (player.live_url) {
+        return player.live_url;
+    }
+
+    if (player.room_id) {
+        return `https://live.bilibili.com/${encodeURIComponent(
+            player.room_id
+        )}`;
+    }
+
+    return "#";
+}
+
+function getPlayerStatus(player) {
+    if (Number(player.wins || 0) >= 3) {
+        return "qualified";
+    }
+
+    if (Number(player.losses || 0) >= 3) {
+        return "eliminated";
+    }
+
+    return "active";
+}
+
+function getBadgeText(wins, losses) {
+    wins = Number(wins || 0);
+    losses = Number(losses || 0);
+
+    if (wins >= 3) {
+        if (wins === 3 && losses === 0) {
+            return {
+                text: "3-0晋级",
+                className: "q30"
+            };
         }
 
-        function getPlayerStatus(player) {
-            if (player.wins >= 3) return 'qualified';
-            if (player.losses >= 3) return 'eliminated';
-            return 'active';
+        if (wins === 3 && losses === 1) {
+            return {
+                text: "3-1晋级",
+                className: "q31"
+            };
         }
 
-        function getBadgeText(wins, losses) {
-            if (wins >= 3) {
-                if (wins === 3 && losses === 0) return { text: '3-0晋级', class: 'q30' };
-                if (wins === 3 && losses === 1) return { text: '3-1晋级', class: 'q31' };
-                if (wins === 3 && losses === 2) return { text: '3-2晋级', class: 'q32' };
+        if (wins === 3 && losses === 2) {
+            return {
+                text: "3-2晋级",
+                className: "q32"
+            };
+        }
+    }
+
+    if (losses >= 3) {
+        if (losses === 3 && wins === 0) {
+            return {
+                text: "0-3淘汰",
+                className: "e03"
+            };
+        }
+
+        if (losses === 3 && wins === 1) {
+            return {
+                text: "1-3淘汰",
+                className: "e13"
+            };
+        }
+
+        if (losses === 3 && wins === 2) {
+            return {
+                text: "2-3淘汰",
+                className: "e23"
+            };
+        }
+    }
+
+    return null;
+}
+
+function playerLinkHtml(player, small = true) {
+    const url = getLiveUrl(player);
+    const avatarClass = small
+        ? "player-avatar-small"
+        : "result-avatar";
+
+    const nameClass = small
+        ? "player-name-small"
+        : "result-name";
+
+    const liveHtml = player.is_live
+        ? '<span class="live-label">直播中</span>'
+        : "";
+
+    return `
+        <a
+            class="player-link"
+            href="${escapeHtml(url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="打开 ${escapeHtml(player.name)} 的Bilibili直播间"
+        >
+            <div class="${avatarClass}">
+                <img
+                    src="${getAvatarUrl(player)}"
+                    alt="${escapeHtml(player.name)}"
+                >
+                ${player.is_live
+                    ? '<span class="live-dot"></span>'
+                    : ""}
+            </div>
+
+            <div class="${nameClass}">
+                ${escapeHtml(player.name)}
+                ${liveHtml}
+            </div>
+        </a>
+    `;
+}
+
+function renderSwissBracket(data) {
+    const container = document.getElementById(
+        "rounds-container"
+    );
+
+    container.replaceChildren();
+
+    const matchesByRound = {};
+
+    data.matches
+        .filter(match => Number(match.round) < 100)
+        .forEach(match => {
+            const round = Number(match.round);
+
+            if (!matchesByRound[round]) {
+                matchesByRound[round] = [];
             }
-            if (losses >= 3) {
-                if (losses === 3 && wins === 0) return { text: '0-3淘汰', class: 'e03' };
-                if (losses === 3 && wins === 1) return { text: '1-3淘汰', class: 'e13' };
-                if (losses === 3 && wins === 2) return { text: '2-3淘汰', class: 'e23' };
-            }
-            return null;
-        }
 
-        function renderSwissBracket(data) {
-            const container = document.getElementById('rounds-container');
-            container.innerHTML = '';
+            matchesByRound[round].push(match);
+        });
 
-            // 按轮次分组比赛
-            const matchesByRound = {};
-            data.matches.filter(m => m.round < 100).forEach(match => {
-                if (!matchesByRound[match.round]) matchesByRound[match.round] = [];
-                matchesByRound[match.round].push(match);
-            });
+    for (let round = 1; round <= 5; round += 1) {
+        const roundDiv = document.createElement("div");
+        roundDiv.className = "round-column";
 
-            // 渲染5轮
-            for (let round = 1; round <= 5; round++) {
-                const roundDiv = document.createElement('div');
-                roundDiv.className = 'round-column';
+        const header = document.createElement("div");
+        header.className = "round-header";
+        header.textContent = `第 ${round} 轮`;
+        roundDiv.appendChild(header);
 
-                const header = document.createElement('div');
-                header.className = 'round-header';
-                header.textContent = `第 ${round} 轮`;
-                roundDiv.appendChild(header);
+        const matchesDiv = document.createElement("div");
+        matchesDiv.className = "round-matches";
 
-                const matchesDiv = document.createElement('div');
-                matchesDiv.className = 'round-matches';
+        const roundMatches = matchesByRound[round] || [];
 
-                const roundMatches = matchesByRound[round] || [];
-                
-                if (roundMatches.length === 0) {
-                    matchesDiv.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:2rem;">未开始</div>';
-                } else {
-                    roundMatches.forEach(match => {
-                        const p1 = data.players.find(p => p.id === match.p1);
-                        const p2 = data.players.find(p => p.id === match.p2);
+        if (!roundMatches.length) {
+            matchesDiv.innerHTML = `
+                <div class="empty">
+                    未开始
+                </div>
+            `;
+        } else {
+            roundMatches.forEach(match => {
+                const p1 = data.players.find(
+                    player => String(player.id) === String(match.p1)
+                );
 
-                        if (!p1 || !p2) return;
+                const p2 = data.players.find(
+                    player => String(player.id) === String(match.p2)
+                );
 
-                        const p1Status = getPlayerStatus(p1);
-                        const p2Status = getPlayerStatus(p2);
-
-                        const matchDiv = document.createElement('div');
-                        matchDiv.className = 'bracket-match';
-                        if (match.status === 'completed') matchDiv.classList.add('completed');
-
-                        matchDiv.innerHTML = `
-                            <div class="match-player ${match.winner === p1.id ? 'winner' : ''} ${p1Status}">
-                                <div class="player-avatar-small">
-                                    <img src="${getAvatarUrl(p1)}" alt="${p1.name}">
-                                </div>
-                                <div class="player-name-small">${p1.name}</div>
-                                <div class="player-record ${p1Status}">${p1.wins}-${p1.losses}</div>
-                            </div>
-                            <div class="vs-small">VS</div>
-                            <div class="match-player ${match.winner === p2.id ? 'winner' : ''} ${p2Status}">
-                                <div class="player-avatar-small">
-                                    <img src="${getAvatarUrl(p2)}" alt="${p2.name}">
-                                </div>
-                                <div class="player-name-small">${p2.name}</div>
-                                <div class="player-record ${p2Status}">${p2.wins}-${p2.losses}</div>
-                            </div>
-                        `;
-
-                        matchesDiv.appendChild(matchDiv);
-                    });
+                if (!p1 || !p2) {
+                    return;
                 }
 
-                roundDiv.appendChild(matchesDiv);
-                container.appendChild(roundDiv);
-            }
-        }
+                const p1Status = getPlayerStatus(p1);
+                const p2Status = getPlayerStatus(p2);
 
-        function renderResults(data) {
-            const qualifiedList = document.getElementById('qualified-list');
-            const eliminatedList = document.getElementById('eliminated-list');
+                const matchDiv = document.createElement("div");
+                matchDiv.className = "bracket-match";
 
-            const qualified = data.players.filter(p => p.wins >= 3).sort((a, b) => {
-                if (b.wins !== a.wins) return b.wins - a.wins;
-                return a.losses - b.losses;
+                if (match.status === "completed") {
+                    matchDiv.classList.add("completed");
+                }
+
+                matchDiv.innerHTML = `
+                    <div
+                        class="match-player
+                        ${String(match.winner) === String(p1.id)
+                            ? "winner"
+                            : ""}
+                        ${p1Status}"
+                    >
+                        ${playerLinkHtml(p1)}
+
+                        <div
+                            class="player-record ${p1Status}"
+                        >
+                            ${Number(p1.wins || 0)}-
+                            ${Number(p1.losses || 0)}
+                        </div>
+                    </div>
+
+                    <div class="vs-small">VS</div>
+
+                    <div
+                        class="match-player
+                        ${String(match.winner) === String(p2.id)
+                            ? "winner"
+                            : ""}
+                        ${p2Status}"
+                    >
+                        ${playerLinkHtml(p2)}
+
+                        <div
+                            class="player-record ${p2Status}"
+                        >
+                            ${Number(p2.wins || 0)}-
+                            ${Number(p2.losses || 0)}
+                        </div>
+                    </div>
+                `;
+
+                matchesDiv.appendChild(matchDiv);
             });
-
-            const eliminated = data.players.filter(p => p.losses >= 3).sort((a, b) => {
-                if (a.losses !== b.losses) return a.losses - b.losses;
-                return b.wins - a.wins;
-            });
-
-            qualifiedList.innerHTML = '';
-            eliminatedList.innerHTML = '';
-
-            if (qualified.length === 0) {
-                qualifiedList.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:2rem;">暂无晋级选手</div>';
-            } else {
-                qualified.forEach(player => {
-                    const badge = getBadgeText(player.wins, player.losses);
-                    const div = document.createElement('div');
-                    div.className = 'result-player qualified';
-                    div.innerHTML = `
-                        <div class="result-avatar">
-                            <img src="${getAvatarUrl(player)}" alt="${player.name}">
-                        </div>
-                        <div class="result-info">
-                            <div class="result-name">${player.name}</div>
-                            <div class="result-record">战绩: ${player.wins}-${player.losses}</div>
-                        </div>
-                        ${badge ? `<div class="result-badge ${badge.class}">${badge.text}</div>` : ''}
-                    `;
-                    qualifiedList.appendChild(div);
-                });
-            }
-
-            if (eliminated.length === 0) {
-                eliminatedList.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:2rem;">暂无淘汰选手</div>';
-            } else {
-                eliminated.forEach(player => {
-                    const badge = getBadgeText(player.wins, player.losses);
-                    const div = document.createElement('div');
-                    div.className = 'result-player eliminated';
-                    div.innerHTML = `
-                        <div class="result-avatar">
-                            <img src="${getAvatarUrl(player)}" alt="${player.name}">
-                        </div>
-                        <div class="result-info">
-                            <div class="result-name">${player.name}</div>
-                            <div class="result-record">战绩: ${player.wins}-${player.losses}</div>
-                        </div>
-                        ${badge ? `<div class="result-badge ${badge.class}">${badge.text}</div>` : ''}
-                    `;
-                    eliminatedList.appendChild(div);
-                });
-            }
         }
 
-        async function loadData() {
-            try {
-                const resp = await fetch(`${API_BASE}/state/${TOURNAMENT_ID}`);
-                const data = await resp.json();
-                currentData = data;
+        roundDiv.appendChild(matchesDiv);
+        container.appendChild(roundDiv);
+    }
+}
 
-                renderSwissBracket(data);
-                renderResults(data);
-            } catch (e) {
-                console.error('加载数据失败:', e);
-            }
+function renderResults(data) {
+    const qualifiedList = document.getElementById(
+        "qualified-list"
+    );
+
+    const eliminatedList = document.getElementById(
+        "eliminated-list"
+    );
+
+    const qualified = data.players
+        .filter(player => Number(player.wins || 0) >= 3)
+        .sort((a, b) =>
+            Number(b.wins || 0) - Number(a.wins || 0)
+            || Number(a.losses || 0) - Number(b.losses || 0)
+        );
+
+    const eliminated = data.players
+        .filter(player => Number(player.losses || 0) >= 3)
+        .sort((a, b) =>
+            Number(a.losses || 0) - Number(b.losses || 0)
+            || Number(b.wins || 0) - Number(a.wins || 0)
+        );
+
+    qualifiedList.replaceChildren();
+    eliminatedList.replaceChildren();
+
+    if (!qualified.length) {
+        qualifiedList.innerHTML = `
+            <div class="empty">暂无晋级选手</div>
+        `;
+    } else {
+        qualified.forEach(player => {
+            const badge = getBadgeText(
+                player.wins,
+                player.losses
+            );
+
+            const div = document.createElement("div");
+            div.className = "result-player qualified";
+
+            div.innerHTML = `
+                ${playerLinkHtml(player, false)}
+
+                <div class="result-info">
+                    <div class="result-record">
+                        战绩：
+                        ${Number(player.wins || 0)}-
+                        ${Number(player.losses || 0)}
+                    </div>
+                </div>
+
+                ${badge
+                    ? `
+                        <div class="result-badge ${badge.className}">
+                            ${badge.text}
+                        </div>
+                    `
+                    : ""}
+            `;
+
+            qualifiedList.appendChild(div);
+        });
+    }
+
+    if (!eliminated.length) {
+        eliminatedList.innerHTML = `
+            <div class="empty">暂无淘汰选手</div>
+        `;
+    } else {
+        eliminated.forEach(player => {
+            const badge = getBadgeText(
+                player.wins,
+                player.losses
+            );
+
+            const div = document.createElement("div");
+            div.className = "result-player eliminated";
+
+            div.innerHTML = `
+                ${playerLinkHtml(player, false)}
+
+                <div class="result-info">
+                    <div class="result-record">
+                        战绩：
+                        ${Number(player.wins || 0)}-
+                        ${Number(player.losses || 0)}
+                    </div>
+                </div>
+
+                ${badge
+                    ? `
+                        <div class="result-badge ${badge.className}">
+                            ${badge.text}
+                        </div>
+                    `
+                    : ""}
+            `;
+
+            eliminatedList.appendChild(div);
+        });
+    }
+}
+
+function getVisitorId() {
+    const key = "vr-page-viewer-id";
+
+    try {
+        let value = localStorage.getItem(key);
+
+        if (!value) {
+            value = crypto.randomUUID();
+            localStorage.setItem(key, value);
         }
 
-        loadData();
-        setInterval(loadData, 30000);
-    </script>
-</body>
-</html>
+        return value;
+    } catch {
+        return "temporary-" + Math.random().toString(36);
+    }
+}
+
+function recordPageView() {
+    fetch("/api/analytics/visit", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            page: window.location.pathname,
+            visitor_id: getVisitorId()
+        }),
+        keepalive: true
+    }).catch(() => {
+        // 浏览量统计失败不影响页面。
+    });
+}
+
+async function loadData() {
+    try {
+        const response = await fetch(
+            `${API_BASE}/state/${TOURNAMENT_ID}`,
+            {
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `服务器返回 ${response.status}`
+            );
+        }
+
+        const data = await response.json();
+
+        if (
+            !data.tournament
+            || !Array.isArray(data.players)
+            || !Array.isArray(data.matches)
+        ) {
+            throw new Error(
+                "服务器返回的数据格式不正确"
+            );
+        }
+
+        currentData = data;
+
+        renderSwissBracket(data);
+        renderResults(data);
+    } catch (error) {
+        console.error("加载数据失败：", error);
+
+        document.getElementById(
+            "rounds-container"
+        ).innerHTML = `
+            <div class="empty">
+                读取数据失败：
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+    }
+}
+
+recordPageView();
+loadData();
+setInterval(loadData, 30000);
+</script>
+
+
+</body></html>
