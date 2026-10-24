@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>VR斗虫大赛 2026 · 比赛详情</title>
+    <title>VR鏂楄櫕澶ц禌 2026 路 姣旇禌璇︽儏</title>
 
     <style>
         :root {
@@ -613,81 +613,81 @@
 
 <body>
 <header>
-    <h1>VR斗虫大赛 2026</h1>
-    <div class="subtitle">比赛详情 · 当前轮次 · 实时支持率</div>
+    <h1>VR鏂楄櫕澶ц禌 2026</h1>
+    <div class="subtitle">姣旇禌璇︽儏 路 褰撳墠杞 路 瀹炴椂鏀寔鐜?/div>
 
     <div class="data-license-top">
-        <strong>数据来源与许可声明</strong><br>
-        本网站部分直播数据来自
+        <strong>鏁版嵁鏉ユ簮涓庤鍙０鏄?/strong><br>
+        鏈綉绔欓儴鍒嗙洿鎾暟鎹潵鑷?
         <a
             href="https://github.com/qianqiuzy/VR_douchong"
             target="_blank"
             rel="noopener noreferrer"
         >VR_douchong</a>
-        项目及其相关数据接口
+        椤圭洰鍙婂叾鐩稿叧鏁版嵁鎺ュ彛
         <code>vr.qianqiuzy.cn</code> /
-        <code>psp.qianqiuzy.cn</code>。<br>
-        数据许可说明请参阅
+        <code>psp.qianqiuzy.cn</code>銆?br>
+        鏁版嵁璁稿彲璇存槑璇峰弬闃?
         <a
             href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
             target="_blank"
             rel="noopener noreferrer"
-        >LICENSE-DATA.md</a>。<br>
-        本网站仅用于非商业兴趣展示和赛事娱乐用途。
+        >LICENSE-DATA.md</a>銆?br>
+        鏈綉绔欎粎鐢ㄤ簬闈炲晢涓氬叴瓒ｅ睍绀哄拰璧涗簨濞变箰鐢ㄩ€斻€?
     </div>
 </header>
 
 <main class="container">
     <nav>
-        <a href="swiss.html" class="active">比赛详情</a>
-        <a href="swiss_bracket.html">瑞士轮晋级图</a>
-        <a href="playoffs.html">淘汰赛</a>
+        <a href="swiss.html" class="active">姣旇禌璇︽儏</a>
+        <a href="swiss_bracket.html">鐟炲＋杞檵绾у浘</a>
+        <a href="playoffs.html">娣樻卑璧?/a>
     </nav>
 
     <section class="status-bar">
         <div class="status-item">
-            <div class="status-label">赛事状态</div>
-            <div class="status-value" id="event-status">加载中</div>
+            <div class="status-label">璧涗簨鐘舵€?/div>
+            <div class="status-value" id="event-status">鍔犺浇涓?/div>
         </div>
 
         <div class="status-item">
-            <div class="status-label">当前阶段</div>
+            <div class="status-label">褰撳墠闃舵</div>
             <div class="status-value" id="stage-label">--</div>
         </div>
 
         <div class="status-item">
-            <div class="status-label">已晋级</div>
+            <div class="status-label">宸叉檵绾?/div>
             <div class="status-value" id="qualified-count">0</div>
         </div>
 
         <div class="status-item">
-            <div class="status-label">已淘汰</div>
+            <div class="status-label">宸叉窐姹?/div>
             <div class="status-value" id="eliminated-count">0</div>
         </div>
 
         <div class="status-item">
-            <div class="status-label">页面更新时间</div>
+            <div class="status-label">椤甸潰鏇存柊鏃堕棿</div>
             <div class="status-value" id="updated-time">--:--</div>
         </div>
     </section>
 
     <div class="layout">
         <section class="panel">
-            <h2>比赛对阵</h2>
+            <h2>姣旇禌瀵归樀</h2>
             <div id="matches-container">
-                <div class="notice">正在读取比赛数据…</div>
+                <div class="notice">姝ｅ湪璇诲彇姣旇禌鏁版嵁鈥?/div>
             </div>
         </section>
 
         <aside class="panel">
-            <h2>选手战绩</h2>
+            <h2>閫夋墜鎴樼哗</h2>
             <div id="standings-container" class="standings"></div>
         </aside>
     </div>
 </main>
 
 <footer>
-    <p>VR斗虫大赛 2026 · 非商业兴趣项目</p>
+    <p>VR鏂楄櫕澶ц禌 2026 路 闈炲晢涓氬叴瓒ｉ」鐩?/p>
 </footer>
 
 <div
@@ -698,13 +698,13 @@
 >
     <div class="modal-content">
         <div class="modal-head">
-            <h2 id="modal-title">对局数据</h2>
+            <h2 id="modal-title">瀵瑰眬鏁版嵁</h2>
             <button
                 class="close"
                 type="button"
-                aria-label="关闭"
+                aria-label="鍏抽棴"
                 onclick="closeDetail()"
-            >×</button>
+            >脳</button>
         </div>
 
         <div id="modal-body"></div>
@@ -714,13 +714,13 @@
 <script>
 "use strict";
 
-const API_BASE = "/api/tournament";
+const API_BASE = "https://nameless-grass-c2e3.1791870448.workers.dev/api/tournament";
 const TOURNAMENT_ID = 1;
 const JPG_PLAYERS = new Set(["Rhea", "Melody"]);
 const STAGE_NAMES = {
-    100: "八强赛",
-    101: "半决赛",
-    102: "决赛"
+    100: "鍏己璧?,
+    101: "鍗婂喅璧?,
+    102: "鍐宠禌"
 };
 
 let currentData = null;
@@ -773,7 +773,7 @@ function liveUrl(player) {
 function money(value) {
     const number = Number(value || 0);
 
-    return "¥" + Math.round(number).toLocaleString("zh-CN");
+    return "楼" + Math.round(number).toLocaleString("zh-CN");
 }
 
 function formatNumber(value) {
@@ -840,7 +840,7 @@ function liveLabel(player) {
         return "";
     }
 
-    return '<span class="live-label">直播中</span>';
+    return '<span class="live-label">鐩存挱涓?/span>';
 }
 
 function concurrencyText(player) {
@@ -854,7 +854,7 @@ function concurrencyText(player) {
 
     return `
         <div class="concurrency">
-            当前同接 ${formatNumber(player.current_concurrency)}
+            褰撳墠鍚屾帴 ${formatNumber(player.current_concurrency)}
         </div>
     `;
 }
@@ -870,7 +870,7 @@ function playerHtml(player, revenue, winner) {
                 href="${esc(url)}"
                 target="_blank"
                 rel="noopener noreferrer"
-                title="打开 ${esc(player.name)} 的Bilibili直播间"
+                title="鎵撳紑 ${esc(player.name)} 鐨凚ilibili鐩存挱闂?
                 ${canOpen ? "" : "aria-disabled=\"true\""}
             >
                 <div class="avatar-wrap">
@@ -891,7 +891,7 @@ function playerHtml(player, revenue, winner) {
                     </div>
 
                     <div class="record">
-                        瑞士轮战绩
+                        鐟炲＋杞垬缁?
                         ${Number(player.wins || 0)}-
                         ${Number(player.losses || 0)}
                     </div>
@@ -901,7 +901,7 @@ function playerHtml(player, revenue, winner) {
             </a>
 
             <div class="revenue">
-                <div class="revenue-label">本场营收</div>
+                <div class="revenue-label">鏈満钀ユ敹</div>
                 <div class="revenue-value">
                     ${money(revenue.total)}
                 </div>
@@ -929,14 +929,14 @@ function renderMatch(match, label) {
     const myVote = savedVote(match.id);
 
     const statusText = match.status === "running"
-        ? "进行中"
+        ? "杩涜涓?
         : match.status === "completed"
-            ? "已结束"
-            : "未开始";
+            ? "宸茬粨鏉?
+            : "鏈紑濮?;
 
     const timeText = match.start_time
-        ? `比赛时间：${beijingTime(match.start_time)} - ${beijingTime(match.end_time)}`
-        : "比赛时间待定";
+        ? `姣旇禌鏃堕棿锛?{beijingTime(match.start_time)} - ${beijingTime(match.end_time)}`
+        : "姣旇禌鏃堕棿寰呭畾";
 
     const card = document.createElement("article");
     card.className = "match-card";
@@ -967,10 +967,10 @@ function renderMatch(match, label) {
 
         <div class="vote">
             <div class="vote-title">
-                为你支持的选手投票
+                涓轰綘鏀寔鐨勯€夋墜鎶曠エ
             </div>
 
-            <div class="vote-bar" aria-label="双方支持率">
+            <div class="vote-bar" aria-label="鍙屾柟鏀寔鐜?>
                 <div
                     class="vote-bar-left"
                     style="width:${leftPercent}%"
@@ -983,14 +983,14 @@ function renderMatch(match, label) {
 
             <div class="vote-totals">
                 <span>
-                    ${esc(p1.name)}：
-                    <strong>${votes.left}</strong> 票 ·
+                    ${esc(p1.name)}锛?
+                    <strong>${votes.left}</strong> 绁?路
                     ${leftPercent}%
                 </span>
 
                 <span>
-                    ${esc(p2.name)}：
-                    <strong>${votes.right}</strong> 票 ·
+                    ${esc(p2.name)}锛?
+                    <strong>${votes.right}</strong> 绁?路
                     ${rightPercent}%
                 </span>
             </div>
@@ -1009,7 +1009,7 @@ function renderMatch(match, label) {
                     )"
                     ${myVote ? "disabled" : ""}
                 >
-                    支持 ${esc(p1.name)}
+                    鏀寔 ${esc(p1.name)}
                 </button>
 
                 <button
@@ -1025,7 +1025,7 @@ function renderMatch(match, label) {
                     )"
                     ${myVote ? "disabled" : ""}
                 >
-                    支持 ${esc(p2.name)}
+                    鏀寔 ${esc(p2.name)}
                 </button>
             </div>
         </div>
@@ -1036,7 +1036,7 @@ function renderMatch(match, label) {
             style="width:100%;margin-top:10px"
             onclick="showMatchDetail('${esc(match.id)}')"
         >
-            查看本场详细数据
+            鏌ョ湅鏈満璇︾粏鏁版嵁
         </button>
     `;
 
@@ -1063,8 +1063,8 @@ function renderMatches(data) {
         empty.className = "notice";
         empty.textContent =
             data.tournament.status === "pending"
-                ? "比赛尚未开始，对阵会在设定时间开放。"
-                : "当前阶段暂无比赛。";
+                ? "姣旇禌灏氭湭寮€濮嬶紝瀵归樀浼氬湪璁惧畾鏃堕棿寮€鏀俱€?
+                : "褰撳墠闃舵鏆傛棤姣旇禌銆?;
 
         container.appendChild(empty);
         return;
@@ -1073,15 +1073,15 @@ function renderMatches(data) {
     const heading = document.createElement("div");
     heading.className = "round-heading";
     heading.textContent = round < 100
-        ? `瑞士轮 · 第 ${round} 轮`
-        : STAGE_NAMES[round] || "淘汰赛";
+        ? `鐟炲＋杞?路 绗?${round} 杞甡
+        : STAGE_NAMES[round] || "娣樻卑璧?;
 
     container.appendChild(heading);
 
     matches.forEach((match, index) => {
         const label = round < 100
             ? match.id
-            : `${STAGE_NAMES[round] || "淘汰赛"} ${index + 1}`;
+            : `${STAGE_NAMES[round] || "娣樻卑璧?} ${index + 1}`;
 
         const card = renderMatch(match, label);
 
@@ -1098,7 +1098,7 @@ function renderMatches(data) {
                 href="playoffs.html"
                 style="color:var(--blue)"
             >
-                查看完整淘汰赛晋级图 →
+                鏌ョ湅瀹屾暣娣樻卑璧涙檵绾у浘 鈫?
             </a>
         `;
 
@@ -1150,7 +1150,7 @@ function renderStandings(data) {
             <span class="standing-name">
                 ${esc(player.name)}
                 ${player.is_live
-                    ? '<span class="live-label">直播中</span>'
+                    ? '<span class="live-label">鐩存挱涓?/span>'
                     : ""}
             </span>
             <span class="standing-record">
@@ -1203,7 +1203,7 @@ function showMatchDetail(matchId) {
             <div class="detail-player">
                 <h3>${esc(p1.name)}</h3>
                 ${detailStat(
-                    "本场营收",
+                    "鏈満钀ユ敹",
                     money(r1.total)
                 )}
                 ${detailStat(
@@ -1211,19 +1211,19 @@ function showMatchDetail(matchId) {
                     money(r1.sc)
                 )}
                 ${detailStat(
-                    "礼物",
+                    "绀肩墿",
                     money(r1.gift)
                 )}
                 ${detailStat(
-                    "弹幕数",
+                    "寮瑰箷鏁?,
                     formatNumber(r1.danmaku)
                 )}
                 ${detailStat(
-                    "峰值同接",
+                    "宄板€煎悓鎺?,
                     formatNumber(r1.peak_viewers)
                 )}
                 ${detailStat(
-                    "平均同接",
+                    "骞冲潎鍚屾帴",
                     formatNumber(r1.avg_viewers)
                 )}
             </div>
@@ -1231,7 +1231,7 @@ function showMatchDetail(matchId) {
             <div class="detail-player">
                 <h3>${esc(p2.name)}</h3>
                 ${detailStat(
-                    "本场营收",
+                    "鏈満钀ユ敹",
                     money(r2.total)
                 )}
                 ${detailStat(
@@ -1239,26 +1239,26 @@ function showMatchDetail(matchId) {
                     money(r2.sc)
                 )}
                 ${detailStat(
-                    "礼物",
+                    "绀肩墿",
                     money(r2.gift)
                 )}
                 ${detailStat(
-                    "弹幕数",
+                    "寮瑰箷鏁?,
                     formatNumber(r2.danmaku)
                 )}
                 ${detailStat(
-                    "峰值同接",
+                    "宄板€煎悓鎺?,
                     formatNumber(r2.peak_viewers)
                 )}
                 ${detailStat(
-                    "平均同接",
+                    "骞冲潎鍚屾帴",
                     formatNumber(r2.avg_viewers)
                 )}
             </div>
         </div>
 
         <p class="match-time">
-            比赛时间：
+            姣旇禌鏃堕棿锛?
             ${beijingTime(match.start_time)}
             -
             ${beijingTime(match.end_time)}
@@ -1299,11 +1299,11 @@ async function castVote(matchId, playerId) {
 
     try {
         if (localStorage.getItem(key)) {
-            alert("你已经为这场比赛投过票了。");
+            alert("浣犲凡缁忎负杩欏満姣旇禌鎶曡繃绁ㄤ簡銆?);
             return;
         }
     } catch {
-        // localStorage 不可用时继续请求后端。
+        // localStorage 涓嶅彲鐢ㄦ椂缁х画璇锋眰鍚庣銆?
     }
 
     try {
@@ -1325,7 +1325,7 @@ async function castVote(matchId, playerId) {
         const result = await response.json();
 
         if (!response.ok) {
-            alert(result.error || "投票失败，请稍后再试。");
+            alert(result.error || "鎶曠エ澶辫触锛岃绋嶅悗鍐嶈瘯銆?);
             return;
         }
 
@@ -1333,26 +1333,26 @@ async function castVote(matchId, playerId) {
             try {
                 localStorage.setItem(key, playerId);
             } catch {
-                // 忽略本地存储失败。
+                // 蹇界暐鏈湴瀛樺偍澶辫触銆?
             }
 
             await loadData();
-            alert("投票成功！");
+            alert("鎶曠エ鎴愬姛锛?);
         } else if (result.error === "already_voted") {
             try {
                 localStorage.setItem(key, playerId);
             } catch {
-                // 忽略本地存储失败。
+                // 蹇界暐鏈湴瀛樺偍澶辫触銆?
             }
 
             await loadData();
-            alert("你已经为这场比赛投过票了。");
+            alert("浣犲凡缁忎负杩欏満姣旇禌鎶曡繃绁ㄤ簡銆?);
         } else {
-            alert(result.error || "投票失败。");
+            alert(result.error || "鎶曠エ澶辫触銆?);
         }
     } catch (error) {
-        console.error("投票失败：", error);
-        alert("无法连接投票服务，请稍后重试。");
+        console.error("鎶曠エ澶辫触锛?, error);
+        alert("鏃犳硶杩炴帴鎶曠エ鏈嶅姟锛岃绋嶅悗閲嶈瘯銆?);
     }
 }
 
@@ -1385,7 +1385,7 @@ function recordPageView() {
         }),
         keepalive: true
     }).catch(() => {
-        // 统计失败不影响页面。
+        // 缁熻澶辫触涓嶅奖鍝嶉〉闈€?
     });
 }
 
@@ -1400,7 +1400,7 @@ async function loadData() {
 
         if (!response.ok) {
             throw new Error(
-                `服务器返回 ${response.status}`
+                `鏈嶅姟鍣ㄨ繑鍥?${response.status}`
             );
         }
 
@@ -1412,7 +1412,7 @@ async function loadData() {
             || !Array.isArray(data.matches)
         ) {
             throw new Error(
-                "服务器返回的数据格式不正确"
+                "鏈嶅姟鍣ㄨ繑鍥炵殑鏁版嵁鏍煎紡涓嶆纭?
             );
         }
 
@@ -1424,11 +1424,11 @@ async function loadData() {
 
         const eventStatus =
             data.tournament.status === "running"
-                ? "进行中"
+                ? "杩涜涓?
                 : data.tournament.status === "pending"
-                    ? "未开始"
+                    ? "鏈紑濮?
                     : data.tournament.status === "finished"
-                        ? "已结束"
+                        ? "宸茬粨鏉?
                         : data.tournament.status;
 
         document.getElementById(
@@ -1438,8 +1438,8 @@ async function loadData() {
         document.getElementById(
             "stage-label"
         ).textContent = round < 100
-            ? `瑞士轮 R${round}`
-            : STAGE_NAMES[round] || "淘汰赛";
+            ? `鐟炲＋杞?R${round}`
+            : STAGE_NAMES[round] || "娣樻卑璧?;
 
         document.getElementById(
             "qualified-count"
@@ -1473,13 +1473,13 @@ async function loadData() {
         renderMatches(data);
         renderStandings(data);
     } catch (error) {
-        console.error("加载比赛数据失败：", error);
+        console.error("鍔犺浇姣旇禌鏁版嵁澶辫触锛?, error);
 
         document.getElementById(
             "matches-container"
         ).innerHTML = `
             <div class="error">
-                读取比赛数据失败：
+                璇诲彇姣旇禌鏁版嵁澶辫触锛?
                 ${esc(error.message)}
             </div>
         `;
@@ -1500,3 +1500,4 @@ setInterval(loadData, 30000);
 </script>
 </body>
 </html>
+

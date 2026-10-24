@@ -1,0 +1,232 @@
+[1mdiff --git a/static/swiss.html b/static/swiss.html[m
+[1mindex 6df5215..a2ab86c 100644[m
+[1m--- a/static/swiss.html[m
+[1m+++ b/static/swiss.html[m
+[36m@@ -4,12 +4,13 @@[m
+     <meta charset="UTF-8">[m
+     <meta name="viewport" content="width=device-width, initial-scale=1">[m
+     <title>VR斗虫大赛 2026 · 比赛详情</title>[m
+[32m+[m
+     <style>[m
+         :root {[m
+             --bg: #080b12;[m
+             --panel: #111824;[m
+             --card: #182231;[m
+[31m-            --card-inner: #101722;[m
+[32m+[m[32m            --inner: #101722;[m
+             --text: #eef4fb;[m
+             --muted: #9aaabd;[m
+             --border: #33445a;[m
+[36m@@ -19,7 +20,9 @@[m
+             --red: #fb7185;[m
+         }[m
+ [m
+[31m-        * { box-sizing: border-box; }[m
+[32m+[m[32m        * {[m
+[32m+[m[32m            box-sizing: border-box;[m
+[32m+[m[32m        }[m
+ [m
+         body {[m
+             margin: 0;[m
+[36m@@ -38,11 +41,53 @@[m
+ [m
+         h1 {[m
+             margin: 0;[m
+[32m+[m[32m            color: var(--blue);[m
+             font-size: clamp(28px, 5vw, 48px);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        h2 {[m
+[32m+[m[32m            margin: 0 0 16px;[m
+             color: var(--blue);[m
+[32m+[m[32m            font-size: 21px;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .subtitle {[m
+[32m+[m[32m            margin-top: 8px;[m
+[32m+[m[32m            color: var(--muted);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .data-license-top {[m
+[32m+[m[32m            width: min(1100px, 94%);[m
+[32m+[m[32m            margin: 22px auto 0;[m
+[32m+[m[32m            padding: 14px 20px;[m
+[32m+[m[32m            color: var(--muted);[m
+[32m+[m[32m            background: #101722;[m
+[32m+[m[32m            border: 1px solid var(--border);[m
+[32m+[m[32m            border-radius: 10px;[m
+[32m+[m[32m            font-size: 13px;[m
+[32m+[m[32m            line-height: 1.8;[m
+[32m+[m[32m            text-align: center;[m
+         }[m
+ [m
+[31m-        .subtitle { color: var(--muted); margin-top: 8px; }[m
+[32m+[m[32m        .data-license-top strong {[m
+[32m+[m[32m            color: var(--text);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .data-license-top a {[m
+[32m+[m[32m            color: var(--blue);[m
+[32m+[m[32m            text-decoration: none;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .data-license-top a:hover {[m
+[32m+[m[32m            text-decoration: underline;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .data-license-top code {[m
+[32m+[m[32m            color: #d7e3f1;[m
+[32m+[m[32m            background: var(--card);[m
+[32m+[m[32m            padding: 2px 5px;[m
+[32m+[m[32m            border-radius: 4px;[m
+[32m+[m[32m        }[m
+ [m
+         .container {[m
+             width: min(1500px, 96%);[m
+[36m@@ -67,7 +112,8 @@[m
+             text-decoration: none;[m
+         }[m
+ [m
+[31m-        nav a.active, nav a:hover {[m
+[32m+[m[32m        nav a.active,[m
+[32m+[m[32m        nav a:hover {[m
+             color: #06111b;[m
+             background: var(--blue);[m
+         }[m
+[36m@@ -76,16 +122,28 @@[m
+             display: grid;[m
+             grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));[m
+             gap: 12px;[m
+[32m+[m[32m            padding: 18px;[m
+[32m+[m[32m            margin-bottom: 20px;[m
+             background: var(--panel);[m
+             border: 1px solid var(--border);[m
+             border-radius: 14px;[m
+[31m-            padding: 18px;[m
+[31m-            margin-bottom: 20px;[m
+         }[m
+ [m
+[31m-        .status-item { text-align: center; }[m
+[31m-        .status-label { color: var(--muted); font-size: 13px; }[m
+[31m-        .status-value { color: var(--blue); font-size: 19px; font-weight: 800; margin-top: 5px; }[m
+[32m+[m[32m        .status-item {[m
+[32m+[m[32m            text-align: center;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .status-label {[m
+[32m+[m[32m            color: var(--muted);[m
+[32m+[m[32m            font-size: 13px;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .status-value {[m
+[32m+[m[32m            margin-top: 5px;[m
+[32m+[m[32m            color: var(--blue);[m
+[32m+[m[32m            font-size: 19px;[m
+[32m+[m[32m            font-weight: 800;[m
+[32m+[m[32m        }[m
+ [m
+         .layout {[m
+             display: grid;[m
+[36m@@ -102,26 +160,20 @@[m
+             border-radius: 14px;[m
+         }[m
+ [m
+[31m-        h2 {[m
+[31m-            color: var(--blue);[m
+[31m-            font-size: 21px;[m
+[31m-            margin: 0 0 16px;[m
+[31m-        }[m
+[31m-[m
+         .round-heading {[m
+[31m-            color: var(--muted);[m
+[31m-            border-bottom: 1px solid var(--border);[m
+             padding-bottom: 8px;[m
+             margin: 22px 0 12px;[m
+[32m+[m[32m            color: var(--muted);[m
+[32m+[m[32m            border-bottom: 1px solid var(--border);[m
+             font-weight: 700;[m
+         }[m
+ [m
+         .match-card {[m
+[32m+[m[32m            padding: 14px;[m
+[32m+[m[32m            margin-bottom: 14px;[m
+             background: var(--card);[m
+             border: 1px solid var(--border);[m
+             border-radius: 12px;[m
+[31m-            padding: 14px;[m
+[31m-            margin-bottom: 14px;[m
+         }[m
+ [m
+         .match-top {[m
+[36m@@ -131,22 +183,27 @@[m
+             gap: 8px;[m
+             padding-bottom: 10px;[m
+             margin-bottom: 10px;[m
+[31m-            border-bottom: 1px solid var(--border);[m
+             color: var(--muted);[m
+[32m+[m[32m            border-bottom: 1px solid var(--border);[m
+             font-size: 13px;[m
+         }[m
+ [m
+         .badge {[m
+[31m-            border-radius: 20px;[m
+             padding: 4px 10px;[m
+[31m-            font-size: 12px;[m
+[31m-            font-weight: 800;[m
+             color: #08111b;[m
+             background: var(--gold);[m
+[32m+[m[32m            border-radius: 20px;[m
+[32m+[m[32m            font-size: 12px;[m
+[32m+[m[32m            font-weight: 800;[m
+         }[m
+ [m
+[31m-        .badge.running { background: var(--green); }[m
+[31m-        .badge.completed { background: #a6b3c5; }[m
+[32m+[m[32m        .badge.running {[m
+[32m+[m[32m            background: var(--green);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .badge.completed {[m
+[32m+[m[32m            background: #a6b3c5;[m
+[32m+[m[32m        }[m
+ [m
+         .player {[m
+             display: grid;[m
+[36m@@ -154,58 +211,154 @@[m
+             gap: 12px;[m
+             align-items: center;[m
+             padding: 11px;[m
+[32m+[m[32m            background: var(--inner);[m
+             border: 2px solid transparent;[m
+             border-radius: 9px;[m
+[31m-            background: var(--card-inner);[m
+         }[m
+ [m
+         .player.winner {[m
+[31m-            border-color: var(--green);[m
+             background: rgba(110, 231, 183, .08);[m
+[32m+[m[32m            border-color: var(--green);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .player-link {[m
+[32m+[m[32m            display: contents;[m
+[32m+[m[32m            color: inherit;[m
+[32m+[m[32m            text-decoration: none;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        .avatar-wrap {[m
+[32m+[m[32m            position: relative;[m
+[32m+[m[32m            width: 48px;[m
+[32m+[m[32m            height: 48px;[m
+         }[m
+ [m
+         .avatar {[m
+             width: 46px;[m
+             height: 46px;[m
+[31m-            border-radius: 50%;[m
+             object-fit: cover;[m
+[31m-            border: 2px solid var(--blue);[m
+             background: #263348;[m
+[32m+[m[32m            border: 2px solid var(--blue);[m
+[32m+[m[32m            border-radius: 50%;[m
+[32m+[m[32m            cursor: p

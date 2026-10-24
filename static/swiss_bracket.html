@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>瑞士轮晋级图 - VR斗虫大赛 2026</title>
+    <title>鐟炲＋杞檵绾у浘 - VR鏂楄櫕澶ц禌 2026</title>
 
     <style>
         :root {
@@ -469,50 +469,50 @@
 
 <body>
 <header>
-    <h1>VR斗虫大赛 2026</h1>
-    <p class="stage-title">瑞士轮晋级路线图</p>
+    <h1>VR鏂楄櫕澶ц禌 2026</h1>
+    <p class="stage-title">鐟炲＋杞檵绾ц矾绾垮浘</p>
 
     <div class="data-license-top">
-        <strong>数据来源与许可声明</strong><br>
-        本网站部分直播数据来自
+        <strong>鏁版嵁鏉ユ簮涓庤鍙０鏄?/strong><br>
+        鏈綉绔欓儴鍒嗙洿鎾暟鎹潵鑷?
         <a
             href="https://github.com/qianqiuzy/VR_douchong"
             target="_blank"
             rel="noopener noreferrer"
         >VR_douchong</a>
-        项目及其相关数据接口
+        椤圭洰鍙婂叾鐩稿叧鏁版嵁鎺ュ彛
         <code>vr.qianqiuzy.cn</code> /
-        <code>psp.qianqiuzy.cn</code>。<br>
-        本网站仅用于非商业兴趣展示和赛事娱乐用途。
+        <code>psp.qianqiuzy.cn</code>銆?br>
+        鏈綉绔欎粎鐢ㄤ簬闈炲晢涓氬叴瓒ｅ睍绀哄拰璧涗簨濞变箰鐢ㄩ€斻€?
     </div>
 </header>
 
 <div class="container">
     <nav>
-        <a href="swiss.html">比赛详情</a>
-        <a href="swiss_bracket.html" class="active">晋级路线图</a>
-        <a href="playoffs.html">淘汰赛</a>
+        <a href="swiss.html">姣旇禌璇︽儏</a>
+        <a href="swiss_bracket.html" class="active">鏅嬬骇璺嚎鍥?/a>
+        <a href="playoffs.html">娣樻卑璧?/a>
     </nav>
 
     <div class="legend">
         <div class="legend-item">
             <div class="legend-box qualified"></div>
-            <span>已晋级</span>
+            <span>宸叉檵绾?/span>
         </div>
 
         <div class="legend-item">
             <div class="legend-box eliminated"></div>
-            <span>已淘汰</span>
+            <span>宸叉窐姹?/span>
         </div>
 
         <div class="legend-item">
             <div class="legend-box active"></div>
-            <span>进行中</span>
+            <span>杩涜涓?/span>
         </div>
 
         <div class="legend-item">
             <div class="legend-box pending"></div>
-            <span>未开始</span>
+            <span>鏈紑濮?/span>
         </div>
     </div>
 
@@ -525,7 +525,7 @@
         <div class="results-area">
             <div class="result-section qualified">
                 <div class="result-title qualified">
-                    ✅ 晋级八强（8人）
+                    鉁?鏅嬬骇鍏己锛?浜猴級
                 </div>
                 <div
                     class="result-list"
@@ -535,7 +535,7 @@
 
             <div class="result-section eliminated">
                 <div class="result-title eliminated">
-                    ❌ 淘汰（8人）
+                    鉂?娣樻卑锛?浜猴級
                 </div>
                 <div
                     class="result-list"
@@ -547,13 +547,13 @@
 </div>
 
 <footer>
-    <p>VR斗虫大赛 2026 · 非商业兴趣项目</p>
+    <p>VR鏂楄櫕澶ц禌 2026 路 闈炲晢涓氬叴瓒ｉ」鐩?/p>
 </footer>
 
 <script>
 "use strict";
 
-const API_BASE = "/api/tournament";
+const API_BASE = "https://nameless-grass-c2e3.1791870448.workers.dev/api/tournament";
 const TOURNAMENT_ID = 1;
 const JPG_PLAYERS = new Set(["Rhea", "Melody"]);
 
@@ -623,21 +623,21 @@ function getBadgeText(wins, losses) {
     if (wins >= 3) {
         if (wins === 3 && losses === 0) {
             return {
-                text: "3-0晋级",
+                text: "3-0鏅嬬骇",
                 className: "q30"
             };
         }
 
         if (wins === 3 && losses === 1) {
             return {
-                text: "3-1晋级",
+                text: "3-1鏅嬬骇",
                 className: "q31"
             };
         }
 
         if (wins === 3 && losses === 2) {
             return {
-                text: "3-2晋级",
+                text: "3-2鏅嬬骇",
                 className: "q32"
             };
         }
@@ -646,21 +646,21 @@ function getBadgeText(wins, losses) {
     if (losses >= 3) {
         if (losses === 3 && wins === 0) {
             return {
-                text: "0-3淘汰",
+                text: "0-3娣樻卑",
                 className: "e03"
             };
         }
 
         if (losses === 3 && wins === 1) {
             return {
-                text: "1-3淘汰",
+                text: "1-3娣樻卑",
                 className: "e13"
             };
         }
 
         if (losses === 3 && wins === 2) {
             return {
-                text: "2-3淘汰",
+                text: "2-3娣樻卑",
                 className: "e23"
             };
         }
@@ -680,7 +680,7 @@ function playerLinkHtml(player, small = true) {
         : "result-name";
 
     const liveHtml = player.is_live
-        ? '<span class="live-label">直播中</span>'
+        ? '<span class="live-label">鐩存挱涓?/span>'
         : "";
 
     return `
@@ -689,7 +689,7 @@ function playerLinkHtml(player, small = true) {
             href="${escapeHtml(url)}"
             target="_blank"
             rel="noopener noreferrer"
-            title="打开 ${escapeHtml(player.name)} 的Bilibili直播间"
+            title="鎵撳紑 ${escapeHtml(player.name)} 鐨凚ilibili鐩存挱闂?
         >
             <div class="${avatarClass}">
                 <img
@@ -736,7 +736,7 @@ function renderSwissBracket(data) {
 
         const header = document.createElement("div");
         header.className = "round-header";
-        header.textContent = `第 ${round} 轮`;
+        header.textContent = `绗?${round} 杞甡;
         roundDiv.appendChild(header);
 
         const matchesDiv = document.createElement("div");
@@ -747,7 +747,7 @@ function renderSwissBracket(data) {
         if (!roundMatches.length) {
             matchesDiv.innerHTML = `
                 <div class="empty">
-                    未开始
+                    鏈紑濮?
                 </div>
             `;
         } else {
@@ -849,7 +849,7 @@ function renderResults(data) {
 
     if (!qualified.length) {
         qualifiedList.innerHTML = `
-            <div class="empty">暂无晋级选手</div>
+            <div class="empty">鏆傛棤鏅嬬骇閫夋墜</div>
         `;
     } else {
         qualified.forEach(player => {
@@ -866,7 +866,7 @@ function renderResults(data) {
 
                 <div class="result-info">
                     <div class="result-record">
-                        战绩：
+                        鎴樼哗锛?
                         ${Number(player.wins || 0)}-
                         ${Number(player.losses || 0)}
                     </div>
@@ -887,7 +887,7 @@ function renderResults(data) {
 
     if (!eliminated.length) {
         eliminatedList.innerHTML = `
-            <div class="empty">暂无淘汰选手</div>
+            <div class="empty">鏆傛棤娣樻卑閫夋墜</div>
         `;
     } else {
         eliminated.forEach(player => {
@@ -904,7 +904,7 @@ function renderResults(data) {
 
                 <div class="result-info">
                     <div class="result-record">
-                        战绩：
+                        鎴樼哗锛?
                         ${Number(player.wins || 0)}-
                         ${Number(player.losses || 0)}
                     </div>
@@ -953,7 +953,7 @@ function recordPageView() {
         }),
         keepalive: true
     }).catch(() => {
-        // 浏览量统计失败不影响页面。
+        // 娴忚閲忕粺璁″け璐ヤ笉褰卞搷椤甸潰銆?
     });
 }
 
@@ -968,7 +968,7 @@ async function loadData() {
 
         if (!response.ok) {
             throw new Error(
-                `服务器返回 ${response.status}`
+                `鏈嶅姟鍣ㄨ繑鍥?${response.status}`
             );
         }
 
@@ -980,7 +980,7 @@ async function loadData() {
             || !Array.isArray(data.matches)
         ) {
             throw new Error(
-                "服务器返回的数据格式不正确"
+                "鏈嶅姟鍣ㄨ繑鍥炵殑鏁版嵁鏍煎紡涓嶆纭?
             );
         }
 
@@ -989,13 +989,13 @@ async function loadData() {
         renderSwissBracket(data);
         renderResults(data);
     } catch (error) {
-        console.error("加载数据失败：", error);
+        console.error("鍔犺浇鏁版嵁澶辫触锛?, error);
 
         document.getElementById(
             "rounds-container"
         ).innerHTML = `
             <div class="empty">
-                读取数据失败：
+                璇诲彇鏁版嵁澶辫触锛?
                 ${escapeHtml(error.message)}
             </div>
         `;
@@ -1008,3 +1008,4 @@ setInterval(loadData, 30000);
 </script>
 </body>
 </html>
+

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>淘汰赛 · VR斗虫大赛2026</title>
+    <title>娣樻卑璧?路 VR鏂楄櫕澶ц禌2026</title>
 
     <style>
         :root {
@@ -375,81 +375,81 @@
 
 <body>
 <header>
-    <h1>VR斗虫大赛 2026</h1>
-    <div class="subtitle">淘汰赛 BO3 · 每局72小时 · 先赢2局晋级</div>
+    <h1>VR鏂楄櫕澶ц禌 2026</h1>
+    <div class="subtitle">娣樻卑璧?BO3 路 姣忓眬72灏忔椂 路 鍏堣耽2灞€鏅嬬骇</div>
 
     <div class="data-license-top">
-        <strong>数据来源与许可声明</strong><br>
-        本网站部分直播数据来自
+        <strong>鏁版嵁鏉ユ簮涓庤鍙０鏄?/strong><br>
+        鏈綉绔欓儴鍒嗙洿鎾暟鎹潵鑷?
         <a
             href="https://github.com/qianqiuzy/VR_douchong"
             target="_blank"
             rel="noopener noreferrer"
         >VR_douchong</a>
-        项目及其相关数据接口
+        椤圭洰鍙婂叾鐩稿叧鏁版嵁鎺ュ彛
         <code>vr.qianqiuzy.cn</code> /
-        <code>psp.qianqiuzy.cn</code>。<br>
-        数据许可说明请参阅
+        <code>psp.qianqiuzy.cn</code>銆?br>
+        鏁版嵁璁稿彲璇存槑璇峰弬闃?
         <a
             href="https://github.com/qianqiuzy/VR_douchong/blob/main/LICENSE-DATA.md"
             target="_blank"
             rel="noopener noreferrer"
-        >LICENSE-DATA.md</a>。<br>
-        本网站仅用于非商业兴趣展示和赛事娱乐用途。
+        >LICENSE-DATA.md</a>銆?br>
+        鏈綉绔欎粎鐢ㄤ簬闈炲晢涓氬叴瓒ｅ睍绀哄拰璧涗簨濞变箰鐢ㄩ€斻€?
     </div>
 </header>
 
 <main class="container">
     <nav>
-        <a href="swiss.html">比赛详情</a>
-        <a href="swiss_bracket.html">瑞士轮晋级图</a>
-        <a href="playoffs.html" class="active">淘汰赛</a>
+        <a href="swiss.html">姣旇禌璇︽儏</a>
+        <a href="swiss_bracket.html">鐟炲＋杞檵绾у浘</a>
+        <a href="playoffs.html" class="active">娣樻卑璧?/a>
     </nav>
 
     <section class="status-bar">
         <div class="status-item">
-            <div class="status-label">赛事状态</div>
-            <div class="status-value" id="event-status">加载中</div>
+            <div class="status-label">璧涗簨鐘舵€?/div>
+            <div class="status-value" id="event-status">鍔犺浇涓?/div>
         </div>
 
         <div class="status-item">
-            <div class="status-label">当前阶段</div>
+            <div class="status-label">褰撳墠闃舵</div>
             <div class="status-value" id="stage-status">--</div>
         </div>
 
         <div class="status-item">
-            <div class="status-label">BO3规则</div>
-            <div class="status-value">2胜晋级</div>
+            <div class="status-label">BO3瑙勫垯</div>
+            <div class="status-value">2鑳滄檵绾?/div>
         </div>
 
         <div class="status-item">
-            <div class="status-label">页面更新时间</div>
+            <div class="status-label">椤甸潰鏇存柊鏃堕棿</div>
             <div class="status-value" id="updated-time">--:--</div>
         </div>
     </section>
 
     <section class="bracket-panel">
         <div id="bracket" class="bracket">
-            <div class="empty">正在读取淘汰赛数据…</div>
+            <div class="empty">姝ｅ湪璇诲彇娣樻卑璧涙暟鎹€?/div>
         </div>
     </section>
 </main>
 
 <footer>
-    <p>VR斗虫大赛 2026 · 非商业兴趣项目</p>
+    <p>VR鏂楄櫕澶ц禌 2026 路 闈炲晢涓氬叴瓒ｉ」鐩?/p>
 </footer>
 
 <script>
 "use strict";
 
-const API_BASE = "/api/tournament";
+const API_BASE = "https://nameless-grass-c2e3.1791870448.workers.dev/api/tournament";
 const TOURNAMENT_ID = 1;
 const JPG_PLAYERS = new Set(["Rhea", "Melody"]);
 
 const STAGE_NAMES = {
-    100: "八强赛",
-    101: "半决赛",
-    102: "决赛"
+    100: "鍏己璧?,
+    101: "鍗婂喅璧?,
+    102: "鍐宠禌"
 };
 
 function escapeHtml(value) {
@@ -496,7 +496,7 @@ function liveUrl(player) {
 }
 
 function money(value) {
-    return "¥" + Math.round(Number(value || 0))
+    return "楼" + Math.round(Number(value || 0))
         .toLocaleString("zh-CN");
 }
 
@@ -631,7 +631,7 @@ function renderPlayer(data, playerId, wins, isWinner) {
             <div class="player">
                 <div></div>
                 <div class="player-info">
-                    <div class="player-name">待定</div>
+                    <div class="player-name">寰呭畾</div>
                 </div>
                 <div class="game-score">-</div>
             </div>
@@ -659,7 +659,7 @@ function renderPlayer(data, playerId, wins, isWinner) {
                 href="${escapeHtml(url)}"
                 target="_blank"
                 rel="noopener noreferrer"
-                title="打开 ${escapeHtml(player.name)} 的Bilibili直播间"
+                title="鎵撳紑 ${escapeHtml(player.name)} 鐨凚ilibili鐩存挱闂?
             >${avatar}</a>
         `
         : `<div class="avatar-link">${avatar}</div>`;
@@ -672,12 +672,12 @@ function renderPlayer(data, playerId, wins, isWinner) {
                 <div class="player-name">
                     ${escapeHtml(player.name)}
                     ${player.is_live
-                        ? '<span class="live-label">直播中</span>'
+                        ? '<span class="live-label">鐩存挱涓?/span>'
                         : ""}
                 </div>
 
                 <div class="player-record">
-                    瑞士轮战绩
+                    鐟炲＋杞垬缁?
                     ${Number(player.wins || 0)}-${Number(player.losses || 0)}
                 </div>
             </div>
@@ -695,7 +695,7 @@ function renderSeries(data, series) {
     }
 
     const isFinished = Boolean(series.winner);
-    const statusText = isFinished ? "系列赛结束" : "进行中";
+    const statusText = isFinished ? "绯诲垪璧涚粨鏉? : "杩涜涓?;
     const statusClass = isFinished ? "finished" : "running";
 
     const firstPlayer = playerById(data, series.player1);
@@ -709,18 +709,18 @@ function renderSeries(data, series) {
         const completed = game.status === "completed";
         const winnerName = game.winner
             ? playerById(data, game.winner)?.name || game.winner
-            : "进行中";
+            : "杩涜涓?;
 
         const p1Revenue = game.revenue?.[game.p1]?.total || 0;
         const p2Revenue = game.revenue?.[game.p2]?.total || 0;
 
         return `
             <div class="game-row ${completed ? "completed" : "active"}">
-                <span>第${gameNumber}局</span>
+                <span>绗?{gameNumber}灞€</span>
                 <span>
                     ${completed
-                        ? `${escapeHtml(winnerName)} 获胜`
-                        : "当前进行中"}
+                        ? `${escapeHtml(winnerName)} 鑾疯儨`
+                        : "褰撳墠杩涜涓?}
                 </span>
                 <span class="revenue">
                     ${money(p1Revenue)} : ${money(p2Revenue)}
@@ -734,7 +734,7 @@ function renderSeries(data, series) {
     );
 
     const timeText = currentGame
-        ? `比赛时间：${beijingTime(currentGame.start_time)} - ${beijingTime(currentGame.end_time)}`
+        ? `姣旇禌鏃堕棿锛?{beijingTime(currentGame.start_time)} - ${beijingTime(currentGame.end_time)}`
         : "";
 
     return `
@@ -743,11 +743,11 @@ function renderSeries(data, series) {
                 <span>${escapeHtml(series.id.toUpperCase())}</span>
 
                 <span class="series-score">
-                    ${escapeHtml(firstPlayer?.name || "待定")}
+                    ${escapeHtml(firstPlayer?.name || "寰呭畾")}
                     ${series.player1Wins}
                     :
                     ${series.player2Wins}
-                    ${escapeHtml(secondPlayer?.name || "待定")}
+                    ${escapeHtml(secondPlayer?.name || "寰呭畾")}
                 </span>
 
                 <span class="series-status ${statusClass}">
@@ -762,7 +762,7 @@ function renderSeries(data, series) {
                 String(series.winner) === String(series.player1)
             )}
 
-            <div class="vs">BO3 · 先赢2局</div>
+            <div class="vs">BO3 路 鍏堣耽2灞€</div>
 
             ${renderPlayer(
                 data,
@@ -938,7 +938,7 @@ function recordPageView() {
         }),
         keepalive: true
     }).catch(() => {
-        // 访问统计失败不影响比赛页面。
+        // 璁块棶缁熻澶辫触涓嶅奖鍝嶆瘮璧涢〉闈€?
     });
 }
 
@@ -950,7 +950,7 @@ async function loadData() {
         );
 
         if (!response.ok) {
-            throw new Error(`服务器返回 ${response.status}`);
+            throw new Error(`鏈嶅姟鍣ㄨ繑鍥?${response.status}`);
         }
 
         const data = await response.json();
@@ -960,22 +960,22 @@ async function loadData() {
             || !Array.isArray(data.players)
             || !Array.isArray(data.matches)
         ) {
-            throw new Error("服务器返回的数据格式不正确");
+            throw new Error("鏈嶅姟鍣ㄨ繑鍥炵殑鏁版嵁鏍煎紡涓嶆纭?);
         }
 
         const round = Number(data.tournament.current_round);
 
         document.getElementById("event-status").textContent =
             data.tournament.status === "running"
-                ? "进行中"
+                ? "杩涜涓?
                 : data.tournament.status === "pending"
-                    ? "未开始"
+                    ? "鏈紑濮?
                     : data.tournament.status === "finished"
-                        ? "已结束"
+                        ? "宸茬粨鏉?
                         : String(data.tournament.status || "--");
 
         document.getElementById("stage-status").textContent =
-            STAGE_NAMES[round] || "瑞士轮";
+            STAGE_NAMES[round] || "鐟炲＋杞?;
 
         document.getElementById("updated-time").textContent =
             new Intl.DateTimeFormat("zh-CN", {
@@ -988,11 +988,11 @@ async function loadData() {
 
         renderBracket(data);
     } catch (error) {
-        console.error("加载淘汰赛数据失败：", error);
+        console.error("鍔犺浇娣樻卑璧涙暟鎹け璐ワ細", error);
 
         document.getElementById("bracket").innerHTML = `
             <div class="empty">
-                读取淘汰赛数据失败：${escapeHtml(error.message)}
+                璇诲彇娣樻卑璧涙暟鎹け璐ワ細${escapeHtml(error.message)}
             </div>
         `;
     }
@@ -1004,3 +1004,4 @@ setInterval(loadData, 30000);
 </script>
 </body>
 </html>
+
