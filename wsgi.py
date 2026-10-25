@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from flask import Flask, abort, send_from_directory
+from flask_cors import CORS
 
 from app.analytics import analytics_bp
 from app.api_tournament import bp as tournament_blueprint
@@ -19,6 +20,18 @@ app = Flask(
 )
 
 # 注册比赛 API
+
+# Cloudflare Pages ???? CloudBase API?
+# ??????????? X-Admin-Token ???
+CORS(
+    app,
+    resources={
+        r"/api/*": {
+            "origins": "*"
+        }
+    }
+)
+
 app.register_blueprint(tournament_blueprint)
 
 # 注册浏览量统计 API
