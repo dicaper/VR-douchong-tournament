@@ -30,7 +30,7 @@
       })
     })
   })()</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>淘汰赛 · VR斗虫大赛2026</title>
 
@@ -399,7 +399,100 @@
                 flex-wrap: wrap;
             }
         }
-    </style>
+
+        .history-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(0, 0, 0, .78);
+        }
+
+        .history-modal.open {
+            display: flex;
+        }
+
+        .history-modal-content {
+            width: min(900px, 100%);
+            max-height: 90vh;
+            overflow: auto;
+            padding: 20px;
+            color: var(--text);
+            background: var(--panel);
+            border: 1px solid var(--blue);
+            border-radius: 14px;
+        }
+
+        .history-modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-modal-close {
+            color: var(--muted);
+            background: transparent;
+            border: 0;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .series-card.clickable-history {
+            cursor: pointer;
+        }
+
+        .series-card.clickable-history:hover {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 1px var(--blue);
+        }
+
+        .comparison-table-wrap {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            min-width: 620px;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: right;
+        }
+
+        .comparison-table th:first-child,
+        .comparison-table td:first-child {
+            color: var(--muted);
+            text-align: left;
+        }
+
+        .comparison-table th {
+            color: var(--blue);
+        }
+
+        .comparison-section-title {
+            margin: 18px 0 8px;
+            color: var(--blue);
+            font-weight: 800;
+        }
+
+        .comparison-note {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+</style>
 <style>@font-face {
   font-family: 'Source Sans Pro';
   font-style: italic;
@@ -1630,8 +1723,8 @@ font-family: 'Source Sans Pro'
 .c8ymIgiX1_X1KsA3H1tV:active .QzECqWHsQ0RPsvPBQcPg svg path.zgYLZOdQFmvl1k7yJoFd {
   fill: transparent;
   stroke: #fff;
-}</style><style>.zQ2oI6HGyJr41sAaSN6A {  
-  width: 195px !important;  
+}</style><style>.zQ2oI6HGyJr41sAaSN6A {
+  width: 195px !important;
 }
 
 .CBjZQOrWgjhwajg6cNdt {
@@ -1646,7 +1739,7 @@ font-family: 'Source Sans Pro'
   padding: 10px !important;
   color: #111 !important;
   background-color: #f0f0eb !important;
-  border-radius: 4px !important;  
+  border-radius: 4px !important;
   font-size: 14px !important;
   font-weight: 400 !important;
   line-height: 1.3 !important;
@@ -1856,14 +1949,14 @@ font-family: 'Source Sans Pro'
   .TKXFYjyTT7BRVXk2l6uF a.o53g2xMKPHItiQ_Pa50z {
     color: #fff !important;
   }
-  
+
   .TKXFYjyTT7BRVXk2l6uF > :first-child {
     margin-top: 0;
   }
   .TKXFYjyTT7BRVXk2l6uF > :last-child {
     margin-bottom: 0;
   }
-  
+
   .N8JKKJ9GMp6XB25A3VK8 {
     top: 0;
     left: 0;
@@ -1875,23 +1968,23 @@ font-family: 'Source Sans Pro'
     -webkit-mask-image: radial-gradient(150px at bottom 60px left 290px, transparent 99%, black 100%);
     mask-image: radial-gradient(150px at bottom 60px left 290px, transparent 99%, black 100%);
   }
-  
+
   .WKlsVvzGQcaszJKQigkg {
     background-color: rgba(255, 255, 255, 0.8);
     -webkit-mask-image: none;
     mask-image: none;
   }
-  
+
   .NFIyN4kDgBJX4_hCTjAo {
     -webkit-mask-image: radial-gradient(350px at bottom 60px left 40px, transparent 99%, black 100%);
     mask-image: radial-gradient(350px at bottom 60px left 40px, transparent 99%, black 100%);
   }
-  
+
   .xsQ_pBk79MDxlAtWKQ1i {
     mask-image: none;
     -webkit-mask-image: none;
   }
-  
+
   #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V,
   .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V {
     display: -webkit-inline-box;
@@ -2195,7 +2288,7 @@ font-family: 'Source Sans Pro'
   .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb svg {
     margin-right: 0;
   }
-  
+
   .WKlsVvzGQcaszJKQigkg {
     background-color: rgba(255, 255, 255, 0.8);
     -webkit-mask-image: none;
@@ -2221,11 +2314,11 @@ font-family: 'Source Sans Pro'
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
   }
-  
+
   .eHXvC2pkWtoHh3fOdygK {
     overflow: hidden !important;
   }
-  
+
   .N7GBO0t9WTd0OozV15Vh {
     z-index: 70000000 !important;
     position: fixed;
@@ -2236,12 +2329,12 @@ font-family: 'Source Sans Pro'
     background-color: #dadada;
     opacity: 0.8;
   }
-  
+
   .xNhUX6MpP3eU4apTCdOF {
     position: relative;
     z-index: 80000000 !important;
   }
-  
+
   .YqtWBHxfSeuDDI4tBtJq {
     position: fixed;
     bottom: 30px;
@@ -2260,13 +2353,13 @@ font-family: 'Source Sans Pro'
     content: "";
     position: absolute;
   }
-  
+
   .wP_d6sVNjv41TuoIOqgu {
     top: 20vh;
     left: 50vw;
     margin-left: -175px;
   }
-  
+
   .y2eGkYbULQmLiDmmsaE_ {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2296,7 +2389,7 @@ font-family: 'Source Sans Pro'
   .y2eGkYbULQmLiDmmsaE_ .MU1OWZXYSl7cGLHsourz {
     padding-right: 0;
   }
-  
+
   .P8xmsluQbsK9kCB8J4TB:before {
     top: 50%;
     right: -50px;
@@ -2315,7 +2408,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-left: 30px solid #5e33bf;
   }
-  
+
   .G6JUSg1GIC3pcwn4LtwJ:before {
     top: 25px;
     right: -50px;
@@ -2332,7 +2425,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-left: 30px solid #5e33bf;
   }
-  
+
   .TSVTVmbeKDsx1uaA3jwg:before {
     bottom: 25px;
     right: -50px;
@@ -2349,7 +2442,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-left: 30px solid #5e33bf;
   }
-  
+
   .lXK6keKCXOgkCYRWTuuw:before {
     top: 50%;
     left: -50px;
@@ -2368,7 +2461,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-right: 30px solid #5e33bf;
   }
-  
+
   .ziKSzAZaZuS7hitu2X8Z:before {
     top: 25px;
     left: -50px;
@@ -2385,7 +2478,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-right: 30px solid #5e33bf;
   }
-  
+
   .quK2DZCe63wsbgp9iUm4:before {
     bottom: 25px;
     left: -50px;
@@ -2402,7 +2495,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-right: 30px solid #5e33bf;
   }
-  
+
   .GrMWkdgGakDmpReMdXtx:before {
     top: -50px;
     left: 50%;
@@ -2421,7 +2514,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-bottom: 30px solid #5e33bf;
   }
-  
+
   .YksVyuEMbXSg025JadDh:before {
     left: 25px;
     top: -50px;
@@ -2438,7 +2531,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-bottom: 30px solid #5e33bf;
   }
-  
+
   .CTXY9eKXSOcPsREchYI2:before {
     right: 25px;
     top: -50px;
@@ -2455,7 +2548,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-bottom: 30px solid #5e33bf;
   }
-  
+
   .mV5XjFYui13hlKYiF9fz:before {
     bottom: -50px;
     left: 50%;
@@ -2474,7 +2567,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-top: 30px solid #5e33bf;
   }
-  
+
   .jlXUNrOMfrz8QPtWwi9D:before {
     bottom: -50px;
     left: 25px;
@@ -2491,7 +2584,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-top: 30px solid #5e33bf;
   }
-  
+
   .JeoJI1NdjwsQC_qBgQws:before {
     bottom: -50px;
     right: 25px;
@@ -2508,7 +2601,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-top: 30px solid #5e33bf;
   }
-  
+
   .MU1OWZXYSl7cGLHsourz {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2521,7 +2614,7 @@ font-family: 'Source Sans Pro'
     font-size: 26px;
     line-height: 1.25;
   }
-  
+
   .G7McxXXrgjal0gygY7go {
     min-width: 30px;
     height: 40px;
@@ -2532,7 +2625,7 @@ font-family: 'Source Sans Pro'
     height: auto;
     width: auto;
   }
-  
+
   .mRKSYTEhLTxmKLYCNnX9 {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2542,7 +2635,7 @@ font-family: 'Source Sans Pro'
     align-items: center;
     min-height: 40px;
   }
-  
+
   .cA8Idbs6OA0BSmKw9Tam {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2623,7 +2716,7 @@ font-family: 'Source Sans Pro'
     fill: transparent;
     stroke: #5e33bf;
   }
-  
+
   .TKXFYjyTT7BRVXk2l6uF {
     margin: 15px 0;
     line-height: 1.25;
@@ -2637,12 +2730,12 @@ font-family: 'Source Sans Pro'
   .TKXFYjyTT7BRVXk2l6uF:last-child {
     margin-bottom: 0;
   }
-  
+
   .NnI3UXnyndFcINeMIp0o {
     font-size: 18px;
     font-weight: 700;
   }
-  
+
   .FV8g2jL10G1UB_eAf9BA {
     text-align: right;
   }
@@ -2654,7 +2747,7 @@ font-family: 'Source Sans Pro'
     color: white;
     text-decoration: none;
    }
-  
+
   .wwyWCr_3HEEc_JqAydbV {
     text-align: center;
   }
@@ -2674,12 +2767,12 @@ font-family: 'Source Sans Pro'
     background-color: rgba(48, 55, 61, 1);
     z-index: 500000000;
   }
-  
+
   .h5vXAMG8g9yvOW1B6wro {
     left: 15px;
     bottom: 100px;
   }
-  
+
   .h5vXAMG8g9yvOW1B6wro::after {
     content: "";
     display: block;
@@ -2691,7 +2784,7 @@ font-family: 'Source Sans Pro'
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
   }
-  
+
   .IAiRh1I0k5egyOBwu5xu {
     bottom: 111px;
     left: 283px;
@@ -2702,7 +2795,7 @@ font-family: 'Source Sans Pro'
     transform: rotate(45deg);
     background-color: rgba(48, 55, 61, 1);
   }
-  
+
   .SH95mwXWE4rR88NI9kdw {
     font-family: "Clarivate";
     text-align: left;
@@ -2710,7 +2803,7 @@ font-family: 'Source Sans Pro'
     font-size: 16px;
     line-height: 1.4;
   }
-  
+
   /* Content visibility */
   .JDTc_LYE4hywcP2UrMj1 {
     display: none;
@@ -2720,13 +2813,13 @@ font-family: 'Source Sans Pro'
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
   }
-  
+
   .JDTc_LYE4hywcP2UrMj1.xt3prUvhYpXaDTATSaqi {
     display: block;
     -webkit-animation-name: cyDGHsYvrKbP8e_GTG2d;
     animation-name: cyDGHsYvrKbP8e_GTG2d;
   }
-  
+
   @keyframes cyDGHsYvrKbP8e_GTG2d {
     0% {
       opacity: 0;
@@ -2735,11 +2828,11 @@ font-family: 'Source Sans Pro'
       opacity: 1;
     }
   }
-  
+
   #p23dTdp5Vjnb1kKXw0Pm {
     color: #fff;
   }
-  
+
   #p23dTdp5Vjnb1kKXw0Pm:hover {
     color: #dadada;
     text-decoration: none;
@@ -2766,9 +2859,9 @@ font-family: 'Source Sans Pro'
 
 <main class="container">
     <nav>
-        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/swiss.html">比赛详情</a>
-        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/swiss_bracket.html">瑞士轮晋级图</a>
-        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/playoffs.html" class="active">淘汰赛</a>
+        <a href="/swiss.html">比赛详情</a>
+        <a href="/swiss_bracket.html">瑞士轮晋级图</a>
+        <a href="/playoffs.html" class="active">淘汰赛</a>
     </nav>
 
     <section class="status-bar">
@@ -2805,6 +2898,22 @@ font-family: 'Source Sans Pro'
 <footer>
     <p>VR斗虫大赛 2026 · 非商业兴趣项目</p>
 </footer>
+
+
+<div class="history-modal" id="history-comparison-modal">
+    <div class="history-modal-content">
+        <div class="history-modal-head">
+            <h2 id="history-comparison-title">???????</h2>
+            <button
+                class="history-modal-close"
+                type="button"
+                onclick="closeSeriesComparison()"
+                aria-label="??"
+            >?</button>
+        </div>
+        <div id="history-comparison-body"></div>
+    </div>
+</div>
 
 <script>
 "use strict";
@@ -3054,6 +3163,241 @@ function renderPlayer(data, playerId, wins, isWinner) {
     `;
 }
 
+
+function comparisonNumber(value) {
+    return Number(value || 0).toLocaleString("zh-CN");
+}
+
+function comparisonMoney(value) {
+    return "&#165;" + Number(value || 0).toLocaleString(
+        "zh-CN",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+}
+
+function comparison指标Rows(player1Name, player2Name, total1, total2) {
+    return `
+        <tr>
+            <td>????</td>
+            <td>${comparisonMoney(total1.total)}</td>
+            <td>${comparisonMoney(total2.total)}</td>
+        </tr>
+        <tr>
+            <td>SC</td>
+            <td>${comparisonMoney(total1.sc)}</td>
+            <td>${comparisonMoney(total2.sc)}</td>
+        </tr>
+        <tr>
+            <td>??/??</td>
+            <td>${comparisonMoney(total1.gift)}</td>
+            <td>${comparisonMoney(total2.gift)}</td>
+        </tr>
+        <tr>
+            <td>???</td>
+            <td>${comparisonNumber(total1.danmaku)}</td>
+            <td>${comparisonNumber(total2.danmaku)}</td>
+        </tr>
+        <tr>
+            <td>????</td>
+            <td>${comparisonNumber(total1.peak)}</td>
+            <td>${comparisonNumber(total2.peak)}</td>
+        </tr>
+        <tr>
+            <td>????</td>
+            <td>${comparisonNumber(total1.avg)}</td>
+            <td>${comparisonNumber(total2.avg)}</td>
+        </tr>
+    `;
+}
+
+function getGameRevenue(game, playerId) {
+    const revenue = game?.revenue?.[playerId] || {};
+
+    return {
+        total: Number(revenue.total || 0),
+        sc: Number(revenue.sc || 0),
+        gift: Number(revenue.gift || 0),
+        danmaku: Number(revenue.danmaku || 0),
+        peak: Number(revenue.peak_viewers || 0),
+        avg: Number(revenue.avg_viewers || 0)
+    };
+}
+
+function showSeriesComparison(seriesId) {
+    if (!currentData) {
+        return;
+    }
+
+    const seriesList = groupSeries(currentData);
+    const series = seriesList.find(
+        item => String(item.id) === String(seriesId)
+    );
+
+    if (!series || !series.games.length) {
+        return;
+    }
+
+    const player1 = playerById(
+        currentData,
+        series.player1
+    );
+    const player2 = playerById(
+        currentData,
+        series.player2
+    );
+
+    if (!player1 || !player2) {
+        return;
+    }
+
+    const total1 = {
+        total: 0,
+        sc: 0,
+        gift: 0,
+        danmaku: 0,
+        peak: 0,
+        avgSum: 0,
+        avgCount: 0
+    };
+
+    const total2 = {
+        total: 0,
+        sc: 0,
+        gift: 0,
+        danmaku: 0,
+        peak: 0,
+        avgSum: 0,
+        avgCount: 0
+    };
+
+    const gameRows = series.games.map((game, index) => {
+        const r1 = getGameRevenue(game, series.player1);
+        const r2 = getGameRevenue(game, series.player2);
+
+        for (const [target, value] of [
+            [total1, r1],
+            [total2, r2]
+        ]) {
+            target.total += value.total;
+            target.sc += value.sc;
+            target.gift += value.gift;
+            target.danmaku += value.danmaku;
+            target.peak = Math.max(target.peak, value.peak);
+
+            if (value.avg > 0) {
+                target.avgSum += value.avg;
+                target.avgCount += 1;
+            }
+        }
+
+        const winner = game.winner
+            ? playerById(currentData, game.winner)
+            : null;
+
+        const gameNumber = Number(
+            game.game_number || index + 1
+        );
+
+        return `
+            <tr>
+                <td>?${gameNumber}?</td>
+                <td>
+                    ${escapeHtml(winner?.name || "???")}
+                </td>
+                <td>${comparisonMoney(r1.total)}</td>
+                <td>${comparisonMoney(r2.total)}</td>
+                <td>${comparisonNumber(r1.danmaku)}</td>
+                <td>${comparisonNumber(r2.danmaku)}</td>
+                <td>${comparisonNumber(r1.peak)}</td>
+                <td>${comparisonNumber(r2.peak)}</td>
+            </tr>
+        `;
+    }).join("");
+
+    total1.avg = total1.avgCount
+        ? Math.round(total1.avgSum / total1.avgCount)
+        : 0;
+
+    total2.avg = total2.avgCount
+        ? Math.round(total2.avgSum / total2.avgCount)
+        : 0;
+
+    document.getElementById(
+        "history-comparison-title"
+    ).textContent =
+        `${player1.name} ${series.player1Wins} : ` +
+        `${series.player2Wins} ${player2.name}`;
+
+    document.getElementById(
+        "history-comparison-body"
+    ).innerHTML = `
+        <div class="comparison-section-title">
+            ???????
+        </div>
+
+        <div class="comparison-table-wrap">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>??</th>
+                        <th>${escapeHtml(player1.name)}</th>
+                        <th>${escapeHtml(player2.name)}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${comparison指标Rows(
+                        player1.name,
+                        player2.name,
+                        total1,
+                        total2
+                    )}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="comparison-section-title">
+            ????
+        </div>
+
+        <div class="comparison-table-wrap">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>??</th>
+                        <th>??</th>
+                        <th>${escapeHtml(player1.name)} ??</th>
+                        <th>${escapeHtml(player2.name)} ??</th>
+                        <th>${escapeHtml(player1.name)} ??</th>
+                        <th>${escapeHtml(player2.name)} ??</th>
+                        <th>${escapeHtml(player1.name)} ??</th>
+                        <th>${escapeHtml(player2.name)} ??</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${gameRows}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="comparison-note">
+            ?????????????/????????????
+        </div>
+    `;
+
+    document.getElementById(
+        "history-comparison-modal"
+    ).classList.add("open");
+}
+
+function closeSeriesComparison() {
+    document.getElementById(
+        "history-comparison-modal"
+    ).classList.remove("open");
+}
+
 function renderSeries(data, series) {
     const firstGame = series.games[0];
 
@@ -3105,7 +3449,11 @@ function renderSeries(data, series) {
         : "";
 
     return `
-        <article class="series-card ${isFinished ? "finished" : ""}">
+        <article
+            class="series-card ${isFinished ? "finished" : ""} clickable-history"
+            data-series-id="${escapeHtml(series.id)}"
+            onclick="if (!event.target.closest('a,button')) showSeriesComparison('${escapeHtml(series.id)}')"
+        >
             <div class="series-header">
                 <span>${escapeHtml(series.id.toUpperCase())}</span>
 
@@ -3365,9 +3713,53 @@ async function loadData() {
     }
 }
 
+
+document.getElementById(
+    "history-comparison-modal"
+).addEventListener("click", event => {
+    if (event.target.id === "history-comparison-modal") {
+        closeSeriesComparison();
+    }
+});
+
 recordPageView();
 loadData();
-setInterval(loadData, 30000);
+
+let refreshTimer = null;
+
+function startAutoRefresh() {
+    if (refreshTimer !== null) {
+        return;
+    }
+
+    refreshTimer = setInterval(
+        loadData,
+        120000
+    );
+}
+
+function stopAutoRefresh() {
+    if (refreshTimer === null) {
+        return;
+    }
+
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+}
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+        if (document.hidden) {
+            stopAutoRefresh();
+        } else {
+            loadData();
+            startAutoRefresh();
+        }
+    }
+);
+
+startAutoRefresh();
 </script>
 
 

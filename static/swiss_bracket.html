@@ -30,7 +30,7 @@
       })
     })
   })()</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>瑞士轮晋级图 - VR斗虫大赛 2026</title>
 
@@ -493,7 +493,82 @@
                 grid-template-columns: 1fr;
             }
         }
-    </style>
+
+        .bracket-match.clickable-match {
+            cursor: pointer;
+        }
+
+        .bracket-match.clickable-match:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .bracket-history-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(0, 0, 0, .78);
+        }
+
+        .bracket-history-modal.open {
+            display: flex;
+        }
+
+        .bracket-history-content {
+            width: min(760px, 100%);
+            max-height: 90vh;
+            overflow: auto;
+            padding: 20px;
+            color: var(--text-primary);
+            background: var(--bg-elevated);
+            border: 1px solid var(--accent);
+            border-radius: 14px;
+        }
+
+        .bracket-history-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .bracket-history-close {
+            color: var(--text-secondary);
+            background: transparent;
+            border: 0;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .bracket-comparison-table {
+            width: 100%;
+            margin-top: 16px;
+            border-collapse: collapse;
+        }
+
+        .bracket-comparison-table th,
+        .bracket-comparison-table td {
+            padding: 9px;
+            border-bottom: 1px solid var(--border);
+            text-align: right;
+        }
+
+        .bracket-comparison-table th:first-child,
+        .bracket-comparison-table td:first-child {
+            color: var(--text-secondary);
+            text-align: left;
+        }
+
+        .bracket-comparison-table th {
+            color: var(--accent);
+        }
+</style>
 <style>@font-face {
   font-family: 'Source Sans Pro';
   font-style: italic;
@@ -1724,8 +1799,8 @@ font-family: 'Source Sans Pro'
 .c8ymIgiX1_X1KsA3H1tV:active .QzECqWHsQ0RPsvPBQcPg svg path.zgYLZOdQFmvl1k7yJoFd {
   fill: transparent;
   stroke: #fff;
-}</style><style>.zQ2oI6HGyJr41sAaSN6A {  
-  width: 195px !important;  
+}</style><style>.zQ2oI6HGyJr41sAaSN6A {
+  width: 195px !important;
 }
 
 .CBjZQOrWgjhwajg6cNdt {
@@ -1740,7 +1815,7 @@ font-family: 'Source Sans Pro'
   padding: 10px !important;
   color: #111 !important;
   background-color: #f0f0eb !important;
-  border-radius: 4px !important;  
+  border-radius: 4px !important;
   font-size: 14px !important;
   font-weight: 400 !important;
   line-height: 1.3 !important;
@@ -1950,14 +2025,14 @@ font-family: 'Source Sans Pro'
   .TKXFYjyTT7BRVXk2l6uF a.o53g2xMKPHItiQ_Pa50z {
     color: #fff !important;
   }
-  
+
   .TKXFYjyTT7BRVXk2l6uF > :first-child {
     margin-top: 0;
   }
   .TKXFYjyTT7BRVXk2l6uF > :last-child {
     margin-bottom: 0;
   }
-  
+
   .N8JKKJ9GMp6XB25A3VK8 {
     top: 0;
     left: 0;
@@ -1969,23 +2044,23 @@ font-family: 'Source Sans Pro'
     -webkit-mask-image: radial-gradient(150px at bottom 60px left 290px, transparent 99%, black 100%);
     mask-image: radial-gradient(150px at bottom 60px left 290px, transparent 99%, black 100%);
   }
-  
+
   .WKlsVvzGQcaszJKQigkg {
     background-color: rgba(255, 255, 255, 0.8);
     -webkit-mask-image: none;
     mask-image: none;
   }
-  
+
   .NFIyN4kDgBJX4_hCTjAo {
     -webkit-mask-image: radial-gradient(350px at bottom 60px left 40px, transparent 99%, black 100%);
     mask-image: radial-gradient(350px at bottom 60px left 40px, transparent 99%, black 100%);
   }
-  
+
   .xsQ_pBk79MDxlAtWKQ1i {
     mask-image: none;
     -webkit-mask-image: none;
   }
-  
+
   #fj4Y2VBM_jUdoqg8vxxE .pOV6BFePmeRb9zzOJ09V,
   .YqtWBHxfSeuDDI4tBtJq .pOV6BFePmeRb9zzOJ09V {
     display: -webkit-inline-box;
@@ -2289,7 +2364,7 @@ font-family: 'Source Sans Pro'
   .YqtWBHxfSeuDDI4tBtJq .x_CwlUpfr3F8cJGqU9wb svg {
     margin-right: 0;
   }
-  
+
   .WKlsVvzGQcaszJKQigkg {
     background-color: rgba(255, 255, 255, 0.8);
     -webkit-mask-image: none;
@@ -2315,11 +2390,11 @@ font-family: 'Source Sans Pro'
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
   }
-  
+
   .eHXvC2pkWtoHh3fOdygK {
     overflow: hidden !important;
   }
-  
+
   .N7GBO0t9WTd0OozV15Vh {
     z-index: 70000000 !important;
     position: fixed;
@@ -2330,12 +2405,12 @@ font-family: 'Source Sans Pro'
     background-color: #dadada;
     opacity: 0.8;
   }
-  
+
   .xNhUX6MpP3eU4apTCdOF {
     position: relative;
     z-index: 80000000 !important;
   }
-  
+
   .YqtWBHxfSeuDDI4tBtJq {
     position: fixed;
     bottom: 30px;
@@ -2354,13 +2429,13 @@ font-family: 'Source Sans Pro'
     content: "";
     position: absolute;
   }
-  
+
   .wP_d6sVNjv41TuoIOqgu {
     top: 20vh;
     left: 50vw;
     margin-left: -175px;
   }
-  
+
   .y2eGkYbULQmLiDmmsaE_ {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2390,7 +2465,7 @@ font-family: 'Source Sans Pro'
   .y2eGkYbULQmLiDmmsaE_ .MU1OWZXYSl7cGLHsourz {
     padding-right: 0;
   }
-  
+
   .P8xmsluQbsK9kCB8J4TB:before {
     top: 50%;
     right: -50px;
@@ -2409,7 +2484,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-left: 30px solid #5e33bf;
   }
-  
+
   .G6JUSg1GIC3pcwn4LtwJ:before {
     top: 25px;
     right: -50px;
@@ -2426,7 +2501,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-left: 30px solid #5e33bf;
   }
-  
+
   .TSVTVmbeKDsx1uaA3jwg:before {
     bottom: 25px;
     right: -50px;
@@ -2443,7 +2518,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-left: 30px solid #5e33bf;
   }
-  
+
   .lXK6keKCXOgkCYRWTuuw:before {
     top: 50%;
     left: -50px;
@@ -2462,7 +2537,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-right: 30px solid #5e33bf;
   }
-  
+
   .ziKSzAZaZuS7hitu2X8Z:before {
     top: 25px;
     left: -50px;
@@ -2479,7 +2554,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-right: 30px solid #5e33bf;
   }
-  
+
   .quK2DZCe63wsbgp9iUm4:before {
     bottom: 25px;
     left: -50px;
@@ -2496,7 +2571,7 @@ font-family: 'Source Sans Pro'
     border-bottom: 20px solid transparent;
     border-right: 30px solid #5e33bf;
   }
-  
+
   .GrMWkdgGakDmpReMdXtx:before {
     top: -50px;
     left: 50%;
@@ -2515,7 +2590,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-bottom: 30px solid #5e33bf;
   }
-  
+
   .YksVyuEMbXSg025JadDh:before {
     left: 25px;
     top: -50px;
@@ -2532,7 +2607,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-bottom: 30px solid #5e33bf;
   }
-  
+
   .CTXY9eKXSOcPsREchYI2:before {
     right: 25px;
     top: -50px;
@@ -2549,7 +2624,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-bottom: 30px solid #5e33bf;
   }
-  
+
   .mV5XjFYui13hlKYiF9fz:before {
     bottom: -50px;
     left: 50%;
@@ -2568,7 +2643,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-top: 30px solid #5e33bf;
   }
-  
+
   .jlXUNrOMfrz8QPtWwi9D:before {
     bottom: -50px;
     left: 25px;
@@ -2585,7 +2660,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-top: 30px solid #5e33bf;
   }
-  
+
   .JeoJI1NdjwsQC_qBgQws:before {
     bottom: -50px;
     right: 25px;
@@ -2602,7 +2677,7 @@ font-family: 'Source Sans Pro'
     border-right: 20px solid transparent;
     border-top: 30px solid #5e33bf;
   }
-  
+
   .MU1OWZXYSl7cGLHsourz {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2615,7 +2690,7 @@ font-family: 'Source Sans Pro'
     font-size: 26px;
     line-height: 1.25;
   }
-  
+
   .G7McxXXrgjal0gygY7go {
     min-width: 30px;
     height: 40px;
@@ -2626,7 +2701,7 @@ font-family: 'Source Sans Pro'
     height: auto;
     width: auto;
   }
-  
+
   .mRKSYTEhLTxmKLYCNnX9 {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2636,7 +2711,7 @@ font-family: 'Source Sans Pro'
     align-items: center;
     min-height: 40px;
   }
-  
+
   .cA8Idbs6OA0BSmKw9Tam {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2717,7 +2792,7 @@ font-family: 'Source Sans Pro'
     fill: transparent;
     stroke: #5e33bf;
   }
-  
+
   .TKXFYjyTT7BRVXk2l6uF {
     margin: 15px 0;
     line-height: 1.25;
@@ -2731,12 +2806,12 @@ font-family: 'Source Sans Pro'
   .TKXFYjyTT7BRVXk2l6uF:last-child {
     margin-bottom: 0;
   }
-  
+
   .NnI3UXnyndFcINeMIp0o {
     font-size: 18px;
     font-weight: 700;
   }
-  
+
   .FV8g2jL10G1UB_eAf9BA {
     text-align: right;
   }
@@ -2748,7 +2823,7 @@ font-family: 'Source Sans Pro'
     color: white;
     text-decoration: none;
    }
-  
+
   .wwyWCr_3HEEc_JqAydbV {
     text-align: center;
   }
@@ -2768,12 +2843,12 @@ font-family: 'Source Sans Pro'
     background-color: rgba(48, 55, 61, 1);
     z-index: 500000000;
   }
-  
+
   .h5vXAMG8g9yvOW1B6wro {
     left: 15px;
     bottom: 100px;
   }
-  
+
   .h5vXAMG8g9yvOW1B6wro::after {
     content: "";
     display: block;
@@ -2785,7 +2860,7 @@ font-family: 'Source Sans Pro'
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
   }
-  
+
   .IAiRh1I0k5egyOBwu5xu {
     bottom: 111px;
     left: 283px;
@@ -2796,7 +2871,7 @@ font-family: 'Source Sans Pro'
     transform: rotate(45deg);
     background-color: rgba(48, 55, 61, 1);
   }
-  
+
   .SH95mwXWE4rR88NI9kdw {
     font-family: "Clarivate";
     text-align: left;
@@ -2804,7 +2879,7 @@ font-family: 'Source Sans Pro'
     font-size: 16px;
     line-height: 1.4;
   }
-  
+
   /* Content visibility */
   .JDTc_LYE4hywcP2UrMj1 {
     display: none;
@@ -2814,13 +2889,13 @@ font-family: 'Source Sans Pro'
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
   }
-  
+
   .JDTc_LYE4hywcP2UrMj1.xt3prUvhYpXaDTATSaqi {
     display: block;
     -webkit-animation-name: cyDGHsYvrKbP8e_GTG2d;
     animation-name: cyDGHsYvrKbP8e_GTG2d;
   }
-  
+
   @keyframes cyDGHsYvrKbP8e_GTG2d {
     0% {
       opacity: 0;
@@ -2829,11 +2904,11 @@ font-family: 'Source Sans Pro'
       opacity: 1;
     }
   }
-  
+
   #p23dTdp5Vjnb1kKXw0Pm {
     color: #fff;
   }
-  
+
   #p23dTdp5Vjnb1kKXw0Pm:hover {
     color: #dadada;
     text-decoration: none;
@@ -2858,9 +2933,9 @@ font-family: 'Source Sans Pro'
 
 <div class="container">
     <nav>
-        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/swiss.html">比赛详情</a>
-        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/swiss_bracket.html" class="active">晋级路线图</a>
-        <a href="https://vrdouchong-332622-12-1512085171.sh.run.tcloudbase.com/playoffs.html">淘汰赛</a>
+        <a href="/swiss.html">比赛详情</a>
+        <a href="/swiss_bracket.html" class="active">晋级路线图</a>
+        <a href="/playoffs.html">淘汰赛</a>
     </nav>
 
     <div class="legend">
@@ -2888,21 +2963,21 @@ font-family: 'Source Sans Pro'
     <div class="swiss-flow">
         <div class="rounds-container" id="rounds-container"><div class="round-column"><div class="round-header">第 1 轮</div><div class="round-matches"><div class="bracket-match">
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/27628019" target="_blank" rel="noopener noreferrer" title="打开 Ameki 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Ameki.webp" alt="Ameki">
-                
+
             </div>
 
             <div class="player-name-small">
                 Ameki
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -2913,21 +2988,21 @@ font-family: 'Source Sans Pro'
                     <div class="vs-small">VS</div>
 
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1727074031" target="_blank" rel="noopener noreferrer" title="打开 chu2u 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/chu2u.webp" alt="chu2u">
-                
+
             </div>
 
             <div class="player-name-small">
                 chu2u
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -2936,9 +3011,9 @@ font-family: 'Source Sans Pro'
                     </div>
                 </div><div class="bracket-match">
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/31368705" target="_blank" rel="noopener noreferrer" title="打开 Nagisa 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Nagisa.webp" alt="Nagisa">
@@ -2950,7 +3025,7 @@ font-family: 'Source Sans Pro'
                 <span class="live-label">直播中</span>
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -2961,9 +3036,9 @@ font-family: 'Source Sans Pro'
                     <div class="vs-small">VS</div>
 
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/23260993" target="_blank" rel="noopener noreferrer" title="打开 Rhea 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Rhea.jpg" alt="Rhea">
@@ -2975,7 +3050,7 @@ font-family: 'Source Sans Pro'
                 <span class="live-label">直播中</span>
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -2984,9 +3059,9 @@ font-family: 'Source Sans Pro'
                     </div>
                 </div><div class="bracket-match">
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/30655190" target="_blank" rel="noopener noreferrer" title="打开 Mizuki 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Mizuki.webp" alt="Mizuki">
@@ -2998,7 +3073,7 @@ font-family: 'Source Sans Pro'
                 <span class="live-label">直播中</span>
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3009,21 +3084,21 @@ font-family: 'Source Sans Pro'
                     <div class="vs-small">VS</div>
 
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1713546334" target="_blank" rel="noopener noreferrer" title="打开 Hazel 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Hazel.webp" alt="Hazel">
-                
+
             </div>
 
             <div class="player-name-small">
                 Hazel
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3032,9 +3107,9 @@ font-family: 'Source Sans Pro'
                     </div>
                 </div><div class="bracket-match">
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1713548468" target="_blank" rel="noopener noreferrer" title="打开 Liko 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Liko.webp" alt="Liko">
@@ -3046,7 +3121,7 @@ font-family: 'Source Sans Pro'
                 <span class="live-label">直播中</span>
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3057,21 +3132,21 @@ font-family: 'Source Sans Pro'
                     <div class="vs-small">VS</div>
 
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1741667419" target="_blank" rel="noopener noreferrer" title="打开 Izayoi 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Izayoi.webp" alt="Izayoi">
-                
+
             </div>
 
             <div class="player-name-small">
                 Izayoi
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3080,21 +3155,21 @@ font-family: 'Source Sans Pro'
                     </div>
                 </div><div class="bracket-match">
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/25788785" target="_blank" rel="noopener noreferrer" title="打开 SUI 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/SUI.webp" alt="SUI">
-                
+
             </div>
 
             <div class="player-name-small">
                 SUI
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3105,21 +3180,21 @@ font-family: 'Source Sans Pro'
                     <div class="vs-small">VS</div>
 
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1820703922" target="_blank" rel="noopener noreferrer" title="打开 Harei 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Harei.webp" alt="Harei">
-                
+
             </div>
 
             <div class="player-name-small">
                 Harei
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3128,21 +3203,21 @@ font-family: 'Source Sans Pro'
                     </div>
                 </div><div class="bracket-match">
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1727071052" target="_blank" rel="noopener noreferrer" title="打开 Viridis 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Viridis.webp" alt="Viridis">
-                
+
             </div>
 
             <div class="player-name-small">
                 Viridis
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3153,21 +3228,21 @@ font-family: 'Source Sans Pro'
                     <div class="vs-small">VS</div>
 
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1727076670" target="_blank" rel="noopener noreferrer" title="打开 Sumire 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Sumire.webp" alt="Sumire">
-                
+
             </div>
 
             <div class="player-name-small">
                 Sumire
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3176,21 +3251,21 @@ font-family: 'Source Sans Pro'
                     </div>
                 </div><div class="bracket-match">
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1986461465" target="_blank" rel="noopener noreferrer" title="打开 Kloa 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Kloa.webp" alt="Kloa">
-                
+
             </div>
 
             <div class="player-name-small">
                 Kloa
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3201,21 +3276,21 @@ font-family: 'Source Sans Pro'
                     <div class="vs-small">VS</div>
 
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1947277414" target="_blank" rel="noopener noreferrer" title="打开 Melody 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Melody.jpg" alt="Melody">
-                
+
             </div>
 
             <div class="player-name-small">
                 Melody
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3224,21 +3299,21 @@ font-family: 'Source Sans Pro'
                     </div>
                 </div><div class="bracket-match">
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/1967216004" target="_blank" rel="noopener noreferrer" title="打开 Mit3uri 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Mit3uri.webp" alt="Mit3uri">
-                
+
             </div>
 
             <div class="player-name-small">
                 Mit3uri
-                
+
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3249,9 +3324,9 @@ font-family: 'Source Sans Pro'
                     <div class="vs-small">VS</div>
 
                     <div class="match-player
-                        
+
                         active">
-                        
+
         <a class="player-link" href="https://live.bilibili.com/26966466" target="_blank" rel="noopener noreferrer" title="打开 Shiori 的Bilibili直播间">
             <div class="player-avatar-small">
                 <img src="./swiss_bracket_files/Shiori.webp" alt="Shiori">
@@ -3263,7 +3338,7 @@ font-family: 'Source Sans Pro'
                 <span class="live-label">直播中</span>
             </div>
         </a>
-    
+
 
                         <div class="player-record active">
                             0-
@@ -3313,6 +3388,29 @@ font-family: 'Source Sans Pro'
 <footer>
     <p>VR斗虫大赛 2026 · 非商业兴趣项目</p>
 </footer>
+
+
+<div
+    class="bracket-history-modal"
+    id="bracket-history-modal"
+>
+    <div class="bracket-history-content">
+        <div class="bracket-history-head">
+            <h2 id="bracket-history-title">
+                比赛数据对比
+            </h2>
+
+            <button
+                class="bracket-history-close"
+                type="button"
+                onclick="closeBracketMatchDetail()"
+                aria-label="关闭"
+            >?</button>
+        </div>
+
+        <div id="bracket-history-body"></div>
+    </div>
+</div>
 
 <script>
 "use strict";
@@ -3473,60 +3571,294 @@ function playerLinkHtml(player, small = true) {
     `;
 }
 
-function renderSwissBracket(data) {
-    const container = document.getElementById(
-        "rounds-container"
+function recordsBeforeSwissRound(data, targetRound) {
+    const records = new Map(
+        data.players.map(player => [
+            String(player.id),
+            {wins: 0, losses: 0}
+        ])
     );
 
+    const previousMatches = [...data.matches]
+        .filter(match =>
+            Number(match.round) < Number(targetRound)
+            && match.status === "completed"
+            && match.winner
+        )
+        .sort((a, b) =>
+            Number(a.round) - Number(b.round)
+        );
+
+    for (const match of previousMatches) {
+        const player1 = String(match.p1);
+        const player2 = String(match.p2);
+        const winner = String(match.winner);
+        const loser = winner === player1 ? player2 : player1;
+
+        if (records.has(winner)) {
+            records.get(winner).wins += 1;
+        }
+        if (records.has(loser)) {
+            records.get(loser).losses += 1;
+        }
+    }
+
+    return records;
+}
+
+
+
+function bracketMoney(value) {
+    return "&#165;" + Number(value || 0).toLocaleString(
+        "zh-CN",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+}
+
+
+function bracketNumber(value) {
+    return Number(value || 0).toLocaleString("zh-CN");
+}
+
+
+function bracketRevenue(match, playerId) {
+    const value = match?.revenue?.[playerId] || {};
+
+    return {
+        total: Number(value.total || 0),
+        sc: Number(value.sc || 0),
+        gift: Number(value.gift || 0),
+        danmaku: Number(value.danmaku || 0),
+        peak: Number(value.peak_viewers || 0),
+        avg: Number(value.avg_viewers || 0)
+    };
+}
+
+
+function showBracketMatchDetail(matchId) {
+    if (!currentData) {
+        return;
+    }
+
+    const match = currentData.matches.find(
+        item => String(item.id) === String(matchId)
+    );
+
+    if (!match) {
+        return;
+    }
+
+    const player1 = currentData.players.find(
+        player => String(player.id) === String(match.p1)
+    );
+
+    const player2 = currentData.players.find(
+        player => String(player.id) === String(match.p2)
+    );
+
+    if (!player1 || !player2) {
+        return;
+    }
+
+    const revenue1 = bracketRevenue(match, match.p1);
+    const revenue2 = bracketRevenue(match, match.p2);
+
+    const winner = currentData.players.find(
+        player => String(player.id) === String(match.winner)
+    );
+
+    document.getElementById(
+        "bracket-history-title"
+    ).textContent =
+        `${escapeHtml(player1.name)} vs ` +
+        `${escapeHtml(player2.name)}`;
+
+    document.getElementById(
+        "bracket-history-body"
+    ).innerHTML = `
+        <p style="color:var(--text-secondary)">
+            ${match.status === "completed"
+                ? "胜者： " + escapeHtml(winner?.name || "-")
+                : "比赛进行中"}
+        </p>
+
+        <table class="bracket-comparison-table">
+            <thead>
+                <tr>
+                    <th>指标</th>
+                    <th>${escapeHtml(player1.name)}</th>
+                    <th>${escapeHtml(player2.name)}</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>总营收</td>
+                    <td>${bracketMoney(revenue1.total)}</td>
+                    <td>${bracketMoney(revenue2.total)}</td>
+                </tr>
+                <tr>
+                    <td>SC</td>
+                    <td>${bracketMoney(revenue1.sc)}</td>
+                    <td>${bracketMoney(revenue2.sc)}</td>
+                </tr>
+                <tr>
+                    <td>礼物／守护</td>
+                    <td>${bracketMoney(revenue1.gift)}</td>
+                    <td>${bracketMoney(revenue2.gift)}</td>
+                </tr>
+                <tr>
+                    <td>弹幕数</td>
+                    <td>${bracketNumber(revenue1.danmaku)}</td>
+                    <td>${bracketNumber(revenue2.danmaku)}</td>
+                </tr>
+                <tr>
+                    <td>峰值同接</td>
+                    <td>${bracketNumber(revenue1.peak)}</td>
+                    <td>${bracketNumber(revenue2.peak)}</td>
+                </tr>
+                <tr>
+                    <td>平均同接</td>
+                    <td>${bracketNumber(revenue1.avg)}</td>
+                    <td>${bracketNumber(revenue2.avg)}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById(
+        "bracket-history-modal"
+    ).classList.add("open");
+}
+
+
+function closeBracketMatchDetail() {
+    document.getElementById(
+        "bracket-history-modal"
+    ).classList.remove("open");
+}
+
+
+function renderSwissBracket(data) {
+    const container = document.getElementById("rounds-container");
     container.replaceChildren();
 
-    const matchesByRound = {};
+    const matchesByRound = new Map();
 
     data.matches
         .filter(match => Number(match.round) < 100)
         .forEach(match => {
             const round = Number(match.round);
-
-            if (!matchesByRound[round]) {
-                matchesByRound[round] = [];
+            if (!matchesByRound.has(round)) {
+                matchesByRound.set(round, []);
             }
-
-            matchesByRound[round].push(match);
+            matchesByRound.get(round).push(match);
         });
 
     for (let round = 1; round <= 5; round += 1) {
         const roundDiv = document.createElement("div");
         roundDiv.className = "round-column";
 
-        const header = document.createElement("div");
-        header.className = "round-header";
-        header.textContent = `第 ${round} 轮`;
-        roundDiv.appendChild(header);
+        const roundHeader = document.createElement("div");
+        roundHeader.className = "round-header";
+        roundHeader.textContent =
+            `\u7b2c ${round} \u8f6e`;
+        roundDiv.appendChild(roundHeader);
 
         const matchesDiv = document.createElement("div");
         matchesDiv.className = "round-matches";
 
-        const roundMatches = matchesByRound[round] || [];
+        const roundMatches = matchesByRound.get(round) || [];
 
         if (!roundMatches.length) {
-            matchesDiv.innerHTML = `
-                <div class="empty">
-                    未开始
-                </div>
-            `;
-        } else {
-            roundMatches.forEach(match => {
+            const empty = document.createElement("div");
+            empty.className = "empty";
+            empty.textContent = "\u672a\u5f00\u59cb";
+            matchesDiv.appendChild(empty);
+            roundDiv.appendChild(matchesDiv);
+            container.appendChild(roundDiv);
+            continue;
+        }
+
+        const records = recordsBeforeSwissRound(data, round);
+        const groups = new Map();
+
+        for (const match of roundMatches) {
+            const p1Record = records.get(String(match.p1))
+                || {wins: 0, losses: 0};
+            const p2Record = records.get(String(match.p2))
+                || {wins: 0, losses: 0};
+
+            const p1Key = `${p1Record.wins}-${p1Record.losses}`;
+            const p2Key = `${p2Record.wins}-${p2Record.losses}`;
+
+            const sameRecord = p1Key === p2Key;
+            const groupKey = sameRecord
+                ? p1Key
+                : `${p1Key}|${p2Key}`;
+
+            if (!groups.has(groupKey)) {
+                groups.set(groupKey, {
+                    label: sameRecord
+                        ? `${p1Key} \u7ec4`
+                        : `${p1Key} / ${p2Key} \u8de8\u6218\u7ee9\u5bf9\u9635`,
+                    winsSort: Math.max(
+                        p1Record.wins,
+                        p2Record.wins
+                    ),
+                    lossesSort: Math.min(
+                        p1Record.losses,
+                        p2Record.losses
+                    ),
+                    matches: []
+                });
+            }
+
+            groups.get(groupKey).matches.push(match);
+        }
+
+        const orderedGroups = [...groups.values()].sort(
+            (a, b) =>
+                b.winsSort - a.winsSort
+                || a.lossesSort - b.lossesSort
+                || a.label.localeCompare(b.label)
+        );
+
+        for (const group of orderedGroups) {
+            const groupHeader = document.createElement("div");
+            groupHeader.textContent = group.label;
+            groupHeader.style.cssText = [
+                "margin:12px 0 4px",
+                "padding:6px 8px",
+                "color:var(--accent)",
+                "font-weight:800",
+                "border-bottom:1px solid var(--border)"
+            ].join(";");
+            matchesDiv.appendChild(groupHeader);
+
+            group.matches.sort((a, b) =>
+                String(a.id).localeCompare(String(b.id))
+            );
+
+            for (const match of group.matches) {
                 const p1 = data.players.find(
                     player => String(player.id) === String(match.p1)
                 );
-
                 const p2 = data.players.find(
                     player => String(player.id) === String(match.p2)
                 );
 
                 if (!p1 || !p2) {
-                    return;
+                    continue;
                 }
+
+                const p1Record = records.get(String(p1.id))
+                    || {wins: 0, losses: 0};
+                const p2Record = records.get(String(p2.id))
+                    || {wins: 0, losses: 0};
 
                 const p1Status = getPlayerStatus(p1);
                 const p2Status = getPlayerStatus(p2);
@@ -3539,51 +3871,50 @@ function renderSwissBracket(data) {
                 }
 
                 matchDiv.innerHTML = `
-                    <div
-                        class="match-player
+                    <div class="match-player
                         ${String(match.winner) === String(p1.id)
                             ? "winner"
                             : ""}
-                        ${p1Status}"
-                    >
+                        ${p1Status}">
                         ${playerLinkHtml(p1)}
-
-                        <div
-                            class="player-record ${p1Status}"
-                        >
-                            ${Number(p1.wins || 0)}-
-                            ${Number(p1.losses || 0)}
+                        <div class="player-record ${p1Status}">
+                            ${p1Record.wins}-${p1Record.losses}
                         </div>
                     </div>
 
                     <div class="vs-small">VS</div>
 
-                    <div
-                        class="match-player
+                    <div class="match-player
                         ${String(match.winner) === String(p2.id)
                             ? "winner"
                             : ""}
-                        ${p2Status}"
-                    >
+                        ${p2Status}">
                         ${playerLinkHtml(p2)}
-
-                        <div
-                            class="player-record ${p2Status}"
-                        >
-                            ${Number(p2.wins || 0)}-
-                            ${Number(p2.losses || 0)}
+                        <div class="player-record ${p2Status}">
+                            ${p2Record.wins}-${p2Record.losses}
                         </div>
                     </div>
                 `;
 
+                matchDiv.classList.add("clickable-match");
+
+                matchDiv.addEventListener("click", event => {
+                    if (event.target.closest("a, button")) {
+                        return;
+                    }
+
+                    showBracketMatchDetail(match.id);
+                });
+
                 matchesDiv.appendChild(matchDiv);
-            });
+            }
         }
 
         roundDiv.appendChild(matchesDiv);
         container.appendChild(roundDiv);
     }
 }
+
 
 function renderResults(data) {
     const qualifiedList = document.getElementById(
@@ -3766,9 +4097,53 @@ async function loadData() {
     }
 }
 
+
+document.getElementById(
+    "bracket-history-modal"
+).addEventListener("click", event => {
+    if (event.target.id === "bracket-history-modal") {
+        closeBracketMatchDetail();
+    }
+});
+
 recordPageView();
 loadData();
-setInterval(loadData, 30000);
+
+let refreshTimer = null;
+
+function startAutoRefresh() {
+    if (refreshTimer !== null) {
+        return;
+    }
+
+    refreshTimer = setInterval(
+        loadData,
+        120000
+    );
+}
+
+function stopAutoRefresh() {
+    if (refreshTimer === null) {
+        return;
+    }
+
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+}
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+        if (document.hidden) {
+            stopAutoRefresh();
+        } else {
+            loadData();
+            startAutoRefresh();
+        }
+    }
+);
+
+startAutoRefresh();
 </script>
 
 

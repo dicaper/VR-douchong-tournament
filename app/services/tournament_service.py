@@ -1233,9 +1233,25 @@ class TournamentService:
         }
 
     @staticmethod
-    def start_knockout_stage(
-        tournament_id,
-    ):
+    def start_knockout_stage(tournament_id):
+        """
+        ??????????? BO3?
+
+        ???????
+            3-0?2?
+            3-1?3?
+            3-2?3?
+
+        ?????
+        1. 3-0 ???? 3-2?
+        2. ?? 3-0 ?????????
+        3. 3-1 ???????
+        4. ?????? 3-1????? 3-2 ???
+
+        ?????
+            QF1 + QF2 -> SF1
+            QF3 + QF4 -> SF2
+        """
         db = TournamentService._db()
         tournament = TournamentService._get_tournament(
             tournament_id
@@ -1244,7 +1260,7 @@ class TournamentService:
         if not tournament:
             return {
                 "success": False,
-                "error": "比赛不存在",
+                "error": "?????",
             }
 
         if TournamentService._get_matches(
@@ -1253,7 +1269,7 @@ class TournamentService:
         ):
             return {
                 "success": False,
-                "error": "八强比赛已存在",
+                "error": "???????",
             }
 
         qualified = [
@@ -1267,12 +1283,139 @@ class TournamentService:
         if len(qualified) != 8:
             return {
                 "success": False,
+                "error": f"?????{len(qualified)}???8?",
+            }
+
+        def record(player):
+            return (
+                int(player.get("wins") or 0),
+                int(player.get("losses") or 0),
+            )
+
+        group_30 = [
+            player for player in qualified
+            if record(player) == (3, 0)
+        ]
+
+        group_31 = [
+            player for player in qualified
+            if record(player) == (3, 1)
+        ]
+
+        group_32 = [
+            player for player in qualified
+            if record(player) == (3, 2)
+        ]
+
+        if (
+            len(group_30)
+            + len(group_31)
+            + len(group_32)
+            != 8
+        ):
+            return {
+                "success": False,
                 "error": (
-                    f"晋级人数为{len(qualified)}，需要8人"
+                    "?????????"
+                    "??3-0?3-1?3-2"
                 ),
             }
 
-        random.shuffle(qualified)
+        random.shuffle(group_30)
+        random.shuffle(group_31)
+        random.shuffle(group_32)
+
+        if len(group_32) < len(group_30):
+            return {
+                "success": False,
+                "error": (
+                    "3-2???????"
+                    "?????3-0??3-2"
+                ),
+            }
+
+        # ??? 3-0 vs 3-2?
+        premium_pairs = []
+
+        while group_30:
+            premium_pairs.append((
+                group_30.pop(),
+                group_32.pop(),
+            ))
+
+        # 3-1 ???????
+        other_pairs = []
+
+        while len(group_31) >= 2:
+            other_pairs.append((
+                group_31.pop(),
+                group_31.pop(),
+            ))
+
+        # ?????3-1?????3-2???
+        if group_31:
+            if not group_32:
+                return {
+                    "success": False,
+                    "error": (
+                        "??3-1??????3-2"
+                    ),
+                }
+
+            other_pairs.append((
+                group_31.pop(),
+                group_32.pop(),
+            ))
+
+        # ?????3-2???????
+        while len(group_32) >= 2:
+            other_pairs.append((
+                group_32.pop(),
+                group_32.pop(),
+            ))
+
+        if group_31 or group_32:
+            return {
+                "success": False,
+                "error": "????????????",
+            }
+
+        if len(premium_pairs) + len(other_pairs) != 4:
+            return {
+                "success": False,
+                "error": "???????4????",
+            }
+
+        # QF1?QF3?????????
+        qf_pairs = [None, None, None, None]
+
+        premium_slots = [0, 2, 1, 3]
+
+        for pair, slot in zip(
+            premium_pairs,
+            premium_slots,
+        ):
+            qf_pairs[slot] = pair
+
+        random.shuffle(other_pairs)
+
+        empty_slots = [
+            index
+            for index, pair in enumerate(qf_pairs)
+            if pair is None
+        ]
+
+        for slot, pair in zip(
+            empty_slots,
+            other_pairs,
+        ):
+            qf_pairs[slot] = pair
+
+        if any(pair is None for pair in qf_pairs):
+            return {
+                "success": False,
+                "error": "????????",
+            }
 
         start = _utc_now_naive()
         end = start + timedelta(
@@ -1286,16 +1429,10 @@ class TournamentService:
                     "tournament_id": int(
                         tournament_id
                     ),
-                    "match_id": (
-                        f"qf{index + 1}g1"
-                    ),
+                    "match_id": f"qf{index + 1}g1",
                     "round_number": ROUND_QF,
-                    "player1_id": qualified[
-                        index * 2
-                    ]["player_id"],
-                    "player2_id": qualified[
-                        index * 2 + 1
-                    ]["player_id"],
+                    "player1_id": pair[0]["player_id"],
+                    "player2_id": pair[1]["player_id"],
                     "start_time": start.isoformat(
                         sep=" "
                     ),
@@ -1304,7 +1441,7 @@ class TournamentService:
                     ),
                     "status": "running",
                 }
-                for index in range(4)
+                for index, pair in enumerate(qf_pairs)
             ],
         )
 
@@ -1324,6 +1461,8 @@ class TournamentService:
             "stage": "quarterfinals",
             "matches_created": 4,
             "format": "BO3",
+            "upper_half": ["qf1", "qf2"],
+            "lower_half": ["qf3", "qf4"],
         }
 
     @staticmethod
@@ -1444,11 +1583,14 @@ class TournamentService:
     @staticmethod
     def _advance_knockout(tournament_id):
         """
-        ??????????? BO3 ????
+        ?????? BO3 ????
 
-        ??????????????????????
-        ??????????????????????
-        2 ????????????????
+        ?????
+            qf1 + qf2 -> sf1
+            qf3 + qf4 -> sf2
+            sf1 + sf2 -> final
+
+        ????????????
         """
         db = TournamentService._db()
         tournament = TournamentService._get_tournament(
@@ -1458,43 +1600,21 @@ class TournamentService:
         if not tournament:
             return
 
-        current_round = int(
-            tournament.get("current_round") or 0
-        )
-
-        if current_round == ROUND_QF:
-            series_ids = ["qf1", "qf2", "qf3", "qf4"]
-            next_round = ROUND_SF
-            next_pairs = [("qf1", "qf2"), ("qf3", "qf4")]
-            next_series_ids = ["sf1", "sf2"]
-        elif current_round == ROUND_SF:
-            series_ids = ["sf1", "sf2"]
-            next_round = ROUND_FINAL
-            next_pairs = [("sf1", "sf2")]
-            next_series_ids = ["final"]
-        elif current_round == ROUND_FINAL:
-            series_ids = ["final"]
-            next_round = None
-            next_pairs = []
-            next_series_ids = []
-        else:
-            return
-
-        series_winners = {}
-
-        for series_id in series_ids:
-            games = TournamentService._series_games(
+        def series_games(series_id, round_number):
+            return TournamentService._series_games(
                 tournament_id,
                 series_id,
-                current_round,
+                round_number,
+            )
+
+        def series_winner(series_id, round_number):
+            games = series_games(
+                series_id,
+                round_number,
             )
 
             if not games:
-                # ???????????????????????
-                continue
-
-            player1_id = str(games[0].get("player1_id"))
-            player2_id = str(games[0].get("player2_id"))
+                return None
 
             wins = defaultdict(int)
 
@@ -1505,31 +1625,74 @@ class TournamentService:
                 ):
                     wins[str(game["winner_id"])] += 1
 
+            player1_id = str(
+                games[0].get("player1_id")
+            )
+            player2_id = str(
+                games[0].get("player2_id")
+            )
+
             if wins[player1_id] >= BEST_OF_THREE_WINS:
-                series_winners[series_id] = player1_id
-                continue
+                return player1_id
 
             if wins[player2_id] >= BEST_OF_THREE_WINS:
-                series_winners[series_id] = player2_id
-                continue
+                return player2_id
 
-            # ????????????????????????
+            return None
+
+        def create_next_game_if_ready(
+            series_id,
+            round_number,
+        ):
+            games = series_games(
+                series_id,
+                round_number,
+            )
+
+            if not games:
+                return None
+
+            winner_id = series_winner(
+                series_id,
+                round_number,
+            )
+
+            if winner_id:
+                return winner_id
+
+            # ??????????????
             if any(
-                game.get("status") in {"running", "pending"}
+                game.get("status") in {
+                    "running",
+                    "pending",
+                }
                 for game in games
             ):
-                continue
+                return None
 
             if len(games) >= 3:
                 print(
-                    f"????????{series_id} ???3??"
-                    "?????2?"
+                    f"????????{series_id} "
+                    "?????????2?"
                 )
-                continue
+                return None
 
-            # ?????????????????
-            # ?????????? game_number ???
-            next_game_number = len(games) + 1
+            game_numbers = [
+                number
+                for number in (
+                    _series_info(
+                        game.get("match_id")
+                    )[1]
+                    for game in games
+                )
+                if number is not None
+            ]
+
+            next_game_number = (
+                max(game_numbers) + 1
+                if game_numbers
+                else 1
+            )
 
             start = _utc_now_naive()
             end = start + timedelta(
@@ -1539,56 +1702,189 @@ class TournamentService:
             db.insert(
                 TABLE_MATCHES,
                 {
-                    "tournament_id": int(tournament_id),
-                    "match_id": f"{series_id}g{next_game_number}",
-                    "round_number": current_round,
-                    "player1_id": games[0]["player1_id"],
-                    "player2_id": games[0]["player2_id"],
-                    "start_time": start.isoformat(sep=" "),
-                    "end_time": end.isoformat(sep=" "),
+                    "tournament_id": int(
+                        tournament_id
+                    ),
+                    "match_id": (
+                        f"{series_id}g"
+                        f"{next_game_number}"
+                    ),
+                    "round_number": round_number,
+                    "player1_id": games[0][
+                        "player1_id"
+                    ],
+                    "player2_id": games[0][
+                        "player2_id"
+                    ],
+                    "start_time": start.isoformat(
+                        sep=" "
+                    ),
+                    "end_time": end.isoformat(
+                        sep=" "
+                    ),
                     "status": "running",
                 },
             )
 
-        # ????????????????????????
-        if len(series_winners) != len(series_ids):
-            return
+            return None
 
-        if current_round == ROUND_FINAL:
+        def ensure_first_game(
+            series_id,
+            round_number,
+            player1_id,
+            player2_id,
+        ):
+            existing = series_games(
+                series_id,
+                round_number,
+            )
+
+            if existing:
+                return
+
+            start = _utc_now_naive()
+            end = start + timedelta(
+                hours=KNOCKOUT_GAME_HOURS
+            )
+
+            db.insert(
+                TABLE_MATCHES,
+                {
+                    "tournament_id": int(
+                        tournament_id
+                    ),
+                    "match_id": f"{series_id}g1",
+                    "round_number": round_number,
+                    "player1_id": str(player1_id),
+                    "player2_id": str(player2_id),
+                    "start_time": start.isoformat(
+                        sep=" "
+                    ),
+                    "end_time": end.isoformat(
+                        sep=" "
+                    ),
+                    "status": "running",
+                },
+            )
+
+        # ?????????
+        qf_winners = {}
+
+        for series_id in (
+            "qf1",
+            "qf2",
+            "qf3",
+            "qf4",
+        ):
+            winner_id = create_next_game_if_ready(
+                series_id,
+                ROUND_QF,
+            )
+
+            if winner_id:
+                qf_winners[series_id] = winner_id
+
+        # ????qf1?qf2?
+        if (
+            "qf1" in qf_winners
+            and "qf2" in qf_winners
+        ):
+            ensure_first_game(
+                "sf1",
+                ROUND_SF,
+                qf_winners["qf1"],
+                qf_winners["qf2"],
+            )
+
+        # ????qf3?qf4?
+        if (
+            "qf3" in qf_winners
+            and "qf4" in qf_winners
+        ):
+            ensure_first_game(
+                "sf2",
+                ROUND_SF,
+                qf_winners["qf3"],
+                qf_winners["qf4"],
+            )
+
+        # ??????????
+        sf_winners = {}
+
+        for series_id in (
+            "sf1",
+            "sf2",
+        ):
+            winner_id = create_next_game_if_ready(
+                series_id,
+                ROUND_SF,
+            )
+
+            if winner_id:
+                sf_winners[series_id] = winner_id
+
+        # ???sf1?? vs sf2???
+        if (
+            "sf1" in sf_winners
+            and "sf2" in sf_winners
+        ):
+            ensure_first_game(
+                "final",
+                ROUND_FINAL,
+                sf_winners["sf1"],
+                sf_winners["sf2"],
+            )
+
+        final_winner = create_next_game_if_ready(
+            "final",
+            ROUND_FINAL,
+        )
+
+        if final_winner:
             db.update(
                 TABLE_TOURNAMENTS,
-                {"id": f"eq.{int(tournament_id)}"},
-                {"status": "finished"},
+                {
+                    "id": f"eq.{int(tournament_id)}",
+                },
+                {
+                    "status": "finished",
+                },
             )
             return
 
-        # ?????????????????????????
-        start = _utc_now_naive()
-        end = start + timedelta(
-            hours=KNOCKOUT_GAME_HOURS
+        # ???????
+        # QF???????????
+        # QF???????????
+        # SF??????????
+        all_qf_finished = all(
+            series_id in qf_winners
+            for series_id in (
+                "qf1",
+                "qf2",
+                "qf3",
+                "qf4",
+            )
         )
 
-        next_matches = []
+        all_sf_finished = (
+            "sf1" in sf_winners
+            and "sf2" in sf_winners
+        )
 
-        for index, (source1, source2) in enumerate(next_pairs):
-            next_matches.append({
-                "tournament_id": int(tournament_id),
-                "match_id": f"{next_series_ids[index]}g1",
-                "round_number": next_round,
-                "player1_id": series_winners[source1],
-                "player2_id": series_winners[source2],
-                "start_time": start.isoformat(sep=" "),
-                "end_time": end.isoformat(sep=" "),
-                "status": "running",
-            })
-
-        db.insert(TABLE_MATCHES, next_matches)
+        if not all_qf_finished:
+            display_round = ROUND_QF
+        elif not all_sf_finished:
+            display_round = ROUND_SF
+        else:
+            display_round = ROUND_FINAL
 
         db.update(
             TABLE_TOURNAMENTS,
-            {"id": f"eq.{int(tournament_id)}"},
             {
-                "current_round": next_round,
+                "id": f"eq.{int(tournament_id)}",
+            },
+            {
+                "current_round": display_round,
                 "status": "running",
             },
         )
@@ -1918,7 +2214,16 @@ class TournamentService:
     @staticmethod
     def _latest_snapshots(match_ids):
         """
-        对每场比赛、每位选手直接查询最新快照。
+        ??????????????
+        ??????????????????????
+
+        ????
+            ????????????????
+
+        ?????
+            ??????????????????
+
+        ???????? MemFire REST ?????
         """
         if not match_ids:
             return {}
@@ -1942,7 +2247,7 @@ class TournamentService:
             ),
         )
 
-        latest = {}
+        valid_keys = set()
 
         for match in matches:
             match_id = str(
@@ -1952,32 +2257,43 @@ class TournamentService:
             if not match_id:
                 continue
 
-            player_ids = {
-                str(match.get("player1_id")),
-                str(match.get("player2_id")),
-            }
+            for player_id in (
+                match.get("player1_id"),
+                match.get("player2_id"),
+            ):
+                if player_id is None:
+                    continue
 
-            player_ids.discard("None")
+                valid_keys.add((
+                    match_id,
+                    str(player_id),
+                ))
 
-            for player_id in player_ids:
-                rows = db.select(
-                    TABLE_REVENUE,
-                    filters={
-                        "match_id": (
-                            f"eq.{match_id}"
-                        ),
-                        "player_id": (
-                            f"eq.{player_id}"
-                        ),
-                    },
-                    order="snapshot_time.desc",
-                    limit=1,
-                )
+        if not valid_keys:
+            return {}
 
-                if rows:
-                    latest[
-                        (match_id, player_id)
-                    ] = rows[0]
+        revenue_rows = db.select(
+            TABLE_REVENUE,
+            filters={
+                "match_id": f"in.({joined_ids})",
+            },
+            order="snapshot_time.desc",
+            limit=10000,
+        )
+
+        latest = {}
+
+        for row in revenue_rows:
+            key = (
+                str(row.get("match_id") or ""),
+                str(row.get("player_id") or ""),
+            )
+
+            if key not in valid_keys:
+                continue
+
+            if key not in latest:
+                latest[key] = row
 
         return latest
 
