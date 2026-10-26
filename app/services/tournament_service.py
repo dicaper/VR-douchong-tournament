@@ -2214,46 +2214,48 @@ class TournamentService:
     @staticmethod
     def _latest_snapshots(match_ids):
         """
-        ??????????????
-        ??????????????????????
+        ?????????????????????
 
-        ????
-            ????????????????
-
-        ?????
-            ??????????????????
-
-        ???????? MemFire REST ?????
+        ?? match_id/player_id ????? limit=1?
+        ???? IN ????????????????0?
+        ?????????????
         """
         if not match_ids:
             return {}
 
         db = TournamentService._db()
+        match_ids = [str(match_id) for match_id in match_ids]
 
-        joined_ids = ",".join(
-            str(match_id)
-            for match_id in match_ids
-        )
-
+        # ???????????? ID?
+        joined_ids = ",".join(match_ids)
         matches = db.select(
             TABLE_MATCHES,
             filters={
                 "match_id": f"in.({joined_ids})",
             },
-            select=(
-                "match_id,"
-                "player1_id,"
-                "player2_id"
-            ),
+            select="match_id,player1_id,player2_id",
         )
 
-        valid_keys = set()
+        # ???? MemFire ??? IN ?????????
+        # ????????????
+        if not matches:
+            matches = []
+
+            for match_id in match_ids:
+                rows = db.select(
+                    TABLE_MATCHES,
+                    filters={
+                        "match_id": f"eq.{match_id}",
+                    },
+                    select="match_id,player1_id,player2_id",
+                    limit=1,
+                )
+                matches.extend(rows)
+
+        latest = {}
 
         for match in matches:
-            match_id = str(
-                match.get("match_id") or ""
-            )
-
+            match_id = str(match.get("match_id") or "")
             if not match_id:
                 continue
 
@@ -2264,36 +2266,25 @@ class TournamentService:
                 if player_id is None:
                     continue
 
-                valid_keys.add((
-                    match_id,
-                    str(player_id),
-                ))
+                player_id = str(player_id)
 
-        if not valid_keys:
-            return {}
+                rows = db.select(
+                    TABLE_REVENUE,
+                    filters={
+                        "match_id": f"eq.{match_id}",
+                        "player_id": f"eq.{player_id}",
+                    },
+                    select=(
+                        "match_id,player_id,snapshot_time,"
+                        "total_revenue,sc_amount,gift_amount,"
+                        "danmaku_count,peak_viewers,avg_viewers"
+                    ),
+                    order="snapshot_time.desc",
+                    limit=1,
+                )
 
-        revenue_rows = db.select(
-            TABLE_REVENUE,
-            filters={
-                "match_id": f"in.({joined_ids})",
-            },
-            order="snapshot_time.desc",
-            limit=10000,
-        )
-
-        latest = {}
-
-        for row in revenue_rows:
-            key = (
-                str(row.get("match_id") or ""),
-                str(row.get("player_id") or ""),
-            )
-
-            if key not in valid_keys:
-                continue
-
-            if key not in latest:
-                latest[key] = row
+                if rows:
+                    latest[(match_id, player_id)] = rows[0]
 
         return latest
 

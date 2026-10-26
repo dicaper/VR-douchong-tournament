@@ -8,8 +8,14 @@ from app.models.tournament import TABLE_MATCHES, TABLE_TOURNAMENTS
 from app.services.tournament_service import TournamentService
 
 
-# 营收抓取、待开始比赛检查、到期比赛结算统一每30分钟执行一次。
-SCHEDULER_INTERVAL_SECONDS = 30 * 60
+# 到期开赛检查：每5分钟。
+ACTIVATE_INTERVAL_SECONDS = 5 * 60
+
+# 结束结算检查：每30分钟，保持原来的结算频率。
+FINISH_INTERVAL_SECONDS = 30 * 60
+
+# 营收快照：每60分钟，原来是每30分钟。
+REVENUE_INTERVAL_SECONDS = 60 * 60
 
 _started = False
 _start_lock = threading.Lock()
@@ -38,7 +44,6 @@ def _activate_due_matches():
     for match in due_matches:
         match_id = str(match["match_id"])
 
-        # 再检查一次当前状态，避免重复激活。
         current = db.select(
             TABLE_MATCHES,
             filters={
@@ -81,37 +86,56 @@ def _activate_due_matches():
 
 
 def _scheduler_loop():
-    interval = SCHEDULER_INTERVAL_SECONDS
-
     print(
-        "⏰ 比赛调度器已启动："
-        f"待开始检查、营收抓取和结束结算统一每 {interval // 60} 分钟执行一次"
+        "比赛调度器已启动："
+        "开赛检查每5分钟，结算检查每30分钟，"
+        "营收快照每60分钟。"
     )
 
-    # 服务启动时先运行一次，之后每30分钟运行一次。
+    last_activate = 0.0
+    last_finish = 0.0
+    last_revenue = 0.0
+
     while True:
-        try:
-            activated = _activate_due_matches()
-            if activated:
-                print(f"✅ 已激活比赛，涉及 {activated} 个赛事轮次")
+        now = time.monotonic()
 
-        except Exception as exc:
-            print(f"⚠️ 检查并启动待开始比赛失败：{exc}")
+        if now - last_activate >= ACTIVATE_INTERVAL_SECONDS:
+            try:
+                activated = _activate_due_matches()
+                if activated:
+                    print(
+                        f"已激活比赛，涉及 {activated} 个赛事轮次"
+                    )
+            except Exception as exc:
+                print(f"检查待开始比赛失败：{exc}")
+            finally:
+                last_activate = time.monotonic()
 
-        try:
-            updated = TournamentService.update_all_running_revenues()
-            print(f"📊 本轮营收抓取完成，更新 {updated} 场比赛")
-        except Exception as exc:
-            print(f"⚠️ 本轮营收抓取失败：{exc}")
+        if now - last_revenue >= REVENUE_INTERVAL_SECONDS:
+            try:
+                updated = (
+                    TournamentService
+                    .update_all_running_revenues()
+                )
+                print(f"营收抓取完成，更新 {updated} 场比赛")
+            except Exception as exc:
+                print(f"营收抓取失败：{exc}")
+            finally:
+                last_revenue = time.monotonic()
 
-        try:
-            finished = TournamentService.check_and_finish_matches()
-            if finished:
-                print(f"✅ 本轮结束比赛：{finished} 场")
-        except Exception as exc:
-            print(f"⚠️ 检查并推进比赛失败：{exc}")
+        if now - last_finish >= FINISH_INTERVAL_SECONDS:
+            try:
+                finished = (
+                    TournamentService.check_and_finish_matches()
+                )
+                if finished:
+                    print(f"结束比赛：{finished} 场")
+            except Exception as exc:
+                print(f"检查并推进比赛失败：{exc}")
+            finally:
+                last_finish = time.monotonic()
 
-        time.sleep(interval)
+        time.sleep(60)
 
 
 def start_scheduler():

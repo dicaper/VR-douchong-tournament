@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from functools import wraps
 import os
 import random
+import threading
+import time
 
 from flask import Blueprint, jsonify, request
 
@@ -26,6 +28,12 @@ bp = Blueprint(
     __name__,
     url_prefix="/api/tournament",
 )
+
+
+# ?????????????? MemFire ???
+_STATE_CACHE = {}
+_STATE_CACHE_LOCK = threading.Lock()
+_STATE_CACHE_TTL_SECONDS = 20
 
 
 ADMIN_TOKEN = os.environ.get(
@@ -53,15 +61,26 @@ def admin_required(function):
     methods=["GET"],
 )
 def get_state(tournament_id):
+    now = time.monotonic()
+
+    with _STATE_CACHE_LOCK:
+        cached = _STATE_CACHE.get(int(tournament_id))
+        if cached and now - cached["time"] < _STATE_CACHE_TTL_SECONDS:
+            return jsonify(cached["state"])
+
     try:
-        state = TournamentService.get_current_state(
-            tournament_id
-        )
+        state = TournamentService.get_current_state(tournament_id)
 
         if not state:
             return jsonify({
                 "error": "Tournament not found",
             }), 404
+
+        with _STATE_CACHE_LOCK:
+            _STATE_CACHE[int(tournament_id)] = {
+                "time": time.monotonic(),
+                "state": state,
+            }
 
         return jsonify(state)
 
@@ -98,6 +117,10 @@ def vote():
             voter_fingerprint=data["fingerprint"],
             voter_ip=request.remote_addr,
         )
+
+        if result.get("success"):
+            with _STATE_CACHE_LOCK:
+                _STATE_CACHE.clear()
 
         return jsonify(result), (
             200 if result.get("success") else 409
