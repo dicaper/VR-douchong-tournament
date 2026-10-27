@@ -41,6 +41,41 @@ def _utc_now_naive():
     return datetime.now(UTC_TZ).replace(tzinfo=None)
 
 
+def _next_beijing_midnight_utc_naive(reference=None):
+    """
+    ????????? 00:00 ??? UTC ??????
+
+    ???????? UTC ????????
+    ???
+        ???? 2026-10-26 00:00:00
+        ?????? 2026-10-25 16:00:00
+    """
+    if reference is None:
+        reference = datetime.now(UTC_TZ)
+
+    if reference.tzinfo is None:
+        reference = reference.replace(tzinfo=UTC_TZ)
+
+    beijing_now = reference.astimezone(BEIJING_TZ)
+
+    # ?????????00:00:00?????????
+    # ????????????00:00?
+    if beijing_now.time() == datetime.min.time():
+        target_date = beijing_now.date()
+    else:
+        target_date = beijing_now.date() + timedelta(days=1)
+
+    midnight_beijing = datetime.combine(
+        target_date,
+        datetime.min.time(),
+        tzinfo=BEIJING_TZ,
+    )
+
+    return midnight_beijing.astimezone(
+        UTC_TZ
+    ).replace(tzinfo=None)
+
+
 def _parse_db_time(value):
     """
     解析数据库时间。
@@ -1171,7 +1206,7 @@ class TournamentService:
             ),
         )
 
-        start = _utc_now_naive()
+        start = _next_beijing_midnight_utc_naive()
 
         end = start + timedelta(
             days=int(
@@ -1417,7 +1452,7 @@ class TournamentService:
                 "error": "????????",
             }
 
-        start = _utc_now_naive()
+        start = _next_beijing_midnight_utc_naive()
         end = start + timedelta(
             hours=KNOCKOUT_GAME_HOURS
         )
@@ -1694,7 +1729,7 @@ class TournamentService:
                 else 1
             )
 
-            start = _utc_now_naive()
+            start = _next_beijing_midnight_utc_naive()
             end = start + timedelta(
                 hours=KNOCKOUT_GAME_HOURS
             )
@@ -1742,7 +1777,7 @@ class TournamentService:
             if existing:
                 return
 
-            start = _utc_now_naive()
+            start = _next_beijing_midnight_utc_naive()
             end = start + timedelta(
                 hours=KNOCKOUT_GAME_HOURS
             )

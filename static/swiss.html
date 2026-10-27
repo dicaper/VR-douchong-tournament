@@ -647,6 +647,15 @@
             box-shadow: 0 0 0 1px var(--blue);
         }
 
+
+        html:not(.page-loaded) body {
+            visibility: hidden;
+        }
+
+        html.page-loaded body {
+            visibility: visible;
+        }
+
 </style>
 <style>@font-face {
   font-family: 'Source Sans Pro';
@@ -5032,6 +5041,7 @@ async function loadData() {
 
         renderMatches(data);
         renderStandings(data);
+        markPageLoaded();
     } catch (error) {
         console.error("加载比赛数据失败：", error);
 
@@ -5053,6 +5063,22 @@ document.getElementById(
         closeDetail();
     }
 });
+
+
+function markPageLoaded() {
+    document.documentElement.classList.add(
+        "page-loaded"
+    );
+}
+
+window.addEventListener("pageshow", () => {
+    document.documentElement.classList.remove(
+        "page-loaded"
+    );
+});
+
+// ?????????10????????????????
+setTimeout(markPageLoaded, 10000);
 
 recordPageView();
 loadData();
