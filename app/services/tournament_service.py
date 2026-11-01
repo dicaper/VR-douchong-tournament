@@ -112,6 +112,35 @@ def _parse_db_time(value):
     return parsed
 
 
+def _start_time_after_round(tournament_id, round_number):
+    """
+    ???????????????
+
+    ?????? UTC ??????
+    ????????? 00:00 ???
+    ???????????? 00:00 ???
+    """
+    matches = TournamentService._get_matches(
+        tournament_id,
+        round_number,
+    )
+
+    end_times = []
+
+    for match in matches:
+        parsed = _parse_db_time(
+            match.get("end_time")
+        )
+
+        if parsed is not None:
+            end_times.append(parsed)
+
+    if end_times:
+        return max(end_times)
+
+    return _next_beijing_midnight_utc_naive()
+
+
 def _parse_api_time(value):
     """
     解析上游直播接口时间。
@@ -1035,36 +1064,34 @@ class TournamentService:
     @staticmethod
     def _pair_swiss_players(players, played):
         """
-        ??????????????????????
+        ????????
 
-        ???????????????????????
-        ??????????????????
-
-        ????
-        1. ?????????
-        2. ???????????????
-        3. ?????????????????????
-
-        ???????????????????????
-        ???????????????
+        1. ??????????
+        2. ????????????
+        3. ???????????????????????
+        4. ??????????????????????
         """
         from functools import lru_cache
 
         pool = list(players)
 
+        if len(pool) % 2:
+            raise RuntimeError(
+                "??????????????????"
+            )
+
         if not pool:
             return []
 
-        if len(pool) % 2:
-            raise RuntimeError(
-                f"??????????{len(pool)}??"
-                "??????????"
-            )
-
         random.shuffle(pool)
 
-        player_count = len(pool)
-        full_mask = (1 << player_count) - 1
+        played_pairs = {
+            frozenset(
+                str(player_id)
+                for player_id in pair
+            )
+            for pair in played
+        }
 
         records = [
             (
@@ -1074,21 +1101,13 @@ class TournamentService:
             for player in pool
         ]
 
-        played_pairs = {
-            frozenset(str(player_id) for player_id in pair)
-            for pair in played
-        }
-
-        # ?????????????
-        # ??????????????????????
-        rematch_penalty = 1_000_000_000
+        count = len(pool)
 
         @lru_cache(maxsize=None)
         def solve(mask):
             if mask == 0:
-                return 0, ()
+                return (0, 0, ())
 
-            # ??????????????????????
             first_bit = mask & -mask
             first_index = first_bit.bit_length() - 1
             remaining = mask ^ first_bit
@@ -1098,64 +1117,68 @@ class TournamentService:
 
             while bits:
                 bit = bits & -bits
-                candidate_index = bit.bit_length() - 1
-                candidates.append(candidate_index)
+                index = bit.bit_length() - 1
+                candidates.append(index)
                 bits ^= bit
 
-            # ?????????????????????
             random.shuffle(candidates)
 
-            best_cost = None
-            best_pairs = None
+            best = None
 
-            for partner_index in candidates:
-                partner_bit = 1 << partner_index
-                next_mask = remaining ^ partner_bit
+            for second_index in candidates:
+                second_bit = 1 << second_index
+                next_mask = remaining ^ second_bit
 
-                later_cost, later_pairs = solve(next_mask)
+                later = solve(next_mask)
 
-                first_player = pool[first_index]
-                second_player = pool[partner_index]
+                player1 = pool[first_index]
+                player2 = pool[second_index]
 
                 pair_key = frozenset((
-                    str(first_player["player_id"]),
-                    str(second_player["player_id"]),
+                    str(player1["player_id"]),
+                    str(player2["player_id"]),
                 ))
 
-                is_rematch = pair_key in played_pairs
-
-                first_record = records[first_index]
-                second_record = records[partner_index]
-
-                record_distance = (
-                    abs(first_record[0] - second_record[0])
-                    + abs(first_record[1] - second_record[1])
+                repeated_cost = (
+                    1
+                    if pair_key in played_pairs
+                    else 0
                 )
 
-                pair_cost = (
-                    (rematch_penalty if is_rematch else 0)
-                    + record_distance * 1000
-                )
-
-                total_cost = pair_cost + later_cost
-
-                if best_cost is None or total_cost < best_cost:
-                    best_cost = total_cost
-                    best_pairs = (
-                        ((first_index, partner_index),)
-                        + later_pairs
+                record_gap = (
+                    abs(
+                        records[first_index][0]
+                        - records[second_index][0]
                     )
+                    + abs(
+                        records[first_index][1]
+                        - records[second_index][1]
+                    )
+                )
 
-            return best_cost, best_pairs
+                candidate = (
+                    repeated_cost + later[0],
+                    record_gap + later[1],
+                    (
+                        (first_index, second_index),
+                    ) + later[2],
+                )
 
-        _, index_pairs = solve(full_mask)
+                if best is None or candidate[:2] < best[:2]:
+                    best = candidate
 
-        if not index_pairs or len(index_pairs) * 2 != player_count:
-            raise RuntimeError("????????????????")
+            return best
+
+        result = solve((1 << count) - 1)
+
+        if not result or len(result[2]) * 2 != count:
+            raise RuntimeError(
+                "???????????"
+            )
 
         return [
             (pool[first_index], pool[second_index])
-            for first_index, second_index in index_pairs
+            for first_index, second_index in result[2]
         ]
 
     @staticmethod
@@ -1206,7 +1229,10 @@ class TournamentService:
             ),
         )
 
-        start = _next_beijing_midnight_utc_naive()
+        start = _start_time_after_round(
+            tournament_id,
+            current_round,
+        )
 
         end = start + timedelta(
             days=int(

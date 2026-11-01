@@ -1,6 +1,7 @@
 # app/api_tournament.py
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from functools import wraps
 import os
 import random
@@ -534,3 +535,134 @@ def admin_check_finish():
             "success": False,
             "error": str(exc),
         }), 500
+
+
+@bp.route(
+    "/admin/align-current-round-time/<int:tournament_id>",
+    methods=["POST"],
+)
+@admin_required
+def align_current_round_time(tournament_id):
+    """
+    ?????????????????????
+
+    ?? JSON ???
+    {
+        "start_beijing": "2026-11-01 00:00:00"
+    }
+
+    ???????????????????????00:00?
+    """
+    db = get_memfire()
+    data = request.get_json(silent=True) or {}
+
+    try:
+        matches = db.select(
+            TABLE_MATCHES,
+            filters={
+                "tournament_id": f"eq.{int(tournament_id)}",
+                "round_number": "eq.current",
+            },
+        )
+
+        tournament_rows = db.select(
+            TABLE_TOURNAMENTS,
+            filters={
+                "id": f"eq.{int(tournament_id)}",
+            },
+            limit=1,
+        )
+
+        if not tournament_rows:
+            return jsonify({
+                "success": False,
+                "error": "?????",
+            }), 404
+
+        current_round = int(
+            tournament_rows[0].get("current_round") or 1
+        )
+
+        matches = db.select(
+            TABLE_MATCHES,
+            filters={
+                "tournament_id": f"eq.{int(tournament_id)}",
+                "round_number": f"eq.{current_round}",
+            },
+        )
+
+        if not matches:
+            return jsonify({
+                "success": False,
+                "error": "???????",
+                "round": current_round,
+            }), 404
+
+        start_text = str(
+            data.get("start_beijing")
+            or "2026-11-01 00:00:00"
+        ).strip()
+
+        beijing = ZoneInfo("Asia/Shanghai")
+        start_beijing = datetime.fromisoformat(
+            start_text.replace(" ", "T")
+        ).replace(tzinfo=beijing)
+
+        start_utc = start_beijing.astimezone(
+            timezone.utc
+        ).replace(tzinfo=None)
+
+        end_utc = start_utc + timedelta(days=3)
+
+        updated = 0
+
+        for match in matches:
+            db.update(
+                TABLE_MATCHES,
+                {
+                    "match_id": (
+                        f"eq.{match['match_id']}"
+                    ),
+                },
+                {
+                    "start_time": start_utc.isoformat(
+                        sep=" "
+                    ),
+                    "end_time": end_utc.isoformat(
+                        sep=" "
+                    ),
+                },
+            )
+            updated += 1
+
+        db.update(
+            TABLE_TOURNAMENTS,
+            {
+                "id": f"eq.{int(tournament_id)}",
+            },
+            {
+                "start_time": start_utc.isoformat(
+                    sep=" "
+                ),
+            },
+        )
+
+        return jsonify({
+            "success": True,
+            "tournament_id": int(tournament_id),
+            "round": current_round,
+            "matches_updated": updated,
+            "start_beijing": start_beijing.isoformat(
+                sep=" "
+            ),
+            "end_beijing": (
+                start_beijing + timedelta(days=3)
+            ).isoformat(sep=" "),
+        })
+
+    except Exception as exc:
+        return jsonify({
+            "success": False,
+            "error": str(exc),
+        }), 400
+
