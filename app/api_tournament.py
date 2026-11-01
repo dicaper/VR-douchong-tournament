@@ -557,14 +557,6 @@ def align_current_round_time(tournament_id):
     data = request.get_json(silent=True) or {}
 
     try:
-        matches = db.select(
-            TABLE_MATCHES,
-            filters={
-                "tournament_id": f"eq.{int(tournament_id)}",
-                "round_number": "eq.current",
-            },
-        )
-
         tournament_rows = db.select(
             TABLE_TOURNAMENTS,
             filters={
@@ -665,4 +657,3 @@ def align_current_round_time(tournament_id):
             "success": False,
             "error": str(exc),
         }), 400
-
